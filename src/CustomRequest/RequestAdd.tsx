@@ -15,6 +15,7 @@ const RequestAdd: React.FC = () => {
       response: data.response,
       createdAt: new Date().toISOString(),
       active: data.active,
+      partage: data.partage,
     };
     try {
       await addRequest(formData);
@@ -42,6 +43,9 @@ const RequestAdd: React.FC = () => {
         <Input.TextArea rows={4} />
       </Form.Item>
       <Form.Item label="Active" name="active" valuePropName="checked">
+        <Switch />
+      </Form.Item>
+      <Form.Item label="partage" name="partage" valuePropName="checked">
         <Switch />
       </Form.Item>
       <Form.Item>

@@ -42,7 +42,7 @@ const Login = () => {
                 <Input
                   prefix={<UserOutlined />}
                   placeholder="Username"
-                  style={{ fontSize: "18px", width: "100%" }} // Set width to 100%
+                  style={{ fontSize: "18px", width: "100%" }}
                 />
               </Form.Item>
 
@@ -55,7 +55,7 @@ const Login = () => {
                 <Input.Password
                   prefix={<LockOutlined />}
                   placeholder="Password"
-                  style={{ fontSize: "18px", width: "100%" }} // Set width to 100%
+                  style={{ fontSize: "18px", width: "100%" }}
                 />
               </Form.Item>
 
@@ -63,7 +63,7 @@ const Login = () => {
                 <Button
                   type="primary"
                   htmlType="submit"
-                  style={{ width: "100%", fontSize: "18px" }} // Set width to 100%
+                  style={{ width: "100%", fontSize: "18px" }}
                 >
                   Submit
                 </Button>

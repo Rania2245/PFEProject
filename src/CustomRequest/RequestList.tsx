@@ -10,7 +10,7 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-//import { useHistory } from "react-router-dom";
+
 const RequestList = () => {
   const [requests, setRequests] = useState<QuestionRequest[]>([]);
   const navigate = useNavigate();
@@ -29,12 +29,10 @@ const RequestList = () => {
   };
 
   const handleView = (record: QuestionRequest) => {
-    // history.push(`/requests/${record.id}`);
     navigate(`/requests/${record.id}`);
   };
 
   const handleModify = (record: QuestionRequest) => {
-    //history.push(`/requests/${record.id}/modify`);
     navigate(`/requests/${record.id}/modify`);
   };
 
@@ -46,6 +44,14 @@ const RequestList = () => {
       console.error("Error deleting record: ", error);
     }
   };
+
+  const handleAdd = async () => {
+    navigate(`/addRequest`);
+  };
+
+  const filteredRequests = requests.filter(
+    (request) => request.active === true
+  );
 
   const Actions = [
     ...requestColumns,
@@ -82,12 +88,13 @@ const RequestList = () => {
       ),
     },
   ];
+
   return (
     <>
-      <Button type="primary" icon={<PlusOutlined />}>
+      <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
         Add Request
       </Button>
-      <Table dataSource={requests} columns={Actions} />
+      <Table dataSource={filteredRequests} columns={Actions} />
     </>
   );
 };

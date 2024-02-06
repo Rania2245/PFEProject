@@ -11,10 +11,12 @@ function App() {
     <div className="app">
       <Routes>
         <Route path="/login" element={<Login />} />
+
         <Route path="/requests" element={<RequestList />} />
         <Route path="/request" element={<RequestAdd />} />
         <Route path="/request/:id" element={<RequestModify />} />
         <Route path="/selectedRequest/:id" element={<RequestItem />} />
+        <Route path="/addRequest" element={<RequestAdd />} />
       </Routes>
     </div>
   );

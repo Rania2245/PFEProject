@@ -4,4 +4,5 @@ export type QuestionRequest = {
   response: string;
   createdAt: string;
   active: boolean;
+  partage: boolean;
 };

@@ -52,6 +52,9 @@ const RequestItem: React.FC = () => {
             <Descriptions.Item label="Active">
               {requestDetails.active ? "Oui" : "Non"}
             </Descriptions.Item>
+            <Descriptions.Item label="Partage">
+              {requestDetails.active ? "Oui" : "Non"}
+            </Descriptions.Item>
           </Descriptions>
         )
       )}

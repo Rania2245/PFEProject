@@ -16,6 +16,7 @@ const RequestModify: React.FC = () => {
     createdAt: new Date().toString(),
     question: "Quest",
     response: "resp",
+    partage: true,
   });
   const { id } = useParams();
   const navigate = useNavigate();
@@ -62,6 +63,9 @@ const RequestModify: React.FC = () => {
         <Input.TextArea rows={4} />
       </Form.Item>
       <Form.Item label="Active" name="active" valuePropName="checked">
+        <Switch />
+      </Form.Item>
+      <Form.Item label="Partage" name="Partage" valuePropName="checked">
         <Switch />
       </Form.Item>
       <Form.Item>
