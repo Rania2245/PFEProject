@@ -1,52 +1,79 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
-import "./Login.css";
+import { Form, Input, Button, Row, Col, Space } from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { loginUser } from "../services/UserService";
-import { useForm, SubmitHandler } from "react-hook-form";
-interface IFormInput {
-  username: string;
-  password: string;
-}
-function Login() {
-  const { register, handleSubmit } = useForm<IFormInput>();
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
-    console.log(data);
-    loginUser(data.username, data.password)
-      .then((response) => response.json())
-      .then((json) => console.log(json));
+
+const Login = () => {
+  const onFinish = async (data: { username: string; password: string }) => {
+    try {
+      console.log(data);
+      const token = await loginUser(data.username, data.password);
+      console.log("JWT Token :", token);
+    } catch (error) {
+      console.error("LogIn Error !:", error);
+    }
   };
 
   return (
-    <div className="container">
-      <div className="image-container">
-        <img src="src/assets/crm.jpg" alt="Login Image" />
-      </div>
-      <div className="form-container">
-        <div className="login-container">
-          <h2>LogIn</h2>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <label htmlFor="username">
-              <FontAwesomeIcon icon={faUser} /> UserName:
-            </label>
-            <input type="text" id="username" {...register("username")} />
+    <Row
+      justify="center"
+      align="middle"
+      style={{ minHeight: "100vh", fontSize: "20px" }}
+    >
+      <Col span={30}>
+        <Space
+          direction="vertical"
+          size="large"
+          align="center"
+          style={{ padding: "20px" }}
+        >
+          <img
+            src="src/assets/crm.jpg"
+            alt="Login Image"
+            style={{ width: "100%", maxWidth: "400px" }}
+          />
+          <Form name="login" onFinish={onFinish} autoComplete="off">
+            <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+              <Form.Item
+                name="username"
+                rules={[
+                  { required: true, message: "Please input your username!" },
+                ]}
+              >
+                <Input
+                  prefix={<UserOutlined />}
+                  placeholder="Username"
+                  style={{ fontSize: "18px", width: "100%" }} // Set width to 100%
+                />
+              </Form.Item>
 
-            <label htmlFor="password">
-              <FontAwesomeIcon icon={faLock} /> PassWord:
-            </label>
-            <input type="password" id="password" {...register("password")} />
+              <Form.Item
+                name="password"
+                rules={[
+                  { required: true, message: "Please input your password!" },
+                ]}
+              >
+                <Input.Password
+                  prefix={<LockOutlined />}
+                  placeholder="Password"
+                  style={{ fontSize: "18px", width: "100%" }} // Set width to 100%
+                />
+              </Form.Item>
 
-            <button type="submit">LOGIN</button>
-            <p>
-              Pas de compte ?{" "}
-              <a href="/inscription" className="create-account-link">
-                S'inscrire
-              </a>
-            </p>
-          </form>
-        </div>
-      </div>
-    </div>
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ width: "100%", fontSize: "18px" }} // Set width to 100%
+                >
+                  Submit
+                </Button>
+              </Form.Item>
+            </Space>
+          </Form>
+        </Space>
+      </Col>
+    </Row>
   );
-}
+};
 
 export default Login;
