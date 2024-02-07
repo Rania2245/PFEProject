@@ -10,14 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 const RequestModify: React.FC = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [questionRequest, setQuestionRequest] = useState<QuestionRequest>({
-    id: "1",
-    active: true,
-    createdAt: new Date().toString(),
-    question: "Quest",
-    response: "resp",
-    partage: true,
-  });
+  const [questionRequest, setQuestionRequest] = useState<QuestionRequest>();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -32,8 +25,8 @@ const RequestModify: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const response = await getRequestById(id);
-      setQuestionRequest(response.data);
+      const response = await getRequestById(Number(id));
+      setQuestionRequest(response);
     } catch (error) {
       console.error("Erreur lors de la récupération des données : ", error);
     }
@@ -42,7 +35,9 @@ const RequestModify: React.FC = () => {
   const onFinish = async (data: QuestionRequest) => {
     setLoading(true);
     try {
-      await modifyRequest(questionRequest.id, data);
+      if (questionRequest) {
+        await modifyRequest(questionRequest.id, data);
+      }
     } catch (error) {
       console.error("Error modifying question:", error);
     }
@@ -56,23 +51,27 @@ const RequestModify: React.FC = () => {
       layout="vertical"
       onFinish={onFinish}
     >
-      <Form.Item label="Question" name="question">
-        <Input />
-      </Form.Item>
-      <Form.Item label="Response" name="response">
-        <Input.TextArea rows={4} />
-      </Form.Item>
-      <Form.Item label="Active" name="active" valuePropName="checked">
-        <Switch />
-      </Form.Item>
-      <Form.Item label="Partage" name="Partage" valuePropName="checked">
-        <Switch />
-      </Form.Item>
-      <Form.Item>
-        <Button type="primary" htmlType="submit" loading={loading}>
-          Modify Question
-        </Button>
-      </Form.Item>
+      {questionRequest && (
+        <>
+          <Form.Item label="Question" name="question">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Response" name="response">
+            <Input.TextArea rows={4} />
+          </Form.Item>
+          <Form.Item label="Active" name="active" valuePropName="checked">
+            <Switch />
+          </Form.Item>
+          <Form.Item label="Partage" name="Partage" valuePropName="checked">
+            <Switch />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Modify Question
+            </Button>
+          </Form.Item>
+        </>
+      )}
     </Form>
   );
 };

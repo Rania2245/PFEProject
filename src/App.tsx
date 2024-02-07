@@ -1,22 +1,25 @@
-import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import Login from "./Login/Login";
+
 import RequestList from "./CustomRequest/RequestList";
 import RequestAdd from "./CustomRequest/RequestAdd";
 import RequestModify from "./CustomRequest/RequestModify";
 import RequestItem from "./CustomRequest/RequestItem";
+import PrivateRoutes from "./PrivateRoutes";
+import "./App.css";
+import Login from "./Login/LogIn";
 
 function App() {
   return (
     <div className="app">
       <Routes>
         <Route path="/login" element={<Login />} />
-
-        <Route path="/requests" element={<RequestList />} />
-        <Route path="/request" element={<RequestAdd />} />
-        <Route path="/request/:id" element={<RequestModify />} />
-        <Route path="/selectedRequest/:id" element={<RequestItem />} />
-        <Route path="/addRequest" element={<RequestAdd />} />
+        <Route element={<PrivateRoutes />}>
+          <Route path="/requests" element={<RequestList />} />
+          <Route path="/request" element={<RequestAdd />} />
+          <Route path="/request/:id" element={<RequestModify />} />
+          <Route path="/selectedRequest/:id" element={<RequestItem />} />
+          <Route path="/addRequest" element={<RequestAdd />} />
+        </Route>
       </Routes>
     </div>
   );

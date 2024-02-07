@@ -1,15 +1,18 @@
 import { Form, Input, Button, Row, Col, Space } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { loginUser } from "../services/UserService";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const onFinish = async (data: { username: string; password: string }) => {
     try {
-      console.log(data);
       const token = await loginUser(data.username, data.password);
-      console.log("JWT Token :", token);
+      localStorage.setItem("token", token);
+      navigate("/requests");
     } catch (error) {
-      console.error("LogIn Error !:", error);
+      console.error("Login Error:", error);
     }
   };
 
@@ -65,7 +68,7 @@ const Login = () => {
                   htmlType="submit"
                   style={{ width: "100%", fontSize: "18px" }}
                 >
-                  Submit
+                  LOGIN
                 </Button>
               </Form.Item>
             </Space>

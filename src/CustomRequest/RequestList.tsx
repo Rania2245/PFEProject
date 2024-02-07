@@ -22,18 +22,18 @@ const RequestList = () => {
   const fetchData = async () => {
     try {
       const response = await getRequests();
-      setRequests(response.data);
+      setRequests(response);
     } catch (error) {
-      console.error("Erreur lors de la récupération des données : ", error);
+      console.error("Error fetching requests: ", error);
     }
   };
 
   const handleView = (record: QuestionRequest) => {
-    navigate(`/requests/${record.id}`);
+    navigate(`/selectedRequest/${record.id}`);
   };
 
   const handleModify = (record: QuestionRequest) => {
-    navigate(`/requests/${record.id}/modify`);
+    navigate(`/request/${record.id}`);
   };
 
   const handleDelete = async (record: QuestionRequest) => {
@@ -49,16 +49,14 @@ const RequestList = () => {
     navigate(`/addRequest`);
   };
 
-  const filteredRequests = requests.filter(
-    (request) => request.active === true
-  );
+  const filteredRequests = requests.filter((request) => request.partage);
 
   const Actions = [
     ...requestColumns,
     {
       title: "Actions",
       key: "actions",
-      render: (_: any, record: QuestionRequest) => (
+      render: (_: unknown, record: QuestionRequest) => (
         <Space>
           <Button
             type="primary"

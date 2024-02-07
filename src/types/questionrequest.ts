@@ -1,8 +1,9 @@
 export type QuestionRequest = {
-  id: string;
+  id: number;
   question: string;
   response: string;
-  createdAt: string;
+  createdAt: Date;
   active: boolean;
   partage: boolean;
+  user_id: number;
 };

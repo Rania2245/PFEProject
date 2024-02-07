@@ -20,8 +20,8 @@ const RequestItem: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getRequestById(id);
-        setRequestDetails(response.data);
+        const response = await getRequestById(Number(id));
+        setRequestDetails(response);
       } catch (error) {
         console.error("Error lors du request details:", error);
       }
@@ -38,7 +38,7 @@ const RequestItem: React.FC = () => {
         requestDetails && (
           <Descriptions title="Request Details">
             <Descriptions.Item label="ID">
-              {requestDetails.id}
+              {requestDetails.id.toString()}
             </Descriptions.Item>
             <Descriptions.Item label="Question">
               {requestDetails.question}
@@ -47,7 +47,7 @@ const RequestItem: React.FC = () => {
               {requestDetails.response}
             </Descriptions.Item>
             <Descriptions.Item label="Creatée a">
-              {requestDetails.createdAt}
+              {requestDetails.createdAt.toDateString()}
             </Descriptions.Item>
             <Descriptions.Item label="Active">
               {requestDetails.active ? "Oui" : "Non"}

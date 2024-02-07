@@ -10,12 +10,13 @@ const RequestAdd: React.FC = () => {
   const onFinish = async (data: QuestionRequest) => {
     setLoading(true);
     const formData: QuestionRequest = {
-      id: (Math.random() + 1).toString(36).substring(7),
+      id: 0,
       question: data.question,
       response: data.response,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(),
       active: data.active,
       partage: data.partage,
+      user_id: 0,
     };
     try {
       await addRequest(formData);
@@ -31,7 +32,7 @@ const RequestAdd: React.FC = () => {
       <Form.Item
         label="Question"
         name="question"
-        rules={[{ required: true, message: "Veuillez saisir la question ! " }]}
+        rules={[{ required: true, message: "Veuillez saisir la question !" }]}
       >
         <Input />
       </Form.Item>
