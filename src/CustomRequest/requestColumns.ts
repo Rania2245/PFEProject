@@ -21,8 +21,8 @@ export default [
   },
   {
     title: "partage",
-    dataIndex: " partage",
-    key: " partage",
+    dataIndex: "partage",
+    key: "partage",
   },
   {
     title: "id_user",

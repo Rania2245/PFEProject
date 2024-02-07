@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
 import { Spin, Descriptions } from "antd";
-import { QuestionRequest } from "../types/questionrequest";
+import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { getRequestById } from "../services/CustomRequestService";
-import { useNavigate, useParams } from "react-router-dom";
+import { QuestionRequest } from "../types/questionrequest";
 
 const RequestItem: React.FC = () => {
   const [requestDetails, setRequestDetails] = useState<QuestionRequest | null>(
@@ -46,14 +46,16 @@ const RequestItem: React.FC = () => {
             <Descriptions.Item label="Response">
               {requestDetails.response}
             </Descriptions.Item>
-            <Descriptions.Item label="Creatée a">
-              {requestDetails.createdAt.toDateString()}
-            </Descriptions.Item>
+            {requestDetails.createdAt && ( // Add this condition
+              <Descriptions.Item label="Created At">
+                {requestDetails.createdAt.toDateString()}
+              </Descriptions.Item>
+            )}
             <Descriptions.Item label="Active">
-              {requestDetails.active ? "Oui" : "Non"}
+              {requestDetails.active ? "Yes" : "No"}
             </Descriptions.Item>
-            <Descriptions.Item label="Partage">
-              {requestDetails.active ? "Oui" : "Non"}
+            <Descriptions.Item label="Share">
+              {requestDetails.partage ? "Yes" : "No"}
             </Descriptions.Item>
           </Descriptions>
         )
