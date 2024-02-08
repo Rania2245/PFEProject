@@ -2,8 +2,12 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Switch } from "antd";
 import { QuestionRequest } from "../types/questionrequest";
-import { getRequestById, modifyRequest } from "../services/CustomRequestService";
+import {
+  getRequestById,
+  modifyRequest,
+} from "../services/CustomRequestService";
 import { useNavigate, useParams } from "react-router-dom";
+import LogoutButton from "./LogOutButton";
 
 const RequestModify: React.FC = () => {
   const [form] = Form.useForm();
@@ -46,25 +50,28 @@ const RequestModify: React.FC = () => {
   };
 
   return (
-    <Form form={form} layout="vertical" onFinish={onFinish}>
-      <Form.Item label="Question" name="question">
-        <Input />
-      </Form.Item>
-      <Form.Item label="Response" name="response">
-        <Input.TextArea rows={4} />
-      </Form.Item>
-      <Form.Item label="Active" name="active" valuePropName="checked">
-        <Switch />
-      </Form.Item>
-      <Form.Item label="Partage" name="partage" valuePropName="checked">
-        <Switch />
-      </Form.Item>
-      <Form.Item>
-        <Button type="primary" htmlType="submit" loading={loading}>
-          Modify Question
-        </Button>
-      </Form.Item>
-    </Form>
+    <>
+      <LogoutButton />
+      <Form form={form} layout="vertical" onFinish={onFinish}>
+        <Form.Item label="Question" name="question">
+          <Input />
+        </Form.Item>
+        <Form.Item label="Response" name="response">
+          <Input.TextArea rows={4} />
+        </Form.Item>
+        <Form.Item label="Active" name="active" valuePropName="checked">
+          <Switch />
+        </Form.Item>
+        <Form.Item label="Partage" name="partage" valuePropName="checked">
+          <Switch />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit" loading={loading}>
+            Modify Question
+          </Button>
+        </Form.Item>
+      </Form>
+    </>
   );
 };
 
