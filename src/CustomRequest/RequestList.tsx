@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+
+import  { useState, useEffect } from "react";
 import { Table, Button, Space, Popconfirm } from "antd";
 import { deleteRequest, getRequests } from "../services/CustomRequestService";
 import { QuestionRequest } from "../types/questionrequest";
@@ -12,7 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const RequestList = () => {
-  const [requests, setRequests] = useState<QuestionRequest[]>([]);
+  const [requests, setRequests] = useState<readonly QuestionRequest[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,8 +50,6 @@ const RequestList = () => {
     navigate(`/addRequest`);
   };
 
-  const filteredRequests = requests.filter((request) => request.partage);
-
   const Actions = [
     ...requestColumns,
     {
@@ -73,10 +72,10 @@ const RequestList = () => {
             Modify
           </Button>
           <Popconfirm
-            title="Êtes-vous sûr de bien vouloir supprimer cet élément?"
+            title="Are you sure you want to delete this item?"
             onConfirm={() => handleDelete(record)}
-            okText="Oui"
-            cancelText="Non"
+            okText="Yes"
+            cancelText="No"
           >
             <Button danger icon={<DeleteOutlined />}>
               Delete
@@ -92,7 +91,11 @@ const RequestList = () => {
       <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
         Add Request
       </Button>
-      <Table dataSource={filteredRequests} columns={Actions} />
+      <Table
+        dataSource={requests}
+        columns={Actions}
+        rowKey={(record) => record.id.toString()}
+      />
     </>
   );
 };

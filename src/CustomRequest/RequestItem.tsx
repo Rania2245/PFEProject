@@ -46,16 +46,19 @@ const RequestItem: React.FC = () => {
             <Descriptions.Item label="Response">
               {requestDetails.response}
             </Descriptions.Item>
-            {requestDetails.createdAt && ( // Add this condition
+            {requestDetails.created_at && ( 
               <Descriptions.Item label="Created At">
-                {requestDetails.createdAt.toDateString()}
-              </Descriptions.Item>
+              {new Date(requestDetails.created_at).toDateString()}
+            </Descriptions.Item>
             )}
             <Descriptions.Item label="Active">
               {requestDetails.active ? "Yes" : "No"}
             </Descriptions.Item>
-            <Descriptions.Item label="Share">
+            <Descriptions.Item label="Partage">
               {requestDetails.partage ? "Yes" : "No"}
+            </Descriptions.Item>
+            <Descriptions.Item label="ID_User">
+              {requestDetails.user_id.toString()}
             </Descriptions.Item>
           </Descriptions>
         )

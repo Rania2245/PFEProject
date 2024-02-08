@@ -21,7 +21,14 @@ export const getRequests = async () => {
       `${endpoint}/api/customRequests`,
       getAxiosConfig()
     );
-    return response.data;
+
+    // Formatter la date en tant que dateString
+    const requests = response.data.map((request) => ({
+      ...request,
+      
+    }));
+
+    return requests;
   } catch (error) {
     console.error("Error fetching requests: ", error);
     throw error;
@@ -69,19 +76,6 @@ export const modifyRequest = async (
   }
 };
 
-export const getRequestsByUserId = async (userId: string) => {
-  try {
-    const response = await axios.get<QuestionRequest[]>(
-      `${endpoint}/api/customRequests?userId=${userId}`,
-      getAxiosConfig()
-    );
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching requests for user ID ${userId}: `, error);
-    throw error;
-  }
-};
-
 export const addRequest = async (formData: QuestionRequest) => {
   try {
     await axios.post(
@@ -93,6 +87,4 @@ export const addRequest = async (formData: QuestionRequest) => {
     console.error("Error adding request: ", error);
     throw error;
   }
-
-
 };
