@@ -51,18 +51,27 @@ const RequestList = () => {
         pagination.current,
         pagination.pageSize
       );
+      console.log(response);
+      const formattedRequests: QuestionRequest[] = response.map((item: any) => {
+        //@ts-expect-error
+        const questions = Object.values(item.questions).map((text: string) => ({
+          text,
+        }));
+        //@ts-expect-error
+        const responses = Object.values(item.responses).map((text: string) => ({
+          text,
+        }));
 
-      const formattedRequests: QuestionRequest[] = response.map(
-        (item: any) => ({
+        return {
           id: item.id,
           active: item.active,
           partage: item.partage,
-          questions: item.questions.map((q: { text: string }) => q.text),
-          responses: item.responses.map((r: { text: string }) => r.text),
+          questions: questions,
+          responses: responses,
           created_at: item.created_at,
           user_id: 0,
-        })
-      );
+        };
+      });
 
       setRequests(formattedRequests);
       setPagination({
@@ -129,20 +138,22 @@ const RequestList = () => {
       console.error("Error while searching:", error);
     }
   };
-
   const renderQuestion = (record: QuestionRequest) => {
     return (
       <Select
         mode="tags"
         style={{ width: 200 }}
         placeholder="Select or input tags"
-        defaultValue={record.questions[0]}
+        defaultValue={
+          record.questions.length > 0 ? record.questions[0].text : undefined
+        }
+        //@ts-expect-error
         onChange={(value) => handleSelectChange(value.text, record)}
         allowClear={true}
       >
-        {record.questions.map((questions, index) => (
-          <Option key={index} value={questions}>
-            {questions.text}
+        {record.questions.map((question, index) => (
+          <Option key={`question_${index}`} value={question.text}>
+            {question.text}
           </Option>
         ))}
       </Select>
@@ -154,12 +165,15 @@ const RequestList = () => {
         mode="tags"
         style={{ width: 200 }}
         placeholder="Select or input tags"
-        defaultValue={record.responses[0]}
+        defaultValue={
+          record.responses.length > 0 ? record.responses[0].text : undefined
+        }
+        //@ts-expect-error
         onChange={(value) => handleSelectChange(value.text, record)}
         allowClear={true}
       >
         {record.responses.map((response, index) => (
-          <Option key={index} value={response}>
+          <Option key={`response_${index}`} value={response.text}>
             {response.text}
           </Option>
         ))}

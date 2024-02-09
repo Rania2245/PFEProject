@@ -1,4 +1,3 @@
-import { Department } from "./department";
 import { PartageOption } from "./partageOption";
 import { Question } from "./question";
 import { Response } from "./response";

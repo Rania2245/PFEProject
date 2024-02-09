@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { getDeps } from "../services/departmentService";
 import { getUsersEmail } from "../services/UserService";
 import { Department } from "../types/department";
-import { User } from "../types/user";
 import { PartageOption } from "../types/partageOption";
 
 const { Option } = Select;
