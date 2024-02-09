@@ -15,8 +15,7 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import LogoutButton from "./NavBar";
-import { GetRowKey } from "antd/es/table/interface";
-import moment from "moment";
+
 const { Search } = Input;
 
 const RequestList = () => {
@@ -79,7 +78,6 @@ const RequestList = () => {
       console.error("Error while searching:", error);
     }
   };
-
   const Actions = [
     ...requestColumns,
     {
@@ -116,41 +114,25 @@ const RequestList = () => {
     },
   ];
 
-  const getRowClassName = (record: QuestionRequest, index: number) => {
-    return index % 2 === 0 ? "even-row" : "odd-row";
-  };
-
-  const getRowKey: GetRowKey<QuestionRequest> = (record) => {
-    return record.id ? record.id.toString() : "";
-  };
-
   return (
     <>
-      <div style={{ padding: "20px" }}>
-        <LogoutButton />
-        <div style={{ margin: "20px 0" }}>
-          <Search
-            placeholder="Search questions"
-            allowClear
-            enterButton="Search"
-            onSearch={handleSearch}
-            style={{ width: 300 }}
-          />
-        </div>
-        <div style={{ marginBottom: "20px" }}>
-          <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-            Ajouter Une Base De Connaissance
-          </Button>
-        </div>
-        <Table
-          dataSource={requests}
-          columns={Actions}
-          rowKey={getRowKey}
-          bordered
-          pagination={{ pageSize: 10 }}
-          rowClassName={getRowClassName}
-        />
-      </div>
+      <LogoutButton />
+      <Search
+        placeholder="Search questions"
+        allowClear
+        enterButton="Search"
+        onSearch={handleSearch}
+        style={{ width: 300, marginBottom: 16 }}
+      />
+      <br />
+      <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+        Add Request
+      </Button>
+      <Table
+        dataSource={requests}
+        columns={Actions}
+        rowKey={(record) => record.id?.toString() ?? "0"}
+      />
     </>
   );
 };
