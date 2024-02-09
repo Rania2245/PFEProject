@@ -1,4 +1,3 @@
-// RequestModify.tsx
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Switch } from "antd";
 import { QuestionRequest } from "../types/questionrequest";

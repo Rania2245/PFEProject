@@ -1,3 +1,10 @@
+import React, { useState, useEffect } from "react";
+import { Table, Button, Space, Popconfirm, Input } from "antd";
+import {
+  deleteRequest,
+  getRequests,
+  findRequest,
+} from "../services/CustomRequestService";
 import { useState, useEffect } from "react";
 import { Table, Button, Space, Popconfirm } from "antd";
 import { deleteRequest, getRequests } from "../services/CustomRequestService";
@@ -11,6 +18,7 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import LogoutButton from "./LogOutButton";
+const { Search } = Input;
 
 const RequestList = () => {
   const [requests, setRequests] = useState<readonly QuestionRequest[]>([]);
@@ -50,6 +58,15 @@ const RequestList = () => {
     navigate(`/addRequest`);
   };
 
+  const handleSearch = async (value: string) => {
+    try {
+      const results = await findRequest(value);
+      console.log("Search results:", results);
+      setRequests(results);
+    } catch (error) {
+      console.error("Error while searching:", error);
+    }
+  };
   const Actions = [
     ...requestColumns,
     {
@@ -89,7 +106,14 @@ const RequestList = () => {
   return (
     <>
       <LogoutButton />
-
+      <Search
+        placeholder="Search questions"
+        allowClear
+        enterButton="Search"
+        onSearch={handleSearch}
+        style={{ width: 300, marginBottom: 16 }}
+      />
+      <br />
       <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
         Add Request
       </Button>

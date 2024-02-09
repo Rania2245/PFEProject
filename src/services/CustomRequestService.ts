@@ -22,10 +22,8 @@ export const getRequests = async () => {
       getAxiosConfig()
     );
 
-    // Formatter la date en tant que dateString
     const requests = response.data.map((request) => ({
       ...request,
-      
     }));
 
     return requests;
@@ -87,6 +85,18 @@ export const addRequest = async (formData: QuestionRequest) => {
     console.error("Error adding request: ", error);
     throw error;
   }
-
-
+};
+export const findRequest = async (question: string) => {
+  try {
+    const response = await axios.get<QuestionRequest[]>(
+      `${endpoint}/api/searchcustomRequests/search?question=${encodeURIComponent(
+        question
+      )}`,
+      getAxiosConfig()
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Can't find the question "${question}": `, error);
+    throw error;
+  }
 };

@@ -36,7 +36,6 @@ const RequestItem: React.FC = () => {
     navigate(`/requests`);
   };
 
-  // Custom title component for the Descriptions
   const customTitle = (
     <div>
       <InfoCircleOutlined style={{ color: "blue", marginRight: "8px" }} />
