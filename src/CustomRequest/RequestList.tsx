@@ -78,6 +78,7 @@ const RequestList = () => {
       console.error("Error while searching:", error);
     }
   };
+
   const Actions = [
     ...requestColumns,
     {
@@ -115,25 +116,30 @@ const RequestList = () => {
   ];
 
   return (
-    <>
+    <div style={{ padding: "20px" }}>
       <LogoutButton />
-      <Search
-        placeholder="Search questions"
-        allowClear
-        enterButton="Search"
-        onSearch={handleSearch}
-        style={{ width: 300, marginBottom: 16 }}
-      />
-      <br />
-      <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-        Add Request
-      </Button>
+      <div style={{ margin: "20px 0" }}>
+        <Search
+          placeholder="Search questions"
+          allowClear
+          enterButton="Search"
+          onSearch={handleSearch}
+          style={{ width: 300 }}
+        />
+      </div>
+      <div style={{ marginBottom: "20px" }}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+          Add Request
+        </Button>
+      </div>
       <Table
         dataSource={requests}
         columns={Actions}
         rowKey={(record) => record.id?.toString() ?? "0"}
+        bordered
+        pagination={{ pageSize: 10 }}
       />
-    </>
+    </div>
   );
 };
 
