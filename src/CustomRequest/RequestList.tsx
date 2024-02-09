@@ -1,5 +1,4 @@
-
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Table, Button, Space, Popconfirm } from "antd";
 import { deleteRequest, getRequests } from "../services/CustomRequestService";
 import { QuestionRequest } from "../types/questionrequest";
@@ -11,6 +10,7 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import LogoutButton from "./LogOutButton";
 
 const RequestList = () => {
   const [requests, setRequests] = useState<readonly QuestionRequest[]>([]);
@@ -88,6 +88,8 @@ const RequestList = () => {
 
   return (
     <>
+      <LogoutButton />
+
       <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
         Add Request
       </Button>
