@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Spin, Descriptions, Button } from "antd";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { getRequestById } from "../services/CustomRequestService";
 import { QuestionRequest } from "../types/questionrequest";
 import { LeftOutlined, InfoCircleOutlined } from "@ant-design/icons";
@@ -15,8 +15,7 @@ const RequestItem: React.FC = () => {
   const navigate = useNavigate();
 
   if (id === undefined) {
-    navigate(`/requests`);
-    return <></>;
+    return <Navigate to="/requests" />;
   }
 
   useEffect(() => {
@@ -25,7 +24,7 @@ const RequestItem: React.FC = () => {
         const response = await getRequestById(Number(id));
         setRequestDetails(response);
       } catch (error) {
-        console.error("Error lors du request details:", error);
+        console.error("Error fetching request details:", error);
       }
       setLoading(false);
     };
@@ -58,12 +57,18 @@ const RequestItem: React.FC = () => {
             <Descriptions.Item label="ID">
               {requestDetails.id.toString()}
             </Descriptions.Item>
+
             <Descriptions.Item label="Question">
-              {requestDetails.question}
+              {requestDetails.question.map((q, index) => (
+                <div key={index}>{q.text}</div>
+              ))}
             </Descriptions.Item>
             <Descriptions.Item label="Response">
-              {requestDetails.response}
+              {requestDetails.response.map((r, index) => (
+                <div key={index}>{r.text}</div>
+              ))}
             </Descriptions.Item>
+
             {requestDetails.created_at && (
               <Descriptions.Item label="Created At">
                 {new Date(requestDetails.created_at).toDateString()}

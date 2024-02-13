@@ -7,6 +7,7 @@ import {
 } from "../services/CustomRequestService";
 import { useNavigate, useParams } from "react-router-dom";
 import LogoutButton from "./LogOutButton";
+import { MinusCircleOutlined } from "@ant-design/icons";
 
 const RequestModify: React.FC = () => {
   const [form] = Form.useForm();
@@ -30,15 +31,15 @@ const RequestModify: React.FC = () => {
       setQuestionRequest(response);
       form.setFieldsValue(response);
     } catch (error) {
-      console.error("Erreur lors de la récupération des données : ", error);
+      console.error("Error fetching data:", error);
     }
   };
 
-  const onFinish = async (data: QuestionRequest) => {
+  const onFinish = async (values: QuestionRequest) => {
     setLoading(true);
     try {
       if (questionRequest) {
-        await modifyRequest(questionRequest.id, data);
+        await modifyRequest(questionRequest.id, values);
         navigate("/requests");
       }
     } catch (error) {
@@ -52,16 +53,90 @@ const RequestModify: React.FC = () => {
     <>
       <LogoutButton />
       <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Form.Item label="Question" name="question">
-          <Input />
-        </Form.Item>
-        <Form.Item label="Response" name="response">
-          <Input.TextArea rows={4} />
-        </Form.Item>
+        <Form.List name="questions">
+          {(fields, { add, remove }) => (
+            <>
+              {fields.map((field, index) => (
+                <Form.Item
+                  label={index === 0 ? "Questions" : ""}
+                  required={false}
+                  key={field.key}
+                >
+                  <Form.Item
+                    {...field}
+                    validateTrigger={["onChange", "onBlur"]}
+                    rules={[
+                      {
+                        required: true,
+                        whitespace: true,
+                        message: "Please input question or delete this field.",
+                      },
+                    ]}
+                    noStyle
+                  >
+                    <Input placeholder="Question" style={{ width: "60%" }} />
+                  </Form.Item>
+                  {fields.length > 1 ? (
+                    <MinusCircleOutlined
+                      className="dynamic-delete-button"
+                      onClick={() => remove(field.name)}
+                    />
+                  ) : null}
+                </Form.Item>
+              ))}
+              <Form.Item>
+                <Button type="dashed" onClick={() => add()}>
+                  Add Question
+                </Button>
+              </Form.Item>
+            </>
+          )}
+        </Form.List>
+
+        <Form.List name="responses">
+          {(fields, { add, remove }) => (
+            <>
+              {fields.map((field, index) => (
+                <Form.Item
+                  label={index === 0 ? "Responses" : ""}
+                  required={false}
+                  key={field.key}
+                >
+                  <Form.Item
+                    {...field}
+                    validateTrigger={["onChange", "onBlur"]}
+                    rules={[
+                      {
+                        required: true,
+                        whitespace: true,
+                        message: "Please input response or delete this field.",
+                      },
+                    ]}
+                    noStyle
+                  >
+                    <Input placeholder="Response" style={{ width: "60%" }} />
+                  </Form.Item>
+                  {fields.length > 1 ? (
+                    <MinusCircleOutlined
+                      className="dynamic-delete-button"
+                      onClick={() => remove(field.name)}
+                    />
+                  ) : null}
+                </Form.Item>
+              ))}
+              <Form.Item>
+                <Button type="dashed" onClick={() => add()}>
+                  Add Response
+                </Button>
+              </Form.Item>
+            </>
+          )}
+        </Form.List>
+
         <Form.Item label="Active" name="active" valuePropName="checked">
           <Switch />
         </Form.Item>
-        <Form.Item label="Partage" name="partage" valuePropName="checked">
+        <Form.Item label="Shared" name="partage" valuePropName="checked">
           <Switch />
         </Form.Item>
         <Form.Item>

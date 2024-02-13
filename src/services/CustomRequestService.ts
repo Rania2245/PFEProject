@@ -24,6 +24,14 @@ export const getRequests = async () => {
 
     const requests = response.data.map((request) => ({
       ...request,
+      question: request.question.map((q) => ({
+        id: q.id,
+        text: q.text,
+      })),
+      response: request.response.map((r) => ({
+        id: r.id,
+        text: r.text,
+      })),
     }));
 
     return requests;
@@ -32,7 +40,6 @@ export const getRequests = async () => {
     throw error;
   }
 };
-
 export const getRequestById = async (id: number) => {
   try {
     const response = await axios.get<QuestionRequest>(
