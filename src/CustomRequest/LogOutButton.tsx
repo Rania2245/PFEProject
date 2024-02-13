@@ -1,5 +1,10 @@
 import { Menu } from "antd";
-import { LogoutOutlined, RobotOutlined, MenuOutlined } from "@ant-design/icons";
+import {
+  LogoutOutlined,
+  RobotOutlined,
+  MenuOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
 const LogoutButton = () => {
@@ -12,6 +17,14 @@ const LogoutButton = () => {
 
   const handleChatBot = () => {
     navigate("/chatbot");
+  };
+
+  const handleList = () => {
+    navigate("/requests");
+  };
+
+  const handleAddRequest = () => {
+    navigate("/addRequest");
   };
 
   return (
@@ -36,10 +49,19 @@ const LogoutButton = () => {
       </Menu.Item>
       <Menu.Item
         key="list"
+        onClick={handleList}
         style={{ marginLeft: "10px" }}
         icon={<MenuOutlined />}
       >
         List
+      </Menu.Item>
+      <Menu.Item
+        key="addRequest"
+        onClick={handleAddRequest}
+        style={{ marginLeft: "10px" }}
+        icon={<PlusOutlined />}
+      >
+        Add Request
       </Menu.Item>
       <Menu.Item key="logout" onClick={handleLogout} style={{ float: "left" }}>
         <LogoutOutlined />
