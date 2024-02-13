@@ -3,6 +3,7 @@ import { Input, Button, message, Space } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 import { findRequest } from "../services/CustomRequestService";
 import "./Chatbot.css";
+import LogoutButton from "./LogOutButton";
 
 const Chatbot = () => {
   const [question, setQuestion] = useState("");
@@ -30,7 +31,7 @@ const Chatbot = () => {
 
   return (
     <>
-      <Chatbot />
+      <LogoutButton />
       <div className="chatbot-container">
         <div className="chatbot-messages">
           {response && (

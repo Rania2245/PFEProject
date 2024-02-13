@@ -14,7 +14,7 @@ function App() {
   return (
     <div className="app">
       <Routes>
-        <Route path="/" element={<Login />} />
+        {<Route path="/" element={<Login />} />}
         {
           <Route element={<PrivateRoutes />}>
             <Route path="/requests" element={<RequestList />} />
