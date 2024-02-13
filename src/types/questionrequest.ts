@@ -1,7 +1,9 @@
+import { Question } from "./question";
+import { Response } from "./response";
 export type QuestionRequest = {
   id: number;
-  question: string;
-  response: string;
+  question: Question[];
+  response: Response[];
   created_at: Date;
   active: boolean;
   partage: boolean;
