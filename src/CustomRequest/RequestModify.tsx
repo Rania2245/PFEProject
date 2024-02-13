@@ -7,7 +7,7 @@ import {
   modifyRequest,
 } from "../services/CustomRequestService";
 import { useNavigate, useParams } from "react-router-dom";
-import LogoutButton from "./NavBar";
+import LogoutButton from "./LogOutButton";
 
 const RequestModify: React.FC = () => {
   const [form] = Form.useForm<QuestionRequest>();
@@ -38,16 +38,10 @@ const RequestModify: React.FC = () => {
   const onFinish = async (values: QuestionRequest) => {
     setLoading(true);
     try {
-      // await modifyRequest(Number(id), values);
-      // console.log({ values });
-      await modifyRequest(Number(id), {
-        ...values,
-        //@ts-expect-error
-        questions: values.questions.map((question) => ({ text: question })),
-        //@ts-expect-error
-        responses: values.responses.map((response) => ({ text: response })),
-      });
-      navigate("/requests");
+      if (questionRequest) {
+        await modifyRequest(questionRequest.id, values);
+        navigate("/requests");
+      }
     } catch (error) {
       console.error("Error modifying request:", error);
     } finally {
@@ -142,7 +136,7 @@ const RequestModify: React.FC = () => {
         <Form.Item label="Active" name="active" valuePropName="checked">
           <Switch />
         </Form.Item>
-        <Form.Item label="Partage" name="partage" valuePropName="checked">
+        <Form.Item label="Shared" name="partage" valuePropName="checked">
           <Switch />
         </Form.Item>
         <Form.Item>

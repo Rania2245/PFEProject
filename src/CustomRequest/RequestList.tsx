@@ -14,8 +14,7 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import LogoutButton from "./NavBar";
-
+import LogoutButton from "./LogOutButton";
 const { Search } = Input;
 
 const RequestList = () => {
@@ -115,6 +114,10 @@ const RequestList = () => {
     },
   ];
 
+  const getRowClassName = (record: QuestionRequest, index: number) => {
+    return index % 2 === 0 ? "even-row" : "odd-row";
+  };
+
   return (
     <div style={{ padding: "20px" }}>
       <LogoutButton />
@@ -129,7 +132,7 @@ const RequestList = () => {
       </div>
       <div style={{ marginBottom: "20px" }}>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-          Add Request
+          Ajouter Une Base De Connaice
         </Button>
       </div>
       <Table
@@ -138,6 +141,7 @@ const RequestList = () => {
         rowKey={(record) => record.id?.toString() ?? "0"}
         bordered
         pagination={{ pageSize: 10 }}
+        rowClassName={getRowClassName}
       />
     </div>
   );

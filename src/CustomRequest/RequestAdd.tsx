@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Form, Input, Button, Switch, Row, Col } from "antd";
+import { Form, Input, Button, Switch } from "antd";
 import { QuestionRequest } from "../types/questionrequest";
-import LogoutButton from "./NavBar";
+import LogoutButton from "./LogOutButton";
 import { MinusCircleOutlined } from "@ant-design/icons";
 import { addRequest } from "../services/CustomRequestService";
 import { useNavigate } from "react-router-dom";
@@ -14,8 +14,9 @@ const RequestAdd: React.FC = () => {
   const onFinish = async (values: QuestionRequest) => {
     setLoading(true);
     try {
-      console.log(values);
       await addRequest(values);
+      console.log({ values });
+      form.resetFields();
       navigate("/requests");
       console.log("Question added successfully:", values);
     } catch (error) {
@@ -32,31 +33,33 @@ const RequestAdd: React.FC = () => {
         <Form.List name="questions">
           {(fields, { add, remove }, { errors }) => (
             <>
-              {fields.map((field) => (
-                <Row gutter={8} key={field.key}>
-                  <Col span={22} key={`${field.key}-col`}>
-                    <Form.Item
-                      label={fields.indexOf(field) === 0 ? "Questions" : ""}
-                      name={[field.name, "text"]}
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input question",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="Question" />
-                    </Form.Item>
-                  </Col>
-                  <Col span={2} key={`${field.key}-minus`}>
-                    {fields.length > 1 ? (
-                      <MinusCircleOutlined
-                        className="dynamic-delete-button"
-                        onClick={() => remove(field.name)}
-                      />
-                    ) : null}
-                  </Col>
-                </Row>
+              {fields.map((field, index) => (
+                <Form.Item
+                  label={index === 0 ? "Questions" : ""}
+                  required={false}
+                  key={field.key}
+                >
+                  <Form.Item
+                    {...field}
+                    validateTrigger={["onChange", "onBlur"]}
+                    rules={[
+                      {
+                        required: true,
+                        whitespace: true,
+                        message: "Please input question delete this field.",
+                      },
+                    ]}
+                    noStyle
+                  >
+                    <Input placeholder="question" style={{ width: "60%" }} />
+                  </Form.Item>
+                  {fields.length > 1 ? (
+                    <MinusCircleOutlined
+                      className="dynamic-delete-button"
+                      onClick={() => remove(field.name)}
+                    />
+                  ) : null}
+                </Form.Item>
               ))}
               <Form.Item>
                 <Button type="dashed" onClick={() => add()}>
@@ -71,31 +74,33 @@ const RequestAdd: React.FC = () => {
         <Form.List name="responses">
           {(fields, { add, remove }, { errors }) => (
             <>
-              {fields.map((field) => (
-                <Row gutter={8} key={field.key}>
-                  <Col span={22} key={`${field.key}-col`}>
-                    <Form.Item
-                      label={fields.indexOf(field) === 0 ? "Responses" : ""}
-                      name={[field.name, "text"]}
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input response",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="Response" />
-                    </Form.Item>
-                  </Col>
-                  <Col span={2} key={`${field.key}-minus`}>
-                    {fields.length > 1 ? (
-                      <MinusCircleOutlined
-                        className="dynamic-delete-button"
-                        onClick={() => remove(field.name)}
-                      />
-                    ) : null}
-                  </Col>
-                </Row>
+              {fields.map((field, index) => (
+                <Form.Item
+                  label={index === 0 ? "Responses" : ""}
+                  required={false}
+                  key={field.key}
+                >
+                  <Form.Item
+                    {...field}
+                    validateTrigger={["onChange", "onBlur"]}
+                    rules={[
+                      {
+                        required: true,
+                        whitespace: true,
+                        message: "Please input response delete this field.",
+                      },
+                    ]}
+                    noStyle
+                  >
+                    <Input placeholder="response" style={{ width: "60%" }} />
+                  </Form.Item>
+                  {fields.length > 1 ? (
+                    <MinusCircleOutlined
+                      className="dynamic-delete-button"
+                      onClick={() => remove(field.name)}
+                    />
+                  ) : null}
+                </Form.Item>
               ))}
               <Form.Item>
                 <Button type="dashed" onClick={() => add()}>
