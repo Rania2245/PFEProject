@@ -3,7 +3,7 @@ import { Input, Button, message, Space } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 import { findRequest } from "../services/CustomRequestService";
 import "./Chatbot.css";
-import LogoutButton from "./LogOutButton";
+import LogoutButton from "./NavBar";
 
 const Chatbot = () => {
   const [question, setQuestion] = useState("");
@@ -17,7 +17,11 @@ const Chatbot = () => {
     try {
       const requests = await findRequest(question);
       if (requests.length > 0) {
-        setResponse(requests[0].response[0].text);
+        // Assuming each request has a 'responses' property
+        const allResponses = requests.map((request) => request.responses);
+        // Combine responses into a single string
+        const combinedResponses = allResponses.join("\n");
+        setResponse(combinedResponses);
       } else {
         setResponse("Désolé, je n'ai pas de réponse à cette question.");
       }
@@ -33,6 +37,15 @@ const Chatbot = () => {
     <>
       <LogoutButton />
       <div className="chatbot-container">
+        <h1 className="chatbot-title">Chatbot</h1>
+        <div className="initial-message">
+          <div className="initial-box">
+            <Space direction="vertical">
+              <p style={{ marginBottom: "0" }}>How can I help you today?</p>
+              <SendOutlined style={{ fontSize: "24px", margin: "auto" }} />
+            </Space>
+          </div>
+        </div>
         <div className="chatbot-messages">
           {response && (
             <div className="chatbot-message">
