@@ -1,17 +1,12 @@
 export default [
   {
     title: "Question",
-    dataIndex: "question",
-    key: "question",
+    dataIndex: "questions",
+    key: "questions",
   },
   {
     title: "Réponse",
-    dataIndex: "response",
-    key: "response",
-  },
-  {
-    title: "Date de création",
-    dataIndex: "created_at",
-    key: "created_at",
+    dataIndex: "responses",
+    key: "responses",
   },
 ];

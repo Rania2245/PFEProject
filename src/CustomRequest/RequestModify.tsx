@@ -1,25 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Switch } from "antd";
+import { MinusCircleOutlined } from "@ant-design/icons";
 import { QuestionRequest } from "../types/questionrequest";
 import {
   getRequestById,
   modifyRequest,
 } from "../services/CustomRequestService";
 import { useNavigate, useParams } from "react-router-dom";
-import LogoutButton from "./LogOutButton";
-import { MinusCircleOutlined } from "@ant-design/icons";
+import LogoutButton from "./NavBar";
 
 const RequestModify: React.FC = () => {
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<QuestionRequest>();
   const [loading, setLoading] = useState(false);
-  const [questionRequest, setQuestionRequest] = useState<QuestionRequest>();
   const { id } = useParams();
   const navigate = useNavigate();
-
-  if (id === undefined) {
-    navigate(`/requests`);
-    return <></>;
-  }
 
   useEffect(() => {
     fetchData();
@@ -28,8 +22,14 @@ const RequestModify: React.FC = () => {
   const fetchData = async () => {
     try {
       const response = await getRequestById(Number(id));
-      setQuestionRequest(response);
-      form.setFieldsValue(response);
+      form.setFieldsValue({
+        active: response.data.active,
+        partage: response.data.partage,
+        //@ts-expect-error
+        questions: response.data.questions.map(({ text }) => text),
+        //@ts-expect-error
+        responses: response.data.responses.map(({ text }) => text),
+      });
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -38,12 +38,18 @@ const RequestModify: React.FC = () => {
   const onFinish = async (values: QuestionRequest) => {
     setLoading(true);
     try {
-      if (questionRequest) {
-        await modifyRequest(questionRequest.id, values);
-        navigate("/requests");
-      }
+      // await modifyRequest(Number(id), values);
+      // console.log({ values });
+      await modifyRequest(Number(id), {
+        ...values,
+        //@ts-expect-error
+        questions: values.questions.map((question) => ({ text: question })),
+        //@ts-expect-error
+        responses: values.responses.map((response) => ({ text: response })),
+      });
+      navigate("/requests");
     } catch (error) {
-      console.error("Error modifying question:", error);
+      console.error("Error modifying request:", error);
     } finally {
       setLoading(false);
     }
@@ -136,7 +142,7 @@ const RequestModify: React.FC = () => {
         <Form.Item label="Active" name="active" valuePropName="checked">
           <Switch />
         </Form.Item>
-        <Form.Item label="Shared" name="partage" valuePropName="checked">
+        <Form.Item label="Partage" name="partage" valuePropName="checked">
           <Switch />
         </Form.Item>
         <Form.Item>
