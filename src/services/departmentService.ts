@@ -13,7 +13,18 @@ const getAxiosConfig = () => {
     throw new Error("JWT token not found in localStorage");
   }
 };
-
+export const getDepartmentsByIds = async (departmentIds: string[]) => {
+  try {
+    const response = await axios.get(
+      `${endpoint}/api/departments/${departmentIds}`,
+      getAxiosConfig()
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching departments:", error);
+    throw error;
+  }
+};
 const addDep = async (name: string) => {
   try {
     const { data } = await axios.post(
