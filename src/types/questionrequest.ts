@@ -1,3 +1,5 @@
+import { Department } from "./department";
+import { PartageOption } from "./partageOption";
 import { Question } from "./question";
 import { Response } from "./response";
 export type QuestionRequest = {
@@ -6,6 +8,7 @@ export type QuestionRequest = {
   responses: Response[];
   created_at?: Date;
   active: boolean;
-  partage: boolean;
+  partage: PartageOption;
+
   user_id?: number;
 };

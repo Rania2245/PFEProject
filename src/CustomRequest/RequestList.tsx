@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { Table, Button, Space, Popconfirm, Input } from "antd";
+import { useState, useEffect } from "react";
+import { Table, Button, Space, Popconfirm, Input, Modal, Select } from "antd";
+
 import {
   deleteRequest,
   getRequests,
   findRequest,
 } from "../services/CustomRequestService";
 import { QuestionRequest } from "../types/questionrequest";
-import requestColumns from "./requestColumns";
 import {
   DeleteOutlined,
   EditOutlined,
@@ -16,11 +16,14 @@ import {
 import { useNavigate } from "react-router-dom";
 import LogoutButton from "./NavBar";
 import { GetRowKey } from "antd/es/table/interface";
-import moment from "moment";
+import RequestAdd from "./RequestAdd";
+
 const { Search } = Input;
+const { Option } = Select;
 
 const RequestList = () => {
   const [requests, setRequests] = useState<readonly QuestionRequest[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,6 +46,7 @@ const RequestList = () => {
         })
       );
 
+      console.log(formattedRequests);
       setRequests(formattedRequests);
     } catch (error) {
       console.error("Error fetching requests: ", error);
@@ -67,21 +71,81 @@ const RequestList = () => {
   };
 
   const handleAdd = async () => {
-    navigate(`/addRequest`);
+    setIsModalVisible(true);
   };
 
   const handleSearch = async (value: string) => {
     try {
-      const results = await findRequest(value);
-      console.log("Search results:", results);
-      setRequests(results);
+      if (value.trim() === "") {
+        fetchData();
+      } else {
+        const results = requests.filter((request) =>
+          request.questions.some((question) =>
+            question.text.toLowerCase().includes(value.toLowerCase())
+          )
+        );
+        setRequests(results);
+      }
     } catch (error) {
       console.error("Error while searching:", error);
     }
   };
 
+  const renderQuestion = (record: QuestionRequest) => {
+    return (
+      <Select
+        mode="tags"
+        style={{ width: 200 }}
+        placeholder="Select or input tags"
+        defaultValue={record.questions[0]}
+        onChange={(value) => handleSelectChange(value.text, record)}
+        allowClear={true}
+      >
+        {record.questions.map((questions, index) => (
+          <Option key={index} value={questions}>
+            {questions.text}
+          </Option>
+        ))}
+      </Select>
+    );
+  };
+  const renderResponse = (record: QuestionRequest) => {
+    return (
+      <Select
+        mode="tags"
+        style={{ width: 200 }}
+        placeholder="Select or input tags"
+        defaultValue={record.responses[0]}
+        onChange={(value) => handleSelectChange(value.text, record)}
+        allowClear={true}
+      >
+        {record.responses.map((response, index) => (
+          <Option key={index} value={response}>
+            {response.text}
+          </Option>
+        ))}
+      </Select>
+    );
+  };
+
+  const handleSelectChange = (value: string, record: QuestionRequest) => {
+    console.log("Selected value:", value);
+    console.log("Record:", record);
+  };
+
   const Actions = [
-    ...requestColumns,
+    {
+      title: "Questions",
+      dataIndex: "questions",
+      key: "questions",
+      render: (_: any, record: QuestionRequest) => renderQuestion(record),
+    },
+    {
+      title: "Réponses",
+      dataIndex: "responses",
+      key: "responses",
+      render: (_: any, record: QuestionRequest) => renderResponse(record),
+    },
     {
       title: "Actions",
       key: "actions",
@@ -124,6 +188,10 @@ const RequestList = () => {
     return record.id ? record.id.toString() : "";
   };
 
+  const refreshPage = () => {
+    fetchData();
+  };
+
   return (
     <>
       <div style={{ padding: "20px" }}>
@@ -151,6 +219,18 @@ const RequestList = () => {
           rowClassName={getRowClassName}
         />
       </div>
+
+      <Modal
+        title="Add Request"
+        visible={isModalVisible}
+        footer={null}
+        onCancel={() => setIsModalVisible(false)}
+        width={800}
+        style={{ position: "fixed", top: 0, right: 0, height: "1000vh" }}
+        afterClose={refreshPage}
+      >
+        <RequestAdd />
+      </Modal>
     </>
   );
 };
