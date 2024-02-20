@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Switch, Row, Col, Select } from "antd";
+import { Form, Input, Button, Switch, Row, Col, Select, message } from "antd";
 import { MinusCircleOutlined } from "@ant-design/icons";
 import { addRequest } from "../services/CustomRequestService";
 import { useNavigate } from "react-router-dom";
@@ -76,7 +76,8 @@ const RequestAdd: React.FC = () => {
       };
       console.log({ requestData });
       await addRequest(requestData);
-      // navigate("/requests");
+      navigate("/requests");
+      message.success("Question added successfully");
       console.log("Question added successfully:", requestData);
     } catch (error) {
       console.error("Error while adding the question:", error);
