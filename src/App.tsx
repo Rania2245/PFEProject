@@ -9,6 +9,8 @@ import Chatbot from "./CustomRequest/ChatBot";
 
 import Login from "./Login/LogIn";
 import PrivateRoutes from "./PrivateRoutes";
+import AddUserForm from "./CustomRequest/AddUser";
+import AddDepartmentForm from "./CustomRequest/AddDep";
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
             <Route path="/selectedRequest/:id" element={<RequestItem />} />
             <Route path="/addRequest" element={<RequestAdd />} />
             <Route path="/chatbot" element={<Chatbot />} />
+            <Route path="/addUser" element={<AddUserForm />} />
+            <Route path="/addDep" element={<AddDepartmentForm />} />
           </Route>
         }
       </Routes>

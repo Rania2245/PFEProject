@@ -73,12 +73,18 @@ export const modifyRequest = async (
     throw error;
   }
 };
-
-export const addRequest = async (formData: QuestionRequest) => {
+export const addRequest = async (formData: any) => {
   try {
+    const transformedData = {
+      ...formData,
+      partage: formData.partage.map((item: any) => ({
+        type: item.type,
+        value: item.value,
+      })),
+    };
     await axios.post(
       `${endpoint}/api/question-requests`,
-      formData,
+      transformedData,
       getAxiosConfig()
     );
   } catch (error) {
