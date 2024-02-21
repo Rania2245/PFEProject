@@ -1,11 +1,7 @@
 import { useState, useEffect } from "react";
 import { Table, Button, Space, Popconfirm, Input, Modal, Select } from "antd";
 
-import {
-  deleteRequest,
-  getRequests,
-  findRequest,
-} from "../services/CustomRequestService";
+import { deleteRequest, getRequests } from "../services/CustomRequestService";
 import { QuestionRequest } from "../types/questionrequest";
 import {
   DeleteOutlined,
@@ -79,9 +75,22 @@ const RequestList = () => {
       if (value.trim() === "") {
         fetchData();
       } else {
-        const results = requests.filter((request) =>
+        const response = await getRequests();
+        const formattedRequests: QuestionRequest[] = response.map(
+          (item: any) => ({
+            id: item.id,
+            active: item.active,
+            partage: item.partage,
+            questions: item.questions.map((q: { text: string }) => q.text),
+            responses: item.responses.map((r: { text: string }) => r.text),
+            created_at: item.created_at,
+            user_id: 0,
+          })
+        );
+        const results = formattedRequests.filter((request) =>
           request.questions.some((question) =>
-            question.text.toLowerCase().includes(value.toLowerCase())
+            //@ts-expect-error
+            question.toLowerCase().includes(value.toLowerCase())
           )
         );
         setRequests(results);

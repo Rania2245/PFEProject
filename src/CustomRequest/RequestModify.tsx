@@ -75,23 +75,47 @@ const RequestModify: React.FC = () => {
   const onFinish = async (values: QuestionRequest) => {
     setLoading(true);
     try {
-      const modifiedPartage = Array.isArray(values.partage)
-        ? values.partage.map((partage) => ({
-            type: partage.type,
-            value: partage.value,
-          }))
-        : values.partage;
+      let modifiedPartage: any;
+
+      //@ts-expect-error
+      if (values.partage === "users") {
+        modifiedPartage = JSON.stringify([
+          {
+            type: "users",
+            //@ts-expect-error
+            value: values.users.join(","),
+          },
+        ]);
+        //@ts-expect-error
+      } else if (values.partage === "department") {
+        modifiedPartage = JSON.stringify([
+          {
+            type: "department",
+            //@ts-expect-error
+            value: values.department.join(","),
+          },
+        ]);
+      } else {
+        modifiedPartage = [];
+      }
+
+      //@ts-expect-error
+      const modifiedQuestions = values.questions.map((question: string) => ({
+        text: question,
+      }));
+
+      //@ts-expect-error
+      const modifiedResponses = values.responses.map((response: string) => ({
+        text: response,
+      }));
 
       const modifiedValues = {
         ...values,
         partage: modifiedPartage,
-        questions: values.questions.map((question) => ({ text: question })),
-        responses: values.responses.map((response) => ({ text: response })),
+        questions: modifiedQuestions,
+        responses: modifiedResponses,
       };
       console.log(modifiedValues);
-
-      //@ts-expect-error
-
       await modifyRequest(Number(id), modifiedValues);
 
       navigate("/requests");
