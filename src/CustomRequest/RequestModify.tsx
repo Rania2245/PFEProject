@@ -110,12 +110,14 @@ const RequestModify: React.FC = () => {
       }));
 
       const modifiedValues = {
-        ...values,
+        active: values.active,
         partage: modifiedPartage,
         questions: modifiedQuestions,
         responses: modifiedResponses,
       };
+
       console.log(modifiedValues);
+
       await modifyRequest(Number(id), modifiedValues);
 
       navigate("/requests");
