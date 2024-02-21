@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Switch, Select } from "antd";
+import { Form, Input, Button, Switch, Select, message } from "antd";
 import { MinusCircleOutlined } from "@ant-design/icons";
 import { QuestionRequest } from "../types/questionrequest";
 import {
@@ -72,42 +72,39 @@ const RequestModify: React.FC = () => {
       setDepartments(departmentsData);
     }
   };
-  const onFinish = async (values: QuestionRequest) => {
+  const onFinish = async (values: any) => {
     setLoading(true);
     try {
       let modifiedPartage: any;
 
-      //@ts-expect-error
       if (values.partage === "users") {
-        modifiedPartage = JSON.stringify([
+        modifiedPartage = [
           {
             type: "users",
-            //@ts-expect-error
             value: values.users.join(","),
           },
-        ]);
-        //@ts-expect-error
+        ];
       } else if (values.partage === "department") {
-        modifiedPartage = JSON.stringify([
+        modifiedPartage = [
           {
             type: "department",
-            //@ts-expect-error
             value: values.department.join(","),
           },
-        ]);
+        ];
       } else {
         modifiedPartage = [];
       }
 
-      //@ts-expect-error
       const modifiedQuestions = values.questions.map((question: string) => ({
         text: question,
       }));
 
-      //@ts-expect-error
-      const modifiedResponses = values.responses.map((response: string) => ({
-        text: response,
-      }));
+      const modifiedResponses = values.responses.map(
+        (response: string, id: number) => ({
+          id: id + 2, // Ensure response IDs start from 2
+          text: response,
+        })
+      );
 
       const modifiedValues = {
         active: values.active,
@@ -116,10 +113,8 @@ const RequestModify: React.FC = () => {
         responses: modifiedResponses,
       };
 
-      console.log(modifiedValues);
-
       await modifyRequest(Number(id), modifiedValues);
-
+      message.success("Request updated successfully");
       navigate("/requests");
     } catch (error) {
       console.error("Error modifying request:", error);
