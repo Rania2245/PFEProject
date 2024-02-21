@@ -1,4 +1,4 @@
-import { Menu, Modal } from "antd";
+import { Menu, Modal, Image } from "antd";
 import {
   LogoutOutlined,
   RobotOutlined,
@@ -6,6 +6,7 @@ import {
   PlusCircleOutlined,
   UserAddOutlined,
   ApartmentOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import RequestAdd from "./RequestAdd";
@@ -45,6 +46,9 @@ const LogoutButton = () => {
     navigate("/requests");
   };
 
+  const handleHistory = () => {
+    navigate("/history");
+  };
   return (
     <>
       <Menu
@@ -54,10 +58,15 @@ const LogoutButton = () => {
           color: "#000",
           lineHeight: "64px",
           paddingRight: "20px",
+          display: "flex",
+          justifyContent: "space-between",
         }}
         defaultSelectedKeys={[""]}
         selectable={false}
       >
+        <Menu.Item key="logo" style={{ marginRight: "auto" }}>
+          <Image src="src/assets/crm.jpg" preview={false} width={40} />
+        </Menu.Item>
         <Menu.Item
           key="chatbot"
           onClick={handleChatBot}
@@ -99,9 +108,17 @@ const LogoutButton = () => {
           Add Department
         </Menu.Item>
         <Menu.Item
+          key="history"
+          onClick={handleHistory}
+          style={{ marginLeft: "10px" }}
+          icon={<HistoryOutlined />}
+        >
+          History
+        </Menu.Item>
+        <Menu.Item
           key="logout"
           onClick={handleLogout}
-          style={{ float: "left" }}
+          style={{ marginLeft: "10px" }}
         >
           <LogoutOutlined />
           Logout

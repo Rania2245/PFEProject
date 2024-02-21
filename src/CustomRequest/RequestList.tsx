@@ -203,8 +203,8 @@ const RequestList = () => {
 
   return (
     <>
+      <LogoutButton />
       <div style={{ padding: "20px" }}>
-        <LogoutButton />
         <div style={{ margin: "20px 0" }}>
           <Search
             placeholder="Search questions"
@@ -228,7 +228,6 @@ const RequestList = () => {
           rowClassName={getRowClassName}
         />
       </div>
-
       <Modal
         title="Add Request"
         visible={isModalVisible}

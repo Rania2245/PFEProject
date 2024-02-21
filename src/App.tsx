@@ -11,6 +11,7 @@ import Login from "./Login/LogIn";
 import PrivateRoutes from "./PrivateRoutes";
 import AddUserForm from "./CustomRequest/AddUser";
 import AddDepartmentForm from "./CustomRequest/AddDep";
+import History from "./CustomRequest/Historiqe";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="/addRequest" element={<RequestAdd />} />
             <Route path="/chatbot" element={<Chatbot />} />
             <Route path="/addUser" element={<AddUserForm />} />
+            <Route path="/history" element={<History />} />
             <Route path="/addDep" element={<AddDepartmentForm />} />
           </Route>
         }
