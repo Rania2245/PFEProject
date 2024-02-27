@@ -14,10 +14,10 @@ const getAxiosConfig = () => {
   }
 };
 
-export const fetchLogs = async () => {
+export const fetchLogs = async (page: number) => {
   try {
     const response = await axios.get(
-      `${endpoint}/api/logPage`,
+      `${endpoint}/api/logPage?page=${page}`,
       getAxiosConfig()
     );
 

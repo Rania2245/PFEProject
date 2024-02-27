@@ -11,7 +11,11 @@ import { PartageOption } from "../types/partageOption";
 
 const { Option } = Select;
 
-const RequestAdd: React.FC = () => {
+interface Props {
+  onCancel: () => void;
+}
+
+const RequestAdd: React.FC<Props> = ({ onCancel }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [partageType, setPartageType] = useState<string>("");
@@ -42,6 +46,7 @@ const RequestAdd: React.FC = () => {
       console.error("Error fetching user emails:", error);
     }
   };
+
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
@@ -77,10 +82,14 @@ const RequestAdd: React.FC = () => {
       console.log({ requestData });
       await addRequest(requestData);
       navigate("/requests");
+      window.location.reload();
       message.success("Question added successfully");
       console.log("Question added successfully:", requestData);
+
+      onCancel();
     } catch (error) {
       console.error("Error while adding the question:", error);
+      message.error("Failed to add , You did not complete the entire form  ");
     } finally {
       setLoading(false);
     }
@@ -207,7 +216,6 @@ const RequestAdd: React.FC = () => {
           <Option value="department">Department</Option>
         </Select>
       </Form.Item>
-
       {renderValueFields()}
 
       <Form.Item label="Active" name="active" valuePropName="checked">

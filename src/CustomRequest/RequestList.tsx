@@ -1,34 +1,56 @@
-import { useState, useEffect } from "react";
-import { Table, Button, Space, Popconfirm, Input, Modal, Select } from "antd";
-
+import React, { useState, useEffect } from "react";
+import {
+  Table,
+  Button,
+  Space,
+  Popconfirm,
+  Input,
+  Drawer,
+  Select,
+  Pagination,
+} from "antd";
 import { deleteRequest, getRequests } from "../services/CustomRequestService";
 import { QuestionRequest } from "../types/questionrequest";
 import {
+  DatabaseOutlined,
   DeleteOutlined,
   EditOutlined,
   EyeOutlined,
   PlusOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
-import LogoutButton from "./NavBar";
-import { GetRowKey } from "antd/es/table/interface";
 import RequestAdd from "./RequestAdd";
-
+import RequestModify from "./RequestModify";
+import { useNavigate } from "react-router-dom";
+import Typography from "antd/es/typography/Typography";
+import Icon from "@ant-design/icons/lib/components/AntdIcon";
 const { Search } = Input;
 const { Option } = Select;
 
 const RequestList = () => {
   const [requests, setRequests] = useState<readonly QuestionRequest[]>([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isDrawerVisible, setIsDrawerVisible] = useState(false);
+  const [isRequestDrawerVisible, setIsRequestDrawerVisible] = useState(false);
+  const [isModifyDrawerVisible, setIsModifyDrawerVisible] = useState(false);
+  const [selectedRequestId, setSelectedRequestId] = useState("");
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [pagination.current, pagination.pageSize]);
 
   const fetchData = async () => {
     try {
-      const response = await getRequests();
+      const response = await getRequests(
+        //@ts-expect-error
+        pagination.current,
+        pagination.pageSize
+      );
 
       const formattedRequests: QuestionRequest[] = response.map(
         (item: any) => ({
@@ -42,8 +64,12 @@ const RequestList = () => {
         })
       );
 
-      console.log(formattedRequests);
       setRequests(formattedRequests);
+      setPagination({
+        ...pagination,
+        //@ts-expect-error
+        total: response.total,
+      });
     } catch (error) {
       console.error("Error fetching requests: ", error);
     }
@@ -54,7 +80,11 @@ const RequestList = () => {
   };
 
   const handleModify = (record: QuestionRequest) => {
-    navigate(`/request/${record.id}`);
+    if (record.id) {
+      //@ts-expect-error
+      setSelectedRequestId(record.id);
+      setIsModifyDrawerVisible(true);
+    }
   };
 
   const handleDelete = async (record: QuestionRequest) => {
@@ -66,8 +96,8 @@ const RequestList = () => {
     }
   };
 
-  const handleAdd = async () => {
-    setIsModalVisible(true);
+  const handleAdd = () => {
+    setIsRequestDrawerVisible(true);
   };
 
   const handleSearch = async (value: string) => {
@@ -192,8 +222,7 @@ const RequestList = () => {
   const getRowClassName = (record: QuestionRequest, index: number) => {
     return index % 2 === 0 ? "even-row" : "odd-row";
   };
-
-  const getRowKey: GetRowKey<QuestionRequest> = (record) => {
+  const getRowKey = (record: QuestionRequest) => {
     return record.id ? record.id.toString() : "";
   };
 
@@ -203,42 +232,92 @@ const RequestList = () => {
 
   return (
     <>
-      <LogoutButton />
-      <div style={{ padding: "20px" }}>
-        <div style={{ margin: "20px 0" }}>
-          <Search
-            placeholder="Search questions"
-            allowClear
-            enterButton="Search"
-            onSearch={handleSearch}
-            style={{ width: 300 }}
-          />
-        </div>
-        <div style={{ marginBottom: "20px" }}>
-          <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-            Ajouter Une Base De Connaissance
-          </Button>
-        </div>
-        <Table
-          dataSource={requests}
-          columns={Actions}
-          rowKey={getRowKey}
-          bordered
-          pagination={{ pageSize: 10 }}
-          rowClassName={getRowClassName}
-        />
-      </div>
-      <Modal
-        title="Add Request"
-        visible={isModalVisible}
-        footer={null}
-        onCancel={() => setIsModalVisible(false)}
-        width={800}
-        style={{ position: "fixed", top: 0, right: 0, height: "1000vh" }}
-        afterClose={refreshPage}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+        }}
       >
-        <RequestAdd />
-      </Modal>
+        <h2>
+          Base de connaissance {<DatabaseOutlined style={{ color: "#000" }} />}
+        </h2>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <div style={{ marginRight: "20px" }}>
+            <Search
+              placeholder="Search questions"
+              allowClear
+              onSearch={handleSearch}
+              style={{ width: 300 }}
+              suffix={<SearchOutlined style={{ color: "#1890ff" }} />}
+            />
+          </div>
+          <div>
+            <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+              Ajouter
+            </Button>
+          </div>
+        </div>
+      </div>
+      <Table
+        dataSource={requests}
+        columns={Actions}
+        rowKey={getRowKey}
+        bordered
+        pagination={false}
+        rowClassName={getRowClassName}
+      />
+      <Pagination
+        style={{ marginTop: "20px", textAlign: "center" }}
+        current={pagination.current}
+        pageSize={pagination.pageSize}
+        total={pagination.total}
+        showSizeChanger
+        showQuickJumper
+        onChange={(page, pageSize) =>
+          setPagination({ ...pagination, current: page, pageSize })
+        }
+        onShowSizeChange={(current, size) =>
+          setPagination({ ...pagination, current: 1, pageSize: size })
+        }
+      />
+      <Drawer
+        title="Add Request"
+        placement="right"
+        closable={true}
+        onClose={() => setIsRequestDrawerVisible(false)}
+        visible={isRequestDrawerVisible}
+        width={800}
+        //@ts-expect-error
+        onClose={() => setIsRequestDrawerVisible(false)}
+      >
+        <RequestAdd onCancel={() => setIsRequestDrawerVisible(false)} />
+      </Drawer>
+      {selectedRequestId && (
+        <Drawer
+          title="Modify Request"
+          placement="right"
+          closable={true}
+          onClose={() => setIsModifyDrawerVisible(false)}
+          visible={isModifyDrawerVisible}
+          width={700}
+          destroyOnClose={true}
+          afterVisibleChange={refreshPage}
+        >
+          <RequestModify
+            id={selectedRequestId}
+            visible={isModifyDrawerVisible}
+            onCancel={() => setIsModifyDrawerVisible(false)}
+          />
+        </Drawer>
+      )}
     </>
   );
 };

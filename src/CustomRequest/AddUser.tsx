@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Select, message } from "antd";
 import { addUser } from "../services/UserService";
 import { User } from "../types/user";
@@ -6,7 +6,11 @@ import { getDeps } from "../services/departmentService";
 
 const { Option } = Select;
 
-const AddUserForm = () => {
+interface Props {
+  onCancel: () => void;
+}
+
+const AddUserForm: React.FC<Props> = ({ onCancel }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [departments, setDepartments] = useState<string[]>([]);
@@ -21,16 +25,22 @@ const AddUserForm = () => {
       setDepartments(departments);
     } catch (error) {
       console.error("Error fetching departments:", error);
+      message.error("Failed to fetch departments. Please try again later.");
     }
   };
+
   const onFinish = async (values: User) => {
     setLoading(true);
     try {
       await addUser(values);
       message.success("User added successfully");
       form.resetFields();
+      onCancel();
     } catch (error) {
       console.error("Error adding user:", error);
+      message.error(
+        "Failed to add User, You did not complete the entire form  "
+      );
     } finally {
       setLoading(false);
     }

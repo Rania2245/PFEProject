@@ -4,7 +4,6 @@ import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { getRequestById } from "../services/CustomRequestService";
 import { QuestionRequest } from "../types/questionrequest";
 import { LeftOutlined, InfoCircleOutlined } from "@ant-design/icons";
-import LogoutButton from "./NavBar";
 
 const RequestItem: React.FC = () => {
   const [requestDetails, setRequestDetails] = useState<QuestionRequest | null>(
@@ -48,9 +47,7 @@ const RequestItem: React.FC = () => {
     <div
       style={{ padding: "20px", border: "1px solid #ccc", borderRadius: "5px" }}
     >
-      <div style={{ marginBottom: "20px" }}>
-        <LogoutButton />
-      </div>
+      <div style={{ marginBottom: "20px" }}>.</div>
       <Descriptions title={customTitle}>
         <Descriptions.Item label="ID">
           {loading ? <Spin /> : requestDetails?.id}

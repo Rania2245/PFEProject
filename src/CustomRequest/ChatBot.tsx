@@ -3,7 +3,6 @@ import { Input, Button, message, Space } from "antd";
 import { SendOutlined, MessageOutlined } from "@ant-design/icons";
 import { findRequest } from "../services/CustomRequestService";
 import "./Chatbot.css";
-import LogoutButton from "./NavBar";
 
 interface Message {
   text: string;
@@ -17,18 +16,23 @@ const Chatbot: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuestion(e.target.value);
   };
-
   const handleSubmit = async () => {
     try {
       const requests = await findRequest(question);
       console.log(requests);
       if (requests.length > 0) {
         const allResponses = requests.map((request) => request.responses);
-        const combinedResponses = allResponses.join("\n");
+        const randomIndex = Math.floor(Math.random() * allResponses.length);
+        const randomResponse = allResponses[randomIndex];
         setMessages([
+          //@ts-expect-error
           ...messages,
+
+          //@ts-expect-error
           { text: question, sender: "user" },
-          { text: combinedResponses, sender: "bot" },
+
+          //@ts-expect-error
+          { text: randomResponse, sender: "bot" },
         ]);
       } else {
         setMessages([
@@ -39,7 +43,7 @@ const Chatbot: React.FC = () => {
           },
         ]);
       }
-      setQuestion(""); // Clear input after sending message
+      setQuestion("");
     } catch (error) {
       console.error("Erreur lors de la recherche de la question:", error);
       message.error(
@@ -50,7 +54,6 @@ const Chatbot: React.FC = () => {
 
   return (
     <>
-      <LogoutButton />
       <div className="chatbot-container">
         <div className="chatbot-header">
           <h1 className="chatbot-title">

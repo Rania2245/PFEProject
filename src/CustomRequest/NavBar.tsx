@@ -1,41 +1,45 @@
-import { Menu, Modal, Image } from "antd";
+import { useState, useEffect } from "react";
+import { Menu, Drawer, Image, Avatar } from "antd";
 import {
-  LogoutOutlined,
   RobotOutlined,
   MenuOutlined,
   PlusCircleOutlined,
   UserAddOutlined,
   ApartmentOutlined,
-  HistoryOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import RequestAdd from "./RequestAdd";
-import { useState } from "react";
 import AddUserForm from "./AddUser";
 import AddDepartmentForm from "./AddDep";
 
 const LogoutButton = () => {
-  const [isRequestModalVisible, setIsRequestModalVisible] = useState(false);
-  const [isUserModalVisible, setIsUserModalVisible] = useState(false);
-  const [isDepartmentModalVisible, setIsDepartmentModalVisible] =
+  const [isRequestDrawerVisible, setIsRequestDrawerVisible] = useState(false);
+  const [isUserDrawerVisible, setIsUserDrawerVisible] = useState(false);
+  const [isDepartmentDrawerVisible, setIsDepartmentDrawerVisible] =
     useState(false);
+  const [tokenExists, setTokenExists] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const tokenExists = localStorage.getItem("token") ? true : false;
+    setTokenExists(tokenExists);
+    const email = localStorage.getItem("userEmail");
+    //@ts-expect-error
+    setUserEmail(email);
+  }, []);
+
   const handleAddRequest = () => {
-    setIsRequestModalVisible(true);
+    setIsRequestDrawerVisible(true);
   };
 
   const handleAddUser = () => {
-    setIsUserModalVisible(true);
+    setIsUserDrawerVisible(true);
   };
 
   const handleAddDepartment = () => {
-    setIsDepartmentModalVisible(true);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/";
+    setIsDepartmentDrawerVisible(true);
   };
 
   const handleChatBot = () => {
@@ -46,9 +50,10 @@ const LogoutButton = () => {
     navigate("/requests");
   };
 
-  const handleHistory = () => {
-    navigate("/history");
-  };
+  if (!tokenExists) {
+    return null;
+  }
+
   return (
     <>
       <Menu
@@ -108,52 +113,51 @@ const LogoutButton = () => {
           Add Department
         </Menu.Item>
         <Menu.Item
-          key="history"
-          onClick={handleHistory}
-          style={{ marginLeft: "10px" }}
-          icon={<HistoryOutlined />}
+          key="addUser"
+          style={{
+            marginLeft: "auto",
+            display: "flex",
+            alignItems: "center",
+            pointerEvents: "none",
+          }}
         >
-          History
-        </Menu.Item>
-        <Menu.Item
-          key="logout"
-          onClick={handleLogout}
-          style={{ marginLeft: "10px" }}
-        >
-          <LogoutOutlined />
-          Logout
+          {userEmail && <span style={{ marginRight: "5px" }}>{userEmail}</span>}
+          <Avatar icon={<UserOutlined />} />
         </Menu.Item>
       </Menu>
-      <Modal
+      <Drawer
         title="Add Request"
-        visible={isRequestModalVisible}
-        footer={null}
-        onCancel={() => setIsRequestModalVisible(false)}
+        placement="right"
+        closable={true}
+        onClose={() => setIsRequestDrawerVisible(false)}
+        visible={isRequestDrawerVisible}
         width={800}
-        style={{ position: "fixed", top: 0, right: 0, height: "1000vh" }}
       >
-        <RequestAdd />
-      </Modal>
-      <Modal
+        <RequestAdd onCancel={() => setIsRequestDrawerVisible(false)} />
+      </Drawer>
+      <Drawer
         title="Add User"
-        visible={isUserModalVisible}
-        footer={null}
-        onCancel={() => setIsUserModalVisible(false)}
+        placement="right"
+        closable={true}
+        onClose={() => setIsUserDrawerVisible(false)}
+        visible={isUserDrawerVisible}
         width={800}
-        style={{ position: "fixed", top: 0, right: 0, height: "1000vh" }}
       >
-        <AddUserForm />
-      </Modal>
-      <Modal
+        <AddUserForm onCancel={() => setIsUserDrawerVisible(false)} />
+      </Drawer>
+
+      <Drawer
         title="Add Department"
-        visible={isDepartmentModalVisible}
-        footer={null}
-        onCancel={() => setIsDepartmentModalVisible(false)}
+        placement="right"
+        closable={true}
+        onClose={() => setIsDepartmentDrawerVisible(false)}
+        visible={isDepartmentDrawerVisible}
         width={800}
-        style={{ position: "fixed", top: 0, right: 0, height: "1000vh" }}
       >
-        <AddDepartmentForm />
-      </Modal>
+        <AddDepartmentForm
+          onCancel={() => setIsDepartmentDrawerVisible(false)}
+        />
+      </Drawer>
     </>
   );
 };
