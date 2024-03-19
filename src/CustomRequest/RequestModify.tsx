@@ -1,24 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Switch } from "antd";
+import { MinusCircleOutlined } from "@ant-design/icons";
 import { QuestionRequest } from "../types/questionrequest";
 import {
   getRequestById,
   modifyRequest,
 } from "../services/CustomRequestService";
 import { useNavigate, useParams } from "react-router-dom";
-import LogoutButton from "./LogOutButton";
+import LogoutButton from "./NavBar";
 
 const RequestModify: React.FC = () => {
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<QuestionRequest>();
   const [loading, setLoading] = useState(false);
-  const [questionRequest, setQuestionRequest] = useState<QuestionRequest>();
   const { id } = useParams();
   const navigate = useNavigate();
-
-  if (id === undefined) {
-    navigate(`/requests`);
-    return <></>;
-  }
 
   useEffect(() => {
     fetchData();
@@ -27,22 +22,34 @@ const RequestModify: React.FC = () => {
   const fetchData = async () => {
     try {
       const response = await getRequestById(Number(id));
-      setQuestionRequest(response);
-      form.setFieldsValue(response);
+      form.setFieldsValue({
+        active: response.data.active,
+        partage: response.data.partage,
+        //@ts-expect-error
+        questions: response.data.questions.map(({ text }) => text),
+        //@ts-expect-error
+        responses: response.data.responses.map(({ text }) => text),
+      });
     } catch (error) {
-      console.error("Erreur lors de la récupération des données : ", error);
+      console.error("Error fetching data:", error);
     }
   };
 
-  const onFinish = async (data: QuestionRequest) => {
+  const onFinish = async (values: QuestionRequest) => {
     setLoading(true);
     try {
-      if (questionRequest) {
-        await modifyRequest(questionRequest.id, data);
-        navigate("/requests");
-      }
+      // await modifyRequest(Number(id), values);
+      // console.log({ values });
+      await modifyRequest(Number(id), {
+        ...values,
+        //@ts-expect-error
+        questions: values.questions.map((question) => ({ text: question })),
+        //@ts-expect-error
+        responses: values.responses.map((response) => ({ text: response })),
+      });
+      navigate("/requests");
     } catch (error) {
-      console.error("Error modifying question:", error);
+      console.error("Error modifying request:", error);
     } finally {
       setLoading(false);
     }
@@ -52,12 +59,86 @@ const RequestModify: React.FC = () => {
     <>
       <LogoutButton />
       <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Form.Item label="Question" name="question">
-          <Input />
-        </Form.Item>
-        <Form.Item label="Response" name="response">
-          <Input.TextArea rows={4} />
-        </Form.Item>
+        <Form.List name="questions">
+          {(fields, { add, remove }) => (
+            <>
+              {fields.map((field, index) => (
+                <Form.Item
+                  label={index === 0 ? "Questions" : ""}
+                  required={false}
+                  key={field.key}
+                >
+                  <Form.Item
+                    {...field}
+                    validateTrigger={["onChange", "onBlur"]}
+                    rules={[
+                      {
+                        required: true,
+                        whitespace: true,
+                        message: "Please input question or delete this field.",
+                      },
+                    ]}
+                    noStyle
+                  >
+                    <Input placeholder="Question" style={{ width: "60%" }} />
+                  </Form.Item>
+                  {fields.length > 1 ? (
+                    <MinusCircleOutlined
+                      className="dynamic-delete-button"
+                      onClick={() => remove(field.name)}
+                    />
+                  ) : null}
+                </Form.Item>
+              ))}
+              <Form.Item>
+                <Button type="dashed" onClick={() => add()}>
+                  Add Question
+                </Button>
+              </Form.Item>
+            </>
+          )}
+        </Form.List>
+
+        <Form.List name="responses">
+          {(fields, { add, remove }) => (
+            <>
+              {fields.map((field, index) => (
+                <Form.Item
+                  label={index === 0 ? "Responses" : ""}
+                  required={false}
+                  key={field.key}
+                >
+                  <Form.Item
+                    {...field}
+                    validateTrigger={["onChange", "onBlur"]}
+                    rules={[
+                      {
+                        required: true,
+                        whitespace: true,
+                        message: "Please input response or delete this field.",
+                      },
+                    ]}
+                    noStyle
+                  >
+                    <Input placeholder="Response" style={{ width: "60%" }} />
+                  </Form.Item>
+                  {fields.length > 1 ? (
+                    <MinusCircleOutlined
+                      className="dynamic-delete-button"
+                      onClick={() => remove(field.name)}
+                    />
+                  ) : null}
+                </Form.Item>
+              ))}
+              <Form.Item>
+                <Button type="dashed" onClick={() => add()}>
+                  Add Response
+                </Button>
+              </Form.Item>
+            </>
+          )}
+        </Form.List>
+
         <Form.Item label="Active" name="active" valuePropName="checked">
           <Switch />
         </Form.Item>

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Form, Input, Button, Switch } from "antd";
-import { addRequest } from "../services/CustomRequestService";
+import { Form, Input, Button, Switch, Row, Col } from "antd";
 import { QuestionRequest } from "../types/questionrequest";
+import LogoutButton from "./NavBar";
+import { MinusCircleOutlined } from "@ant-design/icons";
+import { addRequest } from "../services/CustomRequestService";
 import { useNavigate } from "react-router-dom";
-import LogoutButton from "./LogOutButton";
 
 const RequestAdd: React.FC = () => {
   const [form] = Form.useForm();
@@ -13,14 +14,10 @@ const RequestAdd: React.FC = () => {
   const onFinish = async (values: QuestionRequest) => {
     setLoading(true);
     try {
-      const formData = {
-        ...values,
-        active: values.active || false,
-        partage: values.partage || false,
-      };
-      await addRequest(formData);
-      form.resetFields();
+      console.log(values);
+      await addRequest(values);
       navigate("/requests");
+      console.log("Question added successfully:", values);
     } catch (error) {
       console.error("Error while adding the question:", error);
     } finally {
@@ -32,20 +29,83 @@ const RequestAdd: React.FC = () => {
     <>
       <LogoutButton />
       <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Form.Item
-          label="Question"
-          name="question"
-          rules={[{ required: true, message: "Please enter the question!" }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Response"
-          name="response"
-          rules={[{ required: true, message: "Please enter the response!" }]}
-        >
-          <Input.TextArea rows={4} />
-        </Form.Item>
+        <Form.List name="questions">
+          {(fields, { add, remove }, { errors }) => (
+            <>
+              {fields.map((field) => (
+                <Row gutter={8} key={field.key}>
+                  <Col span={22} key={`${field.key}-col`}>
+                    <Form.Item
+                      label={fields.indexOf(field) === 0 ? "Questions" : ""}
+                      name={[field.name, "text"]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input question",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="Question" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={2} key={`${field.key}-minus`}>
+                    {fields.length > 1 ? (
+                      <MinusCircleOutlined
+                        className="dynamic-delete-button"
+                        onClick={() => remove(field.name)}
+                      />
+                    ) : null}
+                  </Col>
+                </Row>
+              ))}
+              <Form.Item>
+                <Button type="dashed" onClick={() => add()}>
+                  Add question
+                </Button>
+                <Form.ErrorList errors={errors} />
+              </Form.Item>
+            </>
+          )}
+        </Form.List>
+
+        <Form.List name="responses">
+          {(fields, { add, remove }, { errors }) => (
+            <>
+              {fields.map((field) => (
+                <Row gutter={8} key={field.key}>
+                  <Col span={22} key={`${field.key}-col`}>
+                    <Form.Item
+                      label={fields.indexOf(field) === 0 ? "Responses" : ""}
+                      name={[field.name, "text"]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input response",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="Response" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={2} key={`${field.key}-minus`}>
+                    {fields.length > 1 ? (
+                      <MinusCircleOutlined
+                        className="dynamic-delete-button"
+                        onClick={() => remove(field.name)}
+                      />
+                    ) : null}
+                  </Col>
+                </Row>
+              ))}
+              <Form.Item>
+                <Button type="dashed" onClick={() => add()}>
+                  Add response
+                </Button>
+                <Form.ErrorList errors={errors} />
+              </Form.Item>
+            </>
+          )}
+        </Form.List>
         <Form.Item label="Active" name="active" valuePropName="checked">
           <Switch />
         </Form.Item>

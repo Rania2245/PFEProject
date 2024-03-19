@@ -5,9 +5,6 @@ import {
   getRequests,
   findRequest,
 } from "../services/CustomRequestService";
-import { useState, useEffect } from "react";
-import { Table, Button, Space, Popconfirm } from "antd";
-import { deleteRequest, getRequests } from "../services/CustomRequestService";
 import { QuestionRequest } from "../types/questionrequest";
 import requestColumns from "./requestColumns";
 import {
@@ -17,7 +14,9 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import LogoutButton from "./LogOutButton";
+import LogoutButton from "./NavBar";
+import { GetRowKey } from "antd/es/table/interface";
+import moment from "moment";
 const { Search } = Input;
 
 const RequestList = () => {
@@ -31,7 +30,20 @@ const RequestList = () => {
   const fetchData = async () => {
     try {
       const response = await getRequests();
-      setRequests(response);
+
+      const formattedRequests: QuestionRequest[] = response.map(
+        (item: any) => ({
+          id: item.id,
+          active: item.active,
+          partage: item.partage,
+          questions: item.questions.map((q: { text: string }) => q.text),
+          responses: item.responses.map((r: { text: string }) => r.text),
+          created_at: item.created_at,
+          user_id: 0,
+        })
+      );
+
+      setRequests(formattedRequests);
     } catch (error) {
       console.error("Error fetching requests: ", error);
     }
@@ -47,7 +59,7 @@ const RequestList = () => {
 
   const handleDelete = async (record: QuestionRequest) => {
     try {
-      await deleteRequest(record.id);
+      await deleteRequest(Number(record.id));
       fetchData();
     } catch (error) {
       console.error("Error deleting record: ", error);
@@ -67,6 +79,7 @@ const RequestList = () => {
       console.error("Error while searching:", error);
     }
   };
+
   const Actions = [
     ...requestColumns,
     {
@@ -103,25 +116,41 @@ const RequestList = () => {
     },
   ];
 
+  const getRowClassName = (record: QuestionRequest, index: number) => {
+    return index % 2 === 0 ? "even-row" : "odd-row";
+  };
+
+  const getRowKey: GetRowKey<QuestionRequest> = (record) => {
+    return record.id ? record.id.toString() : "";
+  };
+
   return (
     <>
-      <LogoutButton />
-      <Search
-        placeholder="Search questions"
-        allowClear
-        enterButton="Search"
-        onSearch={handleSearch}
-        style={{ width: 300, marginBottom: 16 }}
-      />
-      <br />
-      <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-        Add Request
-      </Button>
-      <Table
-        dataSource={requests}
-        columns={Actions}
-        rowKey={(record) => record.id.toString()}
-      />
+      <div style={{ padding: "20px" }}>
+        <LogoutButton />
+        <div style={{ margin: "20px 0" }}>
+          <Search
+            placeholder="Search questions"
+            allowClear
+            enterButton="Search"
+            onSearch={handleSearch}
+            style={{ width: 300 }}
+          />
+        </div>
+        <div style={{ marginBottom: "20px" }}>
+          <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+            Ajouter Une Base De Connaissance
+          </Button>
+        </div>
+        <Table
+          dataSource={requests}
+          columns={Actions}
+          rowKey={getRowKey}
+          bordered
+          pagination={{ pageSize: 10 }}
+          rowClassName={getRowClassName}
+        />
+      </div>
     </>
   );
 };

@@ -18,7 +18,7 @@ const getAxiosConfig = () => {
 export const getRequests = async () => {
   try {
     const response = await axios.get<QuestionRequest[]>(
-      `${endpoint}/api/customRequests`,
+      `${endpoint}/api/question-requests`,
       getAxiosConfig()
     );
 
@@ -35,8 +35,8 @@ export const getRequests = async () => {
 
 export const getRequestById = async (id: number) => {
   try {
-    const response = await axios.get<QuestionRequest>(
-      `${endpoint}/api/customRequests/${id}`,
+    const response = await axios.get<{ data: QuestionRequest }>(
+      `${endpoint}/api/question-requests/${id}`,
       getAxiosConfig()
     );
     return response.data;
@@ -49,7 +49,7 @@ export const getRequestById = async (id: number) => {
 export const deleteRequest = async (id: number) => {
   try {
     await axios.delete(
-      `${endpoint}/api/customRequests/${id}`,
+      `${endpoint}/api/question-requests/${id}`,
       getAxiosConfig()
     );
   } catch (error) {
@@ -64,7 +64,7 @@ export const modifyRequest = async (
 ) => {
   try {
     await axios.put(
-      `${endpoint}/api/customRequests/${id}`,
+      `${endpoint}/api/question-requests/${id}`,
       data,
       getAxiosConfig()
     );
@@ -77,7 +77,7 @@ export const modifyRequest = async (
 export const addRequest = async (formData: QuestionRequest) => {
   try {
     await axios.post(
-      `${endpoint}/api/customRequests`,
+      `${endpoint}/api/question-requests`,
       formData,
       getAxiosConfig()
     );
@@ -86,10 +86,11 @@ export const addRequest = async (formData: QuestionRequest) => {
     throw error;
   }
 };
+
 export const findRequest = async (question: string) => {
   try {
     const response = await axios.get<QuestionRequest[]>(
-      `${endpoint}/api/searchcustomRequests/search?question=${encodeURIComponent(
+      `${endpoint}/api/questionrequests/searching?question=${encodeURIComponent(
         question
       )}`,
       getAxiosConfig()
