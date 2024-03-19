@@ -1,19 +1,37 @@
-import { Layout, Menu } from "antd";
-import { Link } from "react-router-dom";
+import { Drawer, Layout, Menu } from "antd";
+import { Link, useNavigate } from "react-router-dom";
 import {
+  ApartmentOutlined,
+  ApiOutlined,
   DatabaseOutlined,
   HistoryOutlined,
   LogoutOutlined,
+  PlusCircleOutlined,
   RobotOutlined,
   UnorderedListOutlined,
+  UserAddOutlined,
 } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import RequestAdd from "./RequestAdd";
+import AddUserForm from "./AddUser";
+import AddDepartmentForm from "./AddDep";
 
 const { Sider } = Layout;
 
 const Sidebar = () => {
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const [hovered, setHovered] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [tokenExists, setTokenExists] = useState(false);
+
+  useEffect(() => {
+    const tokenExists = !!token;
+    setTokenExists(tokenExists);
+    const email = localStorage.getItem("userEmail");
+    //@ts-expect-error
+    setUserEmail(email);
+  }, [token]);
 
   const handleMouseEnter = () => {
     setHovered(true);
@@ -25,11 +43,35 @@ const Sidebar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    window.location.href = "/";
-    window.location.reload();
+    localStorage.removeItem("userEmail");
+    navigate("/");
   };
 
-  if (!token) {
+  const [isRequestDrawerVisible, setIsRequestDrawerVisible] = useState(false);
+  const [isUserDrawerVisible, setIsUserDrawerVisible] = useState(false);
+  const [isDepartmentDrawerVisible, setIsDepartmentDrawerVisible] =
+    useState(false);
+
+  const handleAddRequest = () => {
+    setIsRequestDrawerVisible(true);
+  };
+
+  const handleAddUser = () => {
+    setIsUserDrawerVisible(true);
+  };
+
+  const handleAddDepartment = () => {
+    setIsDepartmentDrawerVisible(true);
+  };
+
+  const handleChatBot = () => {
+    navigate("/chatbot");
+  };
+  const handleAutoMess = () => {
+    navigate("/autoMess");
+  };
+
+  if (!tokenExists) {
     return null;
   }
 
@@ -50,11 +92,7 @@ const Sidebar = () => {
           transition: "background-color 0.3s",
         }}
       >
-        {hovered ? (
-          <UnorderedListOutlined style={{ fontSize: "24px", color: "#000" }} />
-        ) : (
-          <UnorderedListOutlined style={{ fontSize: "24px", color: "#000" }} />
-        )}
+        <UnorderedListOutlined style={{ fontSize: "24px", color: "#000" }} />
       </div>
       <div
         style={{ height: "1px", backgroundColor: "#ccc", margin: "0 24px" }}
@@ -87,7 +125,7 @@ const Sidebar = () => {
           icon={<HistoryOutlined style={{ color: "#000" }} />}
           style={{
             transition: "background-color 0.3s",
-            marginBottom: "600px",
+            marginBottom: "10px",
           }}
         >
           <Link to="/history" style={{ color: "#000" }}>
@@ -96,10 +134,53 @@ const Sidebar = () => {
         </Menu.Item>
 
         <Menu.Item
+          key="chatbot"
+          onClick={handleChatBot}
+          style={{ marginLeft: "10px", marginBottom: "10px" }}
+          icon={<RobotOutlined />}
+        >
+          ChatBot
+        </Menu.Item>
+
+        <Menu.Item
+          key="addRequest"
+          onClick={handleAddRequest}
+          style={{ marginLeft: "10px", marginBottom: "10px" }}
+          icon={<PlusCircleOutlined />}
+        >
+          Add Request
+        </Menu.Item>
+        <Menu.Item
+          key="AutomatisationMessenger"
+          onClick={handleAutoMess}
+          style={{ marginLeft: "10px", marginBottom: "10px" }}
+          icon={<ApiOutlined />}
+        >
+          Automatistion Messenger
+        </Menu.Item>
+        <Menu.Item
+          key="addUser"
+          onClick={handleAddUser}
+          style={{ marginLeft: "10px", marginBottom: "10px" }}
+          icon={<UserAddOutlined />}
+        >
+          Add User
+        </Menu.Item>
+        <Menu.Item
+          key="addDepartment"
+          onClick={handleAddDepartment}
+          style={{ marginLeft: "10px", marginBottom: "350px" }}
+          icon={<ApartmentOutlined />}
+        >
+          Add Department
+        </Menu.Item>
+
+        <Menu.Item
           key="logout"
           icon={<LogoutOutlined style={{ color: "#000" }} />}
           style={{
             transition: "background-color 0.3s",
+            marginTop: "auto",
             marginBottom: "10px",
           }}
           onClick={handleLogout}
@@ -107,6 +188,39 @@ const Sidebar = () => {
           Déconnexion
         </Menu.Item>
       </Menu>
+      <Drawer
+        title="Add Request"
+        placement="right"
+        closable={true}
+        onClose={() => setIsRequestDrawerVisible(false)}
+        visible={isRequestDrawerVisible}
+        width={800}
+      >
+        <RequestAdd onCancel={() => setIsRequestDrawerVisible(false)} />
+      </Drawer>
+      <Drawer
+        title="Add User"
+        placement="right"
+        closable={true}
+        onClose={() => setIsUserDrawerVisible(false)}
+        visible={isUserDrawerVisible}
+        width={800}
+      >
+        <AddUserForm onCancel={() => setIsUserDrawerVisible(false)} />
+      </Drawer>
+
+      <Drawer
+        title="Add Department"
+        placement="right"
+        closable={true}
+        onClose={() => setIsDepartmentDrawerVisible(false)}
+        visible={isDepartmentDrawerVisible}
+        width={800}
+      >
+        <AddDepartmentForm
+          onCancel={() => setIsDepartmentDrawerVisible(false)}
+        />
+      </Drawer>
     </Sider>
   );
 };
