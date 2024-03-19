@@ -10,7 +10,9 @@ const Login = () => {
     try {
       const token = await loginUser(data.username, data.password);
       localStorage.setItem("token", token);
+      localStorage.setItem("userEmail", data.username);
       navigate("/requests");
+      window.location.reload();
     } catch (error) {
       console.error("Login Error:", error);
     }

@@ -1,30 +1,49 @@
 import React, { useState } from "react";
 import { Input, Button, message, Space } from "antd";
-import { SendOutlined } from "@ant-design/icons";
+import { SendOutlined, MessageOutlined } from "@ant-design/icons";
 import { findRequest } from "../services/CustomRequestService";
 import "./Chatbot.css";
-import LogoutButton from "./NavBar";
 
-const Chatbot = () => {
-  const [question, setQuestion] = useState("");
-  const [response, setResponse] = useState("");
+interface Message {
+  text: string;
+  sender: "user" | "bot";
+}
+
+const Chatbot: React.FC = () => {
+  const [question, setQuestion] = useState<string>("");
+  const [messages, setMessages] = useState<Message[]>([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuestion(e.target.value);
   };
-
   const handleSubmit = async () => {
     try {
       const requests = await findRequest(question);
+      console.log(requests);
       if (requests.length > 0) {
-        // Assuming each request has a 'responses' property
         const allResponses = requests.map((request) => request.responses);
-        // Combine responses into a single string
-        const combinedResponses = allResponses.join("\n");
-        setResponse(combinedResponses);
+        const randomIndex = Math.floor(Math.random() * allResponses.length);
+        const randomResponse = allResponses[randomIndex];
+        setMessages([
+          //@ts-expect-error
+          ...messages,
+
+          //@ts-expect-error
+          { text: question, sender: "user" },
+
+          //@ts-expect-error
+          { text: randomResponse, sender: "bot" },
+        ]);
       } else {
-        setResponse("Désolé, je n'ai pas de réponse à cette question.");
+        setMessages([
+          ...messages,
+          {
+            text: "Désolé, je n'ai pas de réponse à cette question.",
+            sender: "bot",
+          },
+        ]);
       }
+      setQuestion("");
     } catch (error) {
       console.error("Erreur lors de la recherche de la question:", error);
       message.error(
@@ -35,40 +54,41 @@ const Chatbot = () => {
 
   return (
     <>
-      <LogoutButton />
       <div className="chatbot-container">
-        <h1 className="chatbot-title">Chatbot</h1>
-        <div className="initial-message">
-          <div className="initial-box">
-            <Space direction="vertical">
-              <p style={{ marginBottom: "0" }}>How can I help you today?</p>
-              <SendOutlined style={{ fontSize: "24px", margin: "auto" }} />
-            </Space>
-          </div>
+        <div className="chatbot-header">
+          <h1 className="chatbot-title">
+            <MessageOutlined /> Chatbot
+          </h1>
         </div>
         <div className="chatbot-messages">
-          {response && (
-            <div className="chatbot-message">
-              <span className="chatbot-message-text">{response}</span>
+          {messages.map((message, index) => (
+            <div
+              key={index}
+              className={`chatbot-message ${
+                message.sender === "user" ? "user" : "bot"
+              }`}
+            >
+              <span className="chatbot-message-text">{message.text}</span>
             </div>
-          )}
+          ))}
         </div>
-        <div className="chatbot-input">
-          <Input
-            placeholder="Posez une question..."
-            value={question}
-            onChange={handleChange}
-            suffix={
-              <Space>
-                <Button
-                  type="primary"
-                  onClick={handleSubmit}
-                  icon={<SendOutlined />}
-                />
-              </Space>
-            }
-          />
-        </div>
+      </div>
+      <div className="chatbot-input">
+        <Input
+          placeholder="Posez une question..."
+          value={question}
+          onChange={handleChange}
+          onPressEnter={handleSubmit}
+          suffix={
+            <Space>
+              <Button
+                type="primary"
+                onClick={handleSubmit}
+                icon={<SendOutlined />}
+              />
+            </Space>
+          }
+        />
       </div>
     </>
   );

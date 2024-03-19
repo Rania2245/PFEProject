@@ -1,157 +1,237 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Switch } from "antd";
+import { Form, Input, Button, Switch, Select, message } from "antd";
 import { MinusCircleOutlined } from "@ant-design/icons";
 import { QuestionRequest } from "../types/questionrequest";
 import {
   getRequestById,
   modifyRequest,
 } from "../services/CustomRequestService";
-import { useNavigate, useParams } from "react-router-dom";
-import LogoutButton from "./NavBar";
 
-const RequestModify: React.FC = () => {
+import { getUsersEmail } from "../services/UserService";
+import { getDeps } from "../services/departmentService";
+import { PartageOption } from "../types/partageOption";
+
+const { Option } = Select;
+
+interface Props {
+  id: string;
+  visible: boolean;
+  onCancel: () => void;
+}
+
+const RequestModify: React.FC<Props> = ({ id, visible, onCancel }) => {
   const [form] = Form.useForm<QuestionRequest>();
   const [loading, setLoading] = useState(false);
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const [userEmails, setUserEmails] = useState<string[]>([]);
+  const [departments, setDepartments] = useState<any[]>([]);
+  const [initialPartageValue, setInitialPartageValue] =
+    useState<PartageOption>();
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (visible) {
+      fetchData();
+    }
+  }, [visible]);
 
   const fetchData = async () => {
     try {
       const response = await getRequestById(Number(id));
+
+      const partageData: { type: PartageOption; value: string }[] = JSON.parse(
+        //@ts-expect-error
+        response.data.partage
+      );
+      const initialType = partageData[0].type;
+      setInitialPartageValue(initialType);
+
       form.setFieldsValue({
         active: response.data.active,
-        partage: response.data.partage,
-        //@ts-expect-error
+        partage: initialType,
         questions: response.data.questions.map(({ text }) => text),
         //@ts-expect-error
         responses: response.data.responses.map(({ text }) => text),
       });
+      //@ts-expect-error
+      if (initialType === "users") {
+        const emails = await getUsersEmail();
+        setUserEmails(emails);
+        //@ts-expect-error
+      } else if (initialType === "department") {
+        const deps = await getDeps();
+        setDepartments(deps);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
-  const onFinish = async (values: QuestionRequest) => {
+  const handlePartageTypeChange = async (value: PartageOption) => {
+    //@ts-expect-error
+    if (value === "users") {
+      const emails = await getUsersEmail();
+      setUserEmails(emails);
+      //@ts-expect-error
+    } else if (value === "department") {
+      const departmentsData = await getDeps();
+      setDepartments(departmentsData);
+    }
+  };
+
+  const onFinish = async (values: any) => {
     setLoading(true);
     try {
-      // await modifyRequest(Number(id), values);
-      // console.log({ values });
-      await modifyRequest(Number(id), {
-        ...values,
-        //@ts-expect-error
-        questions: values.questions.map((question) => ({ text: question })),
-        //@ts-expect-error
-        responses: values.responses.map((response) => ({ text: response })),
-      });
-      navigate("/requests");
+      const modifiedPartage =
+        values.partage === "users" || values.partage === "department"
+          ? [{ type: values.partage, value: values[values.partage].join(",") }]
+          : [{ type: values.partage, value: "" }];
+
+      const modifiedValues = {
+        active: values.active,
+        partage: modifiedPartage,
+        questions: values.questions.map((question: string) => ({
+          text: question,
+        })),
+        responses: values.responses.map((response: string) => ({
+          text: response,
+        })),
+      };
+      //@ts-expect-error
+      await modifyRequest(Number(id), modifiedValues);
+      message.success("Request updated successfully");
     } catch (error) {
       console.error("Error modifying request:", error);
     } finally {
       setLoading(false);
+      onCancel();
     }
   };
 
   return (
-    <>
-      <LogoutButton />
-      <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Form.List name="questions">
-          {(fields, { add, remove }) => (
-            <>
-              {fields.map((field, index) => (
+    <Form form={form} layout="vertical" onFinish={onFinish}>
+      <Form.List name="questions">
+        {(fields, { add, remove }) => (
+          <>
+            {fields.map((field, index) => (
+              <Form.Item
+                label={index === 0 ? "Questions" : ""}
+                required={false}
+                key={field.key}
+              >
                 <Form.Item
-                  label={index === 0 ? "Questions" : ""}
-                  required={false}
-                  key={field.key}
+                  {...field}
+                  validateTrigger={["onChange", "onBlur"]}
+                  rules={[
+                    {
+                      required: true,
+                      whitespace: true,
+                      message: "Please input question or delete this field.",
+                    },
+                  ]}
+                  noStyle
                 >
-                  <Form.Item
-                    {...field}
-                    validateTrigger={["onChange", "onBlur"]}
-                    rules={[
-                      {
-                        required: true,
-                        whitespace: true,
-                        message: "Please input question or delete this field.",
-                      },
-                    ]}
-                    noStyle
-                  >
-                    <Input placeholder="Question" style={{ width: "60%" }} />
-                  </Form.Item>
-                  {fields.length > 1 ? (
-                    <MinusCircleOutlined
-                      className="dynamic-delete-button"
-                      onClick={() => remove(field.name)}
-                    />
-                  ) : null}
+                  <Input placeholder="Question" style={{ width: "60%" }} />
                 </Form.Item>
-              ))}
-              <Form.Item>
-                <Button type="dashed" onClick={() => add()}>
-                  Add Question
-                </Button>
+                {fields.length > 1 ? (
+                  <MinusCircleOutlined
+                    className="dynamic-delete-button"
+                    onClick={() => remove(field.name)}
+                  />
+                ) : null}
               </Form.Item>
-            </>
-          )}
-        </Form.List>
+            ))}
+            <Form.Item>
+              <Button type="dashed" onClick={() => add()}>
+                Add Question
+              </Button>
+            </Form.Item>
+          </>
+        )}
+      </Form.List>
 
-        <Form.List name="responses">
-          {(fields, { add, remove }) => (
-            <>
-              {fields.map((field, index) => (
+      <Form.List name="responses">
+        {(fields, { add, remove }) => (
+          <>
+            {fields.map((field, index) => (
+              <Form.Item
+                label={index === 0 ? "Responses" : ""}
+                required={false}
+                key={field.key}
+              >
                 <Form.Item
-                  label={index === 0 ? "Responses" : ""}
-                  required={false}
-                  key={field.key}
+                  {...field}
+                  validateTrigger={["onChange", "onBlur"]}
+                  rules={[
+                    {
+                      required: true,
+                      whitespace: true,
+                      message: "Please input response or delete this field.",
+                    },
+                  ]}
+                  noStyle
                 >
-                  <Form.Item
-                    {...field}
-                    validateTrigger={["onChange", "onBlur"]}
-                    rules={[
-                      {
-                        required: true,
-                        whitespace: true,
-                        message: "Please input response or delete this field.",
-                      },
-                    ]}
-                    noStyle
-                  >
-                    <Input placeholder="Response" style={{ width: "60%" }} />
-                  </Form.Item>
-                  {fields.length > 1 ? (
-                    <MinusCircleOutlined
-                      className="dynamic-delete-button"
-                      onClick={() => remove(field.name)}
-                    />
-                  ) : null}
+                  <Input placeholder="Response" style={{ width: "60%" }} />
                 </Form.Item>
-              ))}
-              <Form.Item>
-                <Button type="dashed" onClick={() => add()}>
-                  Add Response
-                </Button>
+                {fields.length > 1 ? (
+                  <MinusCircleOutlined
+                    className="dynamic-delete-button"
+                    onClick={() => remove(field.name)}
+                  />
+                ) : null}
               </Form.Item>
-            </>
-          )}
-        </Form.List>
+            ))}
+            <Form.Item>
+              <Button type="dashed" onClick={() => add()}>
+                Add Response
+              </Button>
+            </Form.Item>
+          </>
+        )}
+      </Form.List>
 
-        <Form.Item label="Active" name="active" valuePropName="checked">
-          <Switch />
+      <Form.Item label="Active" name="active" valuePropName="checked">
+        <Switch />
+      </Form.Item>
+      <Form.Item
+        label="Partage"
+        name="partage"
+        initialValue={initialPartageValue}
+      >
+        <Select onChange={handlePartageTypeChange}>
+          <Option value="private">Private</Option>
+          <Option value="public">Public</Option>
+          <Option value="users">Users</Option>
+          <Option value="department">Department</Option>
+        </Select>
+      </Form.Item>
+      {form.getFieldValue("partage") === "users" && (
+        <Form.Item label="Users" name="users">
+          <Select mode="multiple" placeholder="Select users">
+            {userEmails.map((email) => (
+              <Option key={email} value={email}>
+                {email}
+              </Option>
+            ))}
+          </Select>
         </Form.Item>
-        <Form.Item label="Partage" name="partage" valuePropName="checked">
-          <Switch />
+      )}
+      {form.getFieldValue("partage") === "department" && (
+        <Form.Item label="Department" name="department">
+          <Select mode="multiple" placeholder="Select departments">
+            {departments.map((department) => (
+              <Option key={department} value={department}>
+                {department}
+              </Option>
+            ))}
+          </Select>
         </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading}>
-            Modify Question
-          </Button>
-        </Form.Item>
-      </Form>
-    </>
+      )}
+
+      <Form.Item>
+        <Button type="primary" htmlType="submit" loading={loading}>
+          Modify Question
+        </Button>
+      </Form.Item>
+    </Form>
   );
 };
 

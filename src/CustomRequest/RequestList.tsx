@@ -1,35 +1,56 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Space, Popconfirm, Input } from "antd";
 import {
-  deleteRequest,
-  getRequests,
-  findRequest,
-} from "../services/CustomRequestService";
+  Table,
+  Button,
+  Space,
+  Popconfirm,
+  Input,
+  Drawer,
+  Select,
+  Pagination,
+} from "antd";
+import { deleteRequest, getRequests } from "../services/CustomRequestService";
 import { QuestionRequest } from "../types/questionrequest";
-import requestColumns from "./requestColumns";
 import {
+  DatabaseOutlined,
   DeleteOutlined,
   EditOutlined,
   EyeOutlined,
   PlusOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
+import RequestAdd from "./RequestAdd";
+import RequestModify from "./RequestModify";
 import { useNavigate } from "react-router-dom";
-import LogoutButton from "./NavBar";
-import { GetRowKey } from "antd/es/table/interface";
-import moment from "moment";
+import Typography from "antd/es/typography/Typography";
+import Icon from "@ant-design/icons/lib/components/AntdIcon";
 const { Search } = Input;
+const { Option } = Select;
 
 const RequestList = () => {
   const [requests, setRequests] = useState<readonly QuestionRequest[]>([]);
+  const [isDrawerVisible, setIsDrawerVisible] = useState(false);
+  const [isRequestDrawerVisible, setIsRequestDrawerVisible] = useState(false);
+  const [isModifyDrawerVisible, setIsModifyDrawerVisible] = useState(false);
+  const [selectedRequestId, setSelectedRequestId] = useState("");
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [pagination.current, pagination.pageSize]);
 
   const fetchData = async () => {
     try {
-      const response = await getRequests();
+      const response = await getRequests(
+        //@ts-expect-error
+        pagination.current,
+        pagination.pageSize
+      );
 
       const formattedRequests: QuestionRequest[] = response.map(
         (item: any) => ({
@@ -44,6 +65,11 @@ const RequestList = () => {
       );
 
       setRequests(formattedRequests);
+      setPagination({
+        ...pagination,
+        //@ts-expect-error
+        total: response.total,
+      });
     } catch (error) {
       console.error("Error fetching requests: ", error);
     }
@@ -54,7 +80,11 @@ const RequestList = () => {
   };
 
   const handleModify = (record: QuestionRequest) => {
-    navigate(`/request/${record.id}`);
+    if (record.id) {
+      //@ts-expect-error
+      setSelectedRequestId(record.id);
+      setIsModifyDrawerVisible(true);
+    }
   };
 
   const handleDelete = async (record: QuestionRequest) => {
@@ -66,22 +96,95 @@ const RequestList = () => {
     }
   };
 
-  const handleAdd = async () => {
-    navigate(`/addRequest`);
+  const handleAdd = () => {
+    setIsRequestDrawerVisible(true);
   };
 
   const handleSearch = async (value: string) => {
     try {
-      const results = await findRequest(value);
-      console.log("Search results:", results);
-      setRequests(results);
+      if (value.trim() === "") {
+        fetchData();
+      } else {
+        const response = await getRequests();
+        const formattedRequests: QuestionRequest[] = response.map(
+          (item: any) => ({
+            id: item.id,
+            active: item.active,
+            partage: item.partage,
+            questions: item.questions.map((q: { text: string }) => q.text),
+            responses: item.responses.map((r: { text: string }) => r.text),
+            created_at: item.created_at,
+            user_id: 0,
+          })
+        );
+        const results = formattedRequests.filter((request) =>
+          request.questions.some((question) =>
+            //@ts-expect-error
+            question.toLowerCase().includes(value.toLowerCase())
+          )
+        );
+        setRequests(results);
+      }
     } catch (error) {
       console.error("Error while searching:", error);
     }
   };
 
+  const renderQuestion = (record: QuestionRequest) => {
+    return (
+      <Select
+        mode="tags"
+        style={{ width: 200 }}
+        placeholder="Select or input tags"
+        defaultValue={record.questions[0]}
+        onChange={(value) => handleSelectChange(value.text, record)}
+        allowClear={true}
+      >
+        {record.questions.map((questions, index) => (
+          <Option key={index} value={questions}>
+            {questions.text}
+          </Option>
+        ))}
+      </Select>
+    );
+  };
+  const renderResponse = (record: QuestionRequest) => {
+    return (
+      <Select
+        mode="tags"
+        style={{ width: 200 }}
+        placeholder="Select or input tags"
+        defaultValue={record.responses[0]}
+        onChange={(value) => handleSelectChange(value.text, record)}
+        allowClear={true}
+      >
+        {record.responses.map((response, index) => (
+          <Option key={index} value={response}>
+            {response.text}
+          </Option>
+        ))}
+      </Select>
+    );
+  };
+
+  const handleSelectChange = (value: string, record: QuestionRequest) => {
+    console.log("Selected value:", value);
+    console.log("Record:", record);
+  };
+
   const Actions = [
-    ...requestColumns,
+    {
+      title: "Questions",
+      dataIndex: "questions",
+      key: "questions",
+      render: (_: any, record: QuestionRequest) => renderQuestion(record),
+    },
+    {
+      title: "Réponses",
+      dataIndex: "responses",
+      key: "responses",
+      render: (_: any, record: QuestionRequest) => renderResponse(record),
+    },
     {
       title: "Actions",
       key: "actions",
@@ -119,38 +222,102 @@ const RequestList = () => {
   const getRowClassName = (record: QuestionRequest, index: number) => {
     return index % 2 === 0 ? "even-row" : "odd-row";
   };
-
-  const getRowKey: GetRowKey<QuestionRequest> = (record) => {
+  const getRowKey = (record: QuestionRequest) => {
     return record.id ? record.id.toString() : "";
+  };
+
+  const refreshPage = () => {
+    fetchData();
   };
 
   return (
     <>
-      <div style={{ padding: "20px" }}>
-        <LogoutButton />
-        <div style={{ margin: "20px 0" }}>
-          <Search
-            placeholder="Search questions"
-            allowClear
-            enterButton="Search"
-            onSearch={handleSearch}
-            style={{ width: 300 }}
-          />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+        }}
+      >
+        <h2>
+          Base de connaissance {<DatabaseOutlined style={{ color: "#000" }} />}
+        </h2>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <div style={{ marginRight: "20px" }}>
+            <Search
+              placeholder="Search questions"
+              allowClear
+              onSearch={handleSearch}
+              style={{ width: 300 }}
+              suffix={<SearchOutlined style={{ color: "#1890ff" }} />}
+            />
+          </div>
+          <div>
+            <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+              Ajouter
+            </Button>
+          </div>
         </div>
-        <div style={{ marginBottom: "20px" }}>
-          <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-            Ajouter Une Base De Connaissance
-          </Button>
-        </div>
-        <Table
-          dataSource={requests}
-          columns={Actions}
-          rowKey={getRowKey}
-          bordered
-          pagination={{ pageSize: 10 }}
-          rowClassName={getRowClassName}
-        />
       </div>
+      <Table
+        dataSource={requests}
+        columns={Actions}
+        rowKey={getRowKey}
+        bordered
+        pagination={false}
+        rowClassName={getRowClassName}
+      />
+      <Pagination
+        style={{ marginTop: "20px", textAlign: "center" }}
+        current={pagination.current}
+        pageSize={pagination.pageSize}
+        total={pagination.total}
+        showSizeChanger
+        showQuickJumper
+        onChange={(page, pageSize) =>
+          setPagination({ ...pagination, current: page, pageSize })
+        }
+        onShowSizeChange={(current, size) =>
+          setPagination({ ...pagination, current: 1, pageSize: size })
+        }
+      />
+      <Drawer
+        title="Add Request"
+        placement="right"
+        closable={true}
+        onClose={() => setIsRequestDrawerVisible(false)}
+        visible={isRequestDrawerVisible}
+        width={800}
+        //@ts-expect-error
+        onClose={() => setIsRequestDrawerVisible(false)}
+      >
+        <RequestAdd onCancel={() => setIsRequestDrawerVisible(false)} />
+      </Drawer>
+      {selectedRequestId && (
+        <Drawer
+          title="Modify Request"
+          placement="right"
+          closable={true}
+          onClose={() => setIsModifyDrawerVisible(false)}
+          visible={isModifyDrawerVisible}
+          width={700}
+          destroyOnClose={true}
+          afterVisibleChange={refreshPage}
+        >
+          <RequestModify
+            id={selectedRequestId}
+            visible={isModifyDrawerVisible}
+            onCancel={() => setIsModifyDrawerVisible(false)}
+          />
+        </Drawer>
+      )}
     </>
   );
 };
