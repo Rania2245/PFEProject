@@ -12,6 +12,7 @@ import AddMenu from "./AddMenu";
 import { Bloc } from "../types/Bloc";
 import { getAllBlocs } from "../services/BlocService";
 import SelectedBloc from "./SelectedBloc";
+import "./button.css";
 
 const { Title } = Typography;
 
@@ -96,14 +97,25 @@ const AutomatisationMessenger: React.FC = () => {
         <div style={{ width: "50%" }}>
           <Card
             title={
-              <>
+              <div
+                style={{
+                  backgroundColor: "#f5f5f5",
+                  padding: "11px 100px",
+                  borderRadius: "4px",
+                  display: "inline-block",
+                  width: "100%",
+                  fontFamily: "Arial, sans-serif",
+                  fontSize: "18px",
+                  color: "#333",
+                }}
+              >
                 <MessageOutlined /> Liste des blocs
-              </>
+              </div>
             }
             bordered={false}
             style={{
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-              backgroundColor: "#e5e5e5",
+              backgroundColor: "white",
               borderRadius: "10px",
               width: "100%",
               marginRight: "16px",
@@ -113,15 +125,25 @@ const AutomatisationMessenger: React.FC = () => {
             <Card
               title={
                 <>
-                  <span style={{ marginRight: "8px", marginBottom: "10px" }}>
+                  <span
+                    style={{
+                      marginRight: "8px",
+                      marginBottom: "10px",
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                      fontFamily: "Arial, sans-serif",
+                      color: "#3b5998",
+                    }}
+                  >
                     Welcome Message
                   </span>
+
                   <MessageOutlined />
                 </>
               }
               style={{
                 marginBottom: "10px",
-                backgroundColor: welcomeHovered ? "#87abcc" : "#cfd7df",
+                backgroundColor: welcomeHovered ? " #87abcc" : "#cfd7df",
                 color: "#333",
               }}
               hoverable
@@ -133,14 +155,23 @@ const AutomatisationMessenger: React.FC = () => {
             <Card
               title={
                 <>
-                  <span style={{ marginRight: "8px", marginBottom: "10px" }}>
+                  <span
+                    style={{
+                      marginRight: "8px",
+                      marginBottom: "10px",
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                      fontFamily: "Arial, sans-serif",
+                      color: "#3b5998",
+                    }}
+                  >
                     Default Message
                   </span>
                   <ApiOutlined />
                 </>
               }
               style={{
-                backgroundColor: defaultHovered ? "#87abcc" : "#cfd7df",
+                backgroundColor: defaultHovered ? " #87abcc" : "#cfd7df",
                 color: "#333",
                 marginBottom: "10px",
               }}
@@ -165,20 +196,36 @@ const AutomatisationMessenger: React.FC = () => {
                     style={{
                       marginRight: "10px",
                       marginBottom: "10px",
-                      backgroundColor: "#87abcc", // Match the background color of the Add button
-                      color: "#fff", // Text color
-                      border: "none", // Remove border
-                      fontWeight: "bold",
+                      backgroundColor: "#fff",
+                      color: "black",
+                      border: "2px solid #87abcc",
+                      width: "120px",
+                      height: "50px",
+
+                      fontFamily: "Arial, sans-serif",
                       fontSize: "16px",
-                      height: "40px", // Set height
-                      padding: "0 20px", // Set padding
+                      padding: "0",
+                      transition:
+                        "background-color 0.3s, border-color 0.3s, color 0.3s",
                     }}
                     onClick={() => handleSelectBloc(bloc)}
+                    className="custom-button"
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = "#e6f7ff";
+                      e.currentTarget.style.borderColor = "#1890ff";
+                      e.currentTarget.style.color = "#1890ff";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = "#fff";
+                      e.currentTarget.style.borderColor = "#87abcc";
+                      e.currentTarget.style.color = "black";
+                    }}
                   >
                     {bloc.name}
                   </Button>
                 ))}
               </div>
+
               <div>
                 <Tooltip title="Add Bloc">
                   <Button
@@ -201,13 +248,25 @@ const AutomatisationMessenger: React.FC = () => {
           </Card>
           <Card
             title={
-              <>
+              <div
+                style={{
+                  backgroundColor: "#f5f5f5",
+                  padding: "11px 100px",
+                  borderRadius: "4px",
+                  display: "inline-block",
+                  width: "100%",
+                  fontFamily: "Arial, sans-serif",
+                  fontSize: "18px",
+                  fontWeight: "bold",
+                  color: "#333",
+                }}
+              >
                 <MenuOutlined /> Eléments de menu
-              </>
+              </div>
             }
             style={{
               cursor: "pointer",
-              backgroundColor: "#e5e5e5",
+              backgroundColor: "white",
               color: "#333",
               height: "200px",
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",

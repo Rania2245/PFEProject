@@ -52,6 +52,7 @@ const RequestList = () => {
         pagination.pageSize
       );
       console.log(response);
+      //@ts-expect-error
       const formattedRequests: QuestionRequest[] = response.map((item: any) => {
         //@ts-expect-error
         const questions = Object.values(item.questions).map((text: string) => ({

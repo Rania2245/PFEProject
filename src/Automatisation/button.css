@@ -1,0 +1,30 @@
+.button-card {
+    background-color: #fff;
+    border: 2px solid #87abcc;
+    border-radius: 8px;
+    color: #101a23;
+    width: 80px;
+    height: 80px;
+    font-size: 16px;
+
+    margin-bottom: 10px;
+    font-family: Arial, sans-serif;
+    text-transform: capitalize;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+  }
+  
+  .button-card:hover {
+    background-color: #e6f7ff;
+    border-color: #1890ff;
+    color: #1890ff;
+  }
+  .custom-button:hover {
+    background-color: #e6f7ff;
+    border-color: #1890ff;
+    color: #1890ff;
+  }
+  

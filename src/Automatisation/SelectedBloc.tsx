@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Input, Space, Tooltip, Modal, message } from "antd";
+import {
+  Card,
+  Button,
+  Input,
+  Space,
+  Tooltip,
+  Modal,
+  message,
+  Select,
+} from "antd";
 import {
   DeleteOutlined,
   MessageOutlined,
@@ -13,29 +22,81 @@ import {
   MenuOutlined,
   FileAddOutlined,
   SendOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 import { Bloc } from "../types/Bloc";
-import { updateBloc, duplicateBloc, deleteBloc } from "../services/BlocService";
+import {
+  updateBloc,
+  duplicateBloc,
+  deleteBloc,
+  getAllBlocs,
+} from "../services/BlocService";
 import { ElementBloc } from "../types/elementBloc";
 import AddOptionModal from "./AddOptionBloc";
 import { BlocOption } from "../types/BlocOptions";
+import ButtonCard from "./ButtonCard";
+import { GalleryFormData } from "../types/Galerie";
+import GalleryForm from "./GalerieForm";
 
 interface SelectedBlocProps {
   bloc: Bloc;
 }
 
 const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
+  const { Option } = Select;
   const [inputData, setInputData] = useState<ElementBloc[]>(
     bloc.elementsBloc.map((elem) => ({ ...elem, blocOptions: [] }))
   );
+  const [fileInputs, setFileInputs] = useState<File[]>([]);
+
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [blocName, setBlocName] = useState<string>(bloc.name);
   const [confirmDeleteVisible, setConfirmDeleteVisible] =
     useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean[]>(
     new Array(bloc.elementsBloc.length).fill(false)
   );
+  const [blocNames, setBlocNames] = useState<string[]>([]);
+  const [galleryForms, setGalleryForms] = useState<GalleryFormData[]>([]);
   const [currentBlockIndex, setCurrentBlockIndex] = useState<number>(-1);
   useEffect(() => {
+    const initialFileInputs = bloc.elementsBloc
+      .filter((elem) => elem.type === "file")
+      .map((elem) => {
+        const file = new File([], elem.data);
+        return file;
+      });
+    setFileInputs(initialFileInputs);
+
+    const initialGalleryForms = bloc.elementsBloc
+      .filter((elem) => elem.type === "galerie")
+      .map((elem) => {
+        const galleryFormData: GalleryFormData = JSON.parse(elem.data);
+        return galleryFormData;
+      });
+    setGalleryForms(initialGalleryForms);
+
+    const initialBlocNames = bloc.elementsBloc
+      .filter((elem) => elem.type === "Redirection")
+      .map((elem) => elem.data as string);
+    setBlocNames(initialBlocNames);
+
+    const initialFacebookUrls = bloc.elementsBloc
+      .filter((elem) => elem.type === "media")
+      .map((elem) => elem.data as string);
+    setFacebookUrls(initialFacebookUrls);
+
+    const fetchBlocNames = async () => {
+      try {
+        const blocs = await getAllBlocs();
+        const blocNames = blocs.map((bloc) => bloc.name);
+        setBlocNames(blocNames);
+      } catch (error) {
+        console.error("Error fetching bloc names:", error);
+      }
+    };
+
+    fetchBlocNames();
     console.log(bloc);
     setInputData(
       bloc.elementsBloc.map((elem) => ({ ...elem, blocOptions: [] }))
@@ -44,6 +105,9 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
     setModalVisible(new Array(bloc.elementsBloc.length).fill(false));
     setCurrentBlockIndex(-1);
   }, [bloc]);
+  const [selectedBlocIndex, setSelectedBlocIndex] = useState<number | null>(
+    null
+  );
 
   const handleDeleteInput = (index: number) => {
     if (index === -1) {
@@ -53,6 +117,40 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
       setInputData(updatedInputData);
       setModalVisible((prev) => prev.filter((_, i) => i !== index));
     }
+  };
+  const handleRedirectionSelect = (value: string) => {
+    const index = parseInt(value);
+    setSelectedBlocIndex(index);
+  };
+  const handleFileInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      const updatedInputData = [...inputData];
+      updatedInputData[index].data = file.name;
+      if (file.size > 3e6) {
+        window.alert("Please upload a file smaller than 3MB");
+      }
+      setUploadedFileName(file.name);
+      setFileInputs((prevFileInputs) => {
+        const updatedFileInputs = [...prevFileInputs];
+        updatedFileInputs[index] = file;
+        return updatedFileInputs;
+      });
+      setInputData(updatedInputData);
+    } else {
+      setUploadedFileName(null);
+    }
+  };
+  const handleGalerieInputChange = (data: GalleryFormData, index: number) => {
+    setGalleryForms((prevForms) => {
+      const updatedForms = [...prevForms];
+      updatedForms[index] = data;
+      return updatedForms;
+    });
   };
 
   const handleConfirmDelete = async () => {
@@ -122,6 +220,15 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
       console.error("Error saving bloc: ", error);
     }
   };
+  const handleAddGalleryForm = () => {
+    setGalleryForms((prevForms) => [
+      ...prevForms,
+      { photo: "", title: "", description: "", url: "" },
+    ]);
+  };
+  const handleSave = () => {
+    console.log("Saved forms:", galleryForms);
+  };
 
   const handleInputChange = (value: string, index: number) => {
     console.log(`input ${index} with value ${value}`);
@@ -136,6 +243,9 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
       prev.map((visible, i) => (i === index ? true : visible))
     );
   };
+  const [facebookUrls, setFacebookUrls] = useState(
+    Array(inputData.length).fill("")
+  );
   const handleModalAdd = async (options: BlocOption[]) => {
     try {
       console.log("Options received:", options);
@@ -162,14 +272,92 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
       );
     }
   };
-
+  const handleFacebookURLChange = (url: string, index: number): void => {
+    const updatedUrls = [...facebookUrls];
+    updatedUrls[index] = url;
+    setFacebookUrls(updatedUrls);
+  };
+  const handleDeleteGallerie = (index: number) => {
+    setGalleryForms((prevForms) => prevForms.filter((_, i) => i !== index));
+  };
   const handleModalCancel = () => {
     setModalVisible((prev) =>
       prev.map((visible, i) => (i === currentBlockIndex ? false : visible))
     );
   };
+  (url: string, index: number) => {
+    const updatedUrls = [...facebookUrls];
+    updatedUrls[index] = url;
+    setFacebookUrls(updatedUrls);
+  };
+  const renderSlider = (index: number) => {
+    return (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          backgroundColor: "#f0f0f0",
+          padding: "10px",
+          borderRadius: "8px",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%",
+            marginBottom: "10px",
+          }}
+        >
+          <Tooltip title="Delete">
+            <Button
+              type="text"
+              icon={<DeleteOutlined />}
+              style={{ color: "red", borderRadius: "50%", fontSize: "16px" }}
+              onClick={() => handleDeleteInput(index)}
+            />
+          </Tooltip>
+          <input
+            type="range"
+            min={0}
+            max={60}
+            defaultValue={0}
+            onChange={(event) => handleSliderChange(event, index)}
+            style={{ width: "300px", height: "7px" }}
+          />
+        </div>
+        <div style={{ fontSize: "16px" }}>
+          {" "}
+          {inputData[index].data as string}
+        </div>
+      </div>
+    );
+  };
+  const handleSliderChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const value = parseInt(event.target.value);
+    const updatedInputData = [...inputData];
+    updatedInputData[index].data = `${value} seconds`;
+    setInputData(updatedInputData);
+  };
 
   const renderInput = (type: string, index: number) => {
+    if (type === "typing") {
+      return (
+        <Space
+          direction="vertical"
+          key={index}
+          style={{ position: "relative" }}
+        >
+          {renderSlider(index)}
+        </Space>
+      );
+    }
     let placeholderText = "Enter ";
     switch (type) {
       case "text":
@@ -186,9 +374,14 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
         break;
       case "quickResponse":
         placeholderText += "quick response";
+      case "Agent":
+        placeholderText += " Agent";
+
         break;
       case "photo":
       case "video":
+      case "file":
+      case "Audio":
         return (
           <Space
             direction="vertical"
@@ -205,15 +398,179 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
                 />
               </Tooltip>
               <input
-                type={type === "photo" ? "file" : "video"}
-                accept={type === "photo" ? "image/*" : "video/*"}
-                style={{ marginLeft: "10px" }}
+                type="file"
+                accept={
+                  type === "photo"
+                    ? "image/*"
+                    : type === "video"
+                    ? "video/*"
+                    : type === "file"
+                    ? ".pdf,.doc,.docx"
+                    : "audio/*"
+                }
+                multiple
+                style={{ display: "none" }}
+                id={`file-upload-${index}`}
+                onChange={(e) => handleFileInputChange(e, index)}
               />
+              <label htmlFor={`file-upload-${index}`}>
+                <Button
+                  type="default"
+                  icon={<UploadOutlined />}
+                  style={{
+                    width: "200px",
+                    height: "40px",
+                    borderRadius: "8px",
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const input = document.getElementById(
+                      `file-upload-${index}`
+                    ) as HTMLInputElement;
+                    input.click();
+                  }}
+                >
+                  Upload File
+                </Button>
+              </label>
             </div>
+            {uploadedFileName && (
+              <p
+                style={{
+                  marginLeft: "10px",
+                  fontSize: "14px",
+                  color: "#87abcc",
+                }}
+              >
+                {uploadedFileName}
+              </p>
+            )}
           </Space>
         );
       default:
         break;
+      case "galerie":
+      case "Generic":
+        return (
+          <div style={{ overflowX: "auto" }}>
+            <Tooltip title="Delete">
+              <Button
+                type="text"
+                icon={<DeleteOutlined />}
+                style={{ color: "red", borderRadius: "50%" }}
+                onClick={() => handleDeleteInput(index)}
+              />
+            </Tooltip>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+                width: "max-content",
+              }}
+            >
+              <>
+                {galleryForms.map((form, galleryIndex) => (
+                  <div key={galleryIndex} style={{ marginRight: "20px" }}>
+                    <GalleryForm
+                      index={index}
+                      formData={form}
+                      photoName={form.photo}
+                      handleDeleteInput={() => handleDeleteGallerie(index)}
+                      handleGalerieInputChange={(data) =>
+                        handleGalerieInputChange(data, index)
+                      }
+                      handleSave={handleSave}
+                      handleAddOptionClick={handleAddOptionClick}
+                    />
+                  </div>
+                ))}
+              </>
+            </div>
+            <div style={{ textAlign: "center", marginTop: "20px" }}>
+              <Button
+                type="primary"
+                onClick={handleAddGalleryForm}
+                style={{ backgroundColor: "#87abcc", border: "none" }}
+              >
+                Add Gallery Form
+              </Button>
+            </div>
+          </div>
+        );
+
+      case "media":
+        return (
+          <Space
+            direction="vertical"
+            key={index}
+            style={{ position: "relative" }}
+          >
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Tooltip title="Delete">
+                <Button
+                  type="text"
+                  icon={<DeleteOutlined />}
+                  style={{ color: "red", borderRadius: "50%" }}
+                  onClick={() => handleDeleteInput(index)}
+                />
+              </Tooltip>
+              <p>
+                The media model allows you to visualize videos, GIFs, and photos
+                from Facebook by adding their URL.
+              </p>
+            </div>
+            <Input
+              placeholder="Enter Facebook URL (e.g., https://www.facebook.com/...)"
+              style={{ width: "300px" }}
+              value={facebookUrls[index]}
+              onChange={(e) => handleFacebookURLChange(e.target.value, index)}
+            />
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Tooltip title="Add Option">
+                <Button
+                  type="text"
+                  icon={<FileAddOutlined />}
+                  style={{
+                    color: "#333",
+                    backgroundColor: "white",
+                    border: "2px solid #87abcc",
+                    width: "100px",
+                    height: "40px",
+                    fontSize: "20px",
+                  }}
+                  onClick={() => handleAddOptionClick(index)}
+                />
+              </Tooltip>
+            </div>
+          </Space>
+        );
+
+      case "Redirection":
+        return (
+          <div>
+            <Tooltip title="Delete">
+              <Button
+                type="text"
+                icon={<DeleteOutlined />}
+                style={{ color: "red", borderRadius: "50%" }}
+                onClick={() => handleDeleteInput(index)}
+              />
+            </Tooltip>
+            <Select
+              defaultValue=""
+              style={{ width: 200 }}
+              onChange={(value) => handleRedirectionSelect(value)}
+            >
+              <Option value="">Select a bloc to redirect to...</Option>
+              {blocNames.map((name, index) => (
+                <Option key={index} value={index}>
+                  {name}
+                </Option>
+              ))}
+            </Select>
+          </div>
+        );
     }
 
     const currentElement = inputData[index];
@@ -266,7 +623,13 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
   return (
     <Card
       title={
-        <>
+        <div
+          style={{
+            backgroundColor: "#f5f5f5",
+            padding: "11px 100px",
+            borderRadius: "4px",
+          }}
+        >
           <Input
             value={blocName}
             onChange={handleNameChange}
@@ -277,7 +640,7 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
               <Button
                 type="text"
                 icon={<SaveOutlined />}
-                style={{ color: "#333", backgroundColor: "#7fe57b" }}
+                style={{ color: "green" }}
                 onClick={handleSaveBloc}
               />
             </Tooltip>
@@ -285,7 +648,7 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
               <Button
                 type="text"
                 icon={<CopyOutlined />}
-                style={{ color: "#333", backgroundColor: "#70b2d8" }}
+                style={{ color: "blue" }}
                 onClick={handleDuplicateBloc}
               />
             </Tooltip>
@@ -293,16 +656,16 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
               <Button
                 type="text"
                 icon={<DeleteOutlined />}
-                style={{ color: "#333", backgroundColor: "#ea6161" }}
+                style={{ color: "red" }}
                 onClick={() => handleDeleteInput(-1)}
               />
             </Tooltip>
           </div>
-        </>
+        </div>
       }
       style={{
         textAlign: "center",
-        backgroundColor: "#e5e5e5",
+        backgroundColor: "white",
         color: "#333",
         boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
         borderRadius: "10px",
@@ -320,13 +683,18 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
               {input.type === "mobile" && <PhoneOutlined />}
               {input.type === "quickResponse" && <ApiOutlined />}
               {input.type === "photo" && <BellOutlined />}
+              {input.type === "audio" && <BellOutlined />}
+              {input.type === "media" && <BellOutlined />}
+              {input.type === "galerie" && <BellOutlined />}
+              {input.type === "redirection" && <BellOutlined />}
+              {input.type === "typing" && <BellOutlined />}
               {input.type === "video" && <VideoCameraAddOutlined />}
             </div>
           }
           key={index}
           style={{
             textAlign: "center",
-            backgroundColor: "#e5e5e5",
+            backgroundColor: "white",
             color: "#333",
             height: "150px",
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
@@ -344,155 +712,7 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
           />
         </Card>
       ))}
-      <div style={{ display: "flex", justifyContent: "space-around" }}>
-        <div>
-          <Button
-            type="primary"
-            icon={<MessageOutlined />}
-            style={{
-              backgroundColor: "#87abcc",
-              borderColor: "#cbaad8",
-              width: "80px",
-              height: "80px",
-              fontSize: "16px",
-              fontWeight: "bold",
-              marginBottom: "10px",
-            }}
-            onClick={() => handleButtonClick("text")}
-          >
-            <br />
-            Text
-          </Button>
-          <Button
-            type="primary"
-            icon={<ApiOutlined />}
-            style={{
-              backgroundColor: "#87abcc",
-              borderColor: "#cbaad8",
-              width: "80px",
-              height: "80px",
-              fontSize: "16px",
-              fontWeight: "bold",
-              marginBottom: "10px",
-            }}
-            onClick={() => handleButtonClick("quickResponse")}
-          >
-            <br />
-            Typing
-          </Button>
-        </div>
-        <div>
-          <Button
-            type="primary"
-            icon={<BellOutlined />}
-            style={{
-              backgroundColor: "#87abcc",
-              borderColor: "#cbaad8",
-              width: "80px",
-              height: "80px",
-              fontSize: "16px",
-              fontWeight: "bold",
-              marginBottom: "10px",
-            }}
-            onClick={() => handleButtonClick("photo")}
-          >
-            <br />
-            Photo
-          </Button>
-          <Button
-            type="primary"
-            icon={<VideoCameraAddOutlined />}
-            style={{
-              backgroundColor: "#87abcc",
-              borderColor: "#cbaad8",
-              width: "80px",
-              height: "80px",
-              fontSize: "16px",
-              fontWeight: "bold",
-              marginBottom: "10px",
-            }}
-            onClick={() => handleButtonClick("video")}
-          >
-            <br />
-            Video
-          </Button>
-        </div>
-        <div>
-          <Button
-            type="primary"
-            icon={<MenuOutlined />}
-            style={{
-              backgroundColor: "#87abcc",
-              borderColor: "#cbaad8",
-              width: "80px",
-              height: "80px",
-              fontSize: "16px",
-              fontWeight: "bold",
-              marginBottom: "10px",
-            }}
-            onClick={() => handleButtonClick("link")}
-          >
-            <br />
-            Link
-          </Button>
-          <Button
-            type="primary"
-            icon={<MailOutlined />}
-            style={{
-              backgroundColor: "#87abcc",
-              borderColor: "#cbaad8",
-              width: "80px",
-              height: "80px",
-              fontSize: "16px",
-              fontWeight: "bold",
-              marginBottom: "10px",
-            }}
-            onClick={() => handleButtonClick("email")}
-          >
-            <br />
-            Mail
-          </Button>
-        </div>
-        <div>
-          <Button
-            type="primary"
-            icon={<PhoneOutlined />}
-            style={{
-              backgroundColor: "#87abcc",
-              borderColor: "#cbaad8",
-              width: "80px",
-              height: "80px",
-              fontSize: "16px",
-              fontWeight: "bold",
-              marginBottom: "10px",
-            }}
-            onClick={() => handleButtonClick("mobile")}
-          >
-            <br />
-            Mobile
-          </Button>
-          <Button
-            type="primary"
-            icon={<SendOutlined />}
-            style={{
-              backgroundColor: "#87abcc",
-              borderColor: "#cbaad8",
-              width: "80px",
-              height: "80px",
-              fontSize: "16px",
-              fontWeight: "bold",
-              marginBottom: "10px",
-            }}
-            onClick={() => handleButtonClick("quickResponse")}
-          >
-            <br />
-            Quick
-            <br />
-            Response
-          </Button>
-        </div>
-      </div>
-
+      <ButtonCard handleButtonClick={handleButtonClick} />{" "}
       <Modal
         title="Delete Bloc"
         visible={confirmDeleteVisible}

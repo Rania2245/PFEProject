@@ -1,6 +1,8 @@
 import axios from "axios";
 import { endpoint } from "../constants";
 import { Bloc } from "../types/Bloc";
+import { ElementBloc } from "../types/elementBloc";
+import { GalleryFormData } from "../types/Galerie";
 
 const getAxiosConfig = () => {
   const token = localStorage.getItem("token");
@@ -40,13 +42,75 @@ export const getBlocById = async (id: number) => {
     throw error;
   }
 };
-
-export const createBloc = async (blocData: Bloc) => {
+export const createBloc = async (formData: Bloc) => {
   try {
+    const config = {
+      headers: {
+        ...getAxiosConfig().headers,
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    console.log({ formData });
+
+    const formDataToSend = new FormData();
+    formData.elementsBloc.forEach((element: ElementBloc, index: number) => {
+      if (
+        element.type === "photo" ||
+        element.type === "video" ||
+        element.type === "audio"
+      ) {
+        if (element.file) {
+          formDataToSend.append(`elementsBloc[${index}][file]`, element.file);
+          formDataToSend.append(
+            `elementsBloc[${index}].data`,
+            element.file.name
+          );
+        }
+      } else if (element.type === "gallery") {
+        if (Array.isArray(element.data)) {
+          element.data.forEach(
+            (galleryItem: GalleryFormData, galleryIndex: number) => {
+              formDataToSend.append(
+                `galerie_${index}_${galleryIndex}[photo]`,
+                galleryItem.photo
+              );
+              formDataToSend.append(
+                `galerie_${index}_${galleryIndex}[title]`,
+                galleryItem.title
+              );
+              formDataToSend.append(
+                `galerie_${index}_${galleryIndex}[description]`,
+                galleryItem.description
+              );
+              formDataToSend.append(
+                `galerie_${index}_${galleryIndex}[url]`,
+                galleryItem.url
+              );
+            }
+          );
+        }
+      } else {
+        formDataToSend.append(`elementBloc[${index}].data`, element.data);
+      }
+
+      formDataToSend.append(`elementsBloc[${index}][type]`, element.type);
+      if (element.blocOptions) {
+        formDataToSend.append(
+          `elementsBloc[${index}].options_bloc[0]`,
+          JSON.stringify(element.blocOptions)
+        );
+      }
+    });
+
+    formDataToSend.append("name", formData.name);
+
+    console.log([...formDataToSend]);
+
     const response = await axios.post<Bloc>(
       `${endpoint}/api/blocs`,
-      blocData,
-      getAxiosConfig()
+      formDataToSend,
+      config
     );
     return response.data;
   } catch (error) {
