@@ -301,9 +301,11 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
 
   const handleAddOptionClick = (index: number) => {
     setCurrentBlockIndex(index);
-    setModalVisible((prev) =>
-      prev.map((visible, i) => (i === index ? true : visible))
-    );
+    setModalVisible((prev) => {
+      const updated = [...prev];
+      updated[index] = true;
+      return updated;
+    });
   };
   const [facebookUrls, setFacebookUrls] = useState(
     Array(inputData.length).fill("")
@@ -772,6 +774,7 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
           }}
         >
           {renderInput(input.type, index)}
+
           <AddOptionModal
             bloc={bloc}
             index={index}
