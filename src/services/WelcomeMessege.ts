@@ -86,7 +86,7 @@ export const deleteWelcomeMessage = async (id: number) => {
   }
 };
 
-export const getAllWelcomeMessages = async () => {
+export const getWelcomeMessage = async () => {
   try {
     const response = await axios.get<WelcomeMessage[]>(
       `${endpoint}/api/welcomeMessages`,

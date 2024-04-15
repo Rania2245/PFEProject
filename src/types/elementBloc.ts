@@ -9,5 +9,5 @@ export type ElementBloc = {
   file?: File;
   id_bloc?: Bloc;
   blocOptions: BlocOption[];
-  galerie?: GalleryFormData[];
+  gallery?: GalleryFormData[];
 };

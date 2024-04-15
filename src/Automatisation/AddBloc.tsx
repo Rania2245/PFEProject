@@ -20,6 +20,7 @@ import {
   CustomerServiceOutlined,
   FacebookOutlined,
   UploadOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
 import { Bloc } from "../types/Bloc";
 import {
@@ -51,7 +52,7 @@ const AddBloc: React.FC = () => {
   );
   const [forms, setForms] = useState<GalleryFormData[]>([]);
 
-  const [uploadedFileName, setUploadedFileName] = useState<File | null>(null);
+  const [uploadedFileName, setUploadedFileName] = useState<File[]>([]);
   const [searchKeyword, setSearchKeyword] = useState("");
 
   const [fileInputs, setFileInputs] = useState<File[]>([]);
@@ -100,7 +101,6 @@ const AddBloc: React.FC = () => {
       if (file.size > 3e6) {
         window.alert("Please upload a file smaller than 3MB");
       }
-      setUploadedFileName(file);
       setFileInputs((prevFileInputs) => {
         const updatedFileInputs = [...prevFileInputs];
         updatedFileInputs[index] = file;
@@ -112,10 +112,16 @@ const AddBloc: React.FC = () => {
         index,
         file
       );
-    } else {
-      setUploadedFileName(null);
+
+      // Update uploadedFileName array
+      setUploadedFileName((prevUploadedFiles) => {
+        const updatedUploadedFiles = [...prevUploadedFiles];
+        updatedUploadedFiles[index] = file;
+        return updatedUploadedFiles;
+      });
     }
   };
+
   const handleAddGalleryForm = () => {
     //@ts-ignore
     setGalleryForms((prevState) => [
@@ -220,7 +226,16 @@ const AddBloc: React.FC = () => {
     });
   };
   const handleDeleteGallerie = (index: number) => {
-    setElementsBloc((prevState) => prevState.filter((_, i) => i !== index));
+    setElementsBloc((prevState) => {
+      // Filter out the element at the given index
+      const updatedElements = prevState.filter((_, i) => i !== index);
+
+      // Log the state before and after deletion for debugging
+      console.log("Previous State:", prevState);
+      console.log("Updated State:", updatedElements);
+
+      return updatedElements;
+    });
   };
 
   const handleInputChange = (value: string, index: number) => {
@@ -232,35 +247,72 @@ const AddBloc: React.FC = () => {
   const handleSaveBloc = async () => {
     try {
       console.log({ inputData });
+      // const hasEmptyData = inputData.some((input) => {
+      //   return input.data === "";
+      // });
+
+      // if (hasEmptyData) {
+      //   message.error(
+      //     "Please fill all required fields before saving the bloc."
+      //   );
+      //   throw new Error(
+      //     "Please fill all required fields before saving the bloc."
+      //   );
+      // }
       const blocData: Bloc = {
         name: blocName,
         //@ts-expect-error
         elementsBloc: inputData.map((input: ElementBloc, index: number) => {
-          if (input.type === "galerie") {
+          if (input.type === "gallery") {
+            console.log("gallery");
+            if (galleryForms.length === 0) {
+              message.error(
+                "Please fill all required fields of the gallerie before saving the bloc."
+              );
+            }
+
             return {
               type: input.type,
               data: "",
               options_bloc: input.blocOptions,
-              galerie: galleryForms,
+              gallery: galleryForms,
             };
-          } else if (input.type === "photo" && uploadedFileName) {
+          } else if (
+            input.type === "photo" ||
+            input.type === "video" ||
+            (input.type === "audio" && uploadedFileName)
+          ) {
+            if (!input.file) {
+              if (galleryForms.length === 0) {
+                message.error(
+                  "Please fill all required fields of the file before saving the bloc."
+                );
+              }
+            }
             return {
               type: input.type,
-              data: `${uploadedFileName.name}`,
+              data: `${uploadedFileName}`,
               file: input.file,
               options_bloc: input.blocOptions,
             };
-          } else if (
-            input.type === "Redirection" &&
-            selectedBlocIndex !== null
-          ) {
+          } else if (input.type === "redirect" && selectedBlocIndex !== null) {
             const selectedBlocName = blocNames[selectedBlocIndex];
+            if (selectedBlocName === "") {
+              message.error(
+                "Please fill all required fields of the selected bloc before saving the bloc."
+              );
+            }
             return {
               type: input.type,
               data: selectedBlocName,
               options_bloc: input.blocOptions,
             };
           } else if (input.type === "media") {
+            if (facebookUrls[index] === "") {
+              message.error(
+                "Please fill all required fields of the gallerie before saving the bloc."
+              );
+            }
             return {
               type: input.type,
               data: facebookUrls[index],
@@ -277,6 +329,7 @@ const AddBloc: React.FC = () => {
         }),
       };
       message.success("Bloc has been added successfully!");
+      console.log({ blocData });
       await createBloc(blocData);
 
       setInputData([]);
@@ -390,29 +443,41 @@ const AddBloc: React.FC = () => {
           <Space
             direction="vertical"
             key={index}
-            style={{ position: "relative" }}
+            style={{ display: "flex", alignItems: "center" }}
           >
-            <Input
-              value={inputDataAtIndex.data}
-              placeholder={`Enter ${type === "link" ? "link" : type}`}
-              onChange={(e) => handleInputChange(e.target.value, index)}
-              style={{ width: "300px", backgroundColor: "#f5f5f5" }}
-            />
-            <Tooltip title="Delete">
-              <Button
-                type="text"
-                icon={<DeleteOutlined />}
-                style={{
-                  color: "red",
-                  borderRadius: "50%",
-                  position: "absolute",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  left: "-25px",
-                }}
-                onClick={() => handleDeleteInput(index)}
-              />
-            </Tooltip>
+            <div
+              style={{
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Tooltip title="Delete">
+                  <Button
+                    type="text"
+                    icon={<DeleteOutlined />}
+                    style={{ color: "red", borderRadius: "50%" }}
+                    onClick={() => handleDeleteInput(index)}
+                  />
+                </Tooltip>
+                <Input
+                  value={inputDataAtIndex.data}
+                  placeholder={`Enter ${type === "link" ? "link" : type}`}
+                  onChange={(e) => handleInputChange(e.target.value, index)}
+                  style={{
+                    flex: 1,
+                    width: "400px",
+                    backgroundColor: "beige",
+                    border: "2px solid #87abcc",
+                    borderRadius: "8px",
+                    padding: "8px",
+                    marginRight: "8px",
+                  }}
+                />
+              </div>
+            </div>
             <div style={{ display: "flex", justifyContent: "center" }}>
               <Tooltip title="Add Option">
                 <Button
@@ -425,6 +490,7 @@ const AddBloc: React.FC = () => {
                     width: "100px",
                     height: "40px",
                     fontSize: "20px",
+                    marginLeft: "8px",
                   }}
                   onClick={() => handleAddOptionClick(index)}
                 />
@@ -432,7 +498,8 @@ const AddBloc: React.FC = () => {
             </div>
           </Space>
         );
-      case "galerie":
+
+      case "gallery":
         return (
           <div style={{ overflowX: "auto" }}>
             <Tooltip title="Delete">
@@ -472,8 +539,13 @@ const AddBloc: React.FC = () => {
             <div style={{ textAlign: "center", marginTop: "20px" }}>
               <Button
                 type="primary"
+                style={{
+                  backgroundColor: "#fff",
+                  border: "2px solid #87abcc",
+                  color: "#87abcc",
+                }}
                 onClick={handleAddGalleryForm}
-                style={{ backgroundColor: "#87abcc", border: "none" }}
+                icon={<PlusOutlined />}
               >
                 Add Gallery Form
               </Button>
@@ -486,18 +558,30 @@ const AddBloc: React.FC = () => {
           <Space
             direction="vertical"
             key={index}
-            style={{ position: "relative" }}
+            style={{ position: "relative", fontFamily: "Arial, sans-serif" }}
           >
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "8px",
+              }}
+            >
+             
               <Tooltip title="Delete">
                 <Button
                   type="text"
                   icon={<DeleteOutlined />}
-                  style={{ color: "red", borderRadius: "50%" }}
+                  style={{
+                    color: "red",
+                    borderRadius: "50%",
+                    marginRight: "8px",
+                  }}
                   onClick={() => handleDeleteInput(index)}
                 />
               </Tooltip>
-              <p>
+              <p style={{ margin: 0 }}>
+              
                 The media model allows you to visualize videos, GIFs, and photos
                 from Facebook by adding their URL.
               </p>
@@ -508,7 +592,14 @@ const AddBloc: React.FC = () => {
               value={facebookUrls[index]}
               onChange={(e) => handleFacebookURLChange(e.target.value, index)}
             />
-            <div style={{ display: "flex", justifyContent: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "8px",
+              }}
+            >
+             
               <Tooltip title="Add Option">
                 <Button
                   type="text"
@@ -528,7 +619,7 @@ const AddBloc: React.FC = () => {
           </Space>
         );
 
-      case "Redirection":
+      case "redirect":
         return (
           <div>
             <Tooltip title="Delete">
@@ -626,7 +717,7 @@ const AddBloc: React.FC = () => {
                 </Button>
               </label>
             </div>
-            {uploadedFileName && (
+            {uploadedFileName[index] && (
               <p
                 style={{
                   marginLeft: "10px",
@@ -634,7 +725,7 @@ const AddBloc: React.FC = () => {
                   color: "#87abcc",
                 }}
               >
-                {uploadedFileName.name}
+                {uploadedFileName[index].name}
               </p>
             )}
           </Space>
@@ -766,11 +857,11 @@ const AddBloc: React.FC = () => {
             backgroundColor: "white",
             color: "blue",
             height:
-              input.type === "Generic" ||
-              input.type === "galerie" ||
-              input.type === "media"
+              input.type === "gallery"
                 ? "550px"
-                : "170px",
+                : input.type === "media"
+                ? "250px"
+                : "180px",
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             borderRadius: "10px",
             marginBottom: "20px",

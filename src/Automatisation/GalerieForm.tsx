@@ -14,7 +14,7 @@ interface GalleryFormProps {
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => void;
-  handleDeleteInput: () => void;
+  handleDeleteInput: (index: number) => void;
   handleGalerieInputChange: (
     data: GalleryFormData,
     index: number,
@@ -37,7 +37,7 @@ const GalleryForm: React.FC<GalleryFormProps> = ({
   const [uploadedFileName, setUploadedFileName] = useState<File>();
 
   const handleDelete = () => {
-    handleDeleteInput();
+    handleDeleteInput(index);
   };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

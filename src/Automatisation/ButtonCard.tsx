@@ -66,10 +66,10 @@ const ButtonCard = ({
             type="primary"
             icon={<AppstoreAddOutlined style={{ color: "Indigo" }} />}
             className="button-card"
-            onClick={() => handleButtonClick("galerie")}
+            onClick={() => handleButtonClick("gallery")}
           >
             <br />
-            galerie
+            gallery
           </Button>
         </div>
         <div>
@@ -97,7 +97,7 @@ const ButtonCard = ({
             type="primary"
             icon={<UserOutlined style={{ color: "Gold" }} />}
             className="button-card"
-            onClick={() => handleButtonClick("Agent")}
+            onClick={() => handleButtonClick("agent")}
           >
             <br />
             Agent
@@ -157,7 +157,7 @@ const ButtonCard = ({
             icon={<RedoOutlined style={{ color: "Brown" }} />}
             className="button-card"
             style={{ width: "140px", marginLeft: "10px" }}
-            onClick={() => handleButtonClick("Redirection")}
+            onClick={() => handleButtonClick("redirect")}
           >
             <br />
             Redirection

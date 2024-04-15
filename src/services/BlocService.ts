@@ -19,7 +19,7 @@ const getAxiosConfig = () => {
 export const duplicateBloc = async (id: number) => {
   try {
     const response = await axios.post<Bloc>(
-      `${endpoint}/api/blocs/${id}/duplicate`,
+      `${endpoint}/api/blocs/${id}`,
       {},
       getAxiosConfig()
     );
@@ -51,61 +51,66 @@ export const createBloc = async (formData: Bloc) => {
       },
     };
 
-    console.log({ formData });
-
     const formDataToSend = new FormData();
+    formDataToSend.append("name", formData.name);
+
     formData.elementsBloc.forEach((element: ElementBloc, index: number) => {
-      if (
-        element.type === "photo" ||
-        element.type === "video" ||
-        element.type === "audio"
-      ) {
-        if (element.file) {
-          formDataToSend.append(`elementsBloc[${index}][file]`, element.file);
-          formDataToSend.append(
-            `elementsBloc[${index}].data`,
-            element.file.name
-          );
-        }
-      } else if (element.type === "gallery") {
-        if (Array.isArray(element.data)) {
-          element.data.forEach(
-            (galleryItem: GalleryFormData, galleryIndex: number) => {
-              formDataToSend.append(
-                `galerie_${index}_${galleryIndex}[photo]`,
-                galleryItem.photo
-              );
-              formDataToSend.append(
-                `galerie_${index}_${galleryIndex}[title]`,
-                galleryItem.title
-              );
-              formDataToSend.append(
-                `galerie_${index}_${galleryIndex}[description]`,
-                galleryItem.description
-              );
-              formDataToSend.append(
-                `galerie_${index}_${galleryIndex}[url]`,
-                galleryItem.url
-              );
-            }
-          );
-        }
-      } else {
-        formDataToSend.append(`elementBloc[${index}].data`, element.data);
+      console.log(formData.elementsBloc);
+      switch (element.type) {
+        case "photo":
+        case "video":
+        case "audio":
+          if (element.file) {
+            formDataToSend.append(`elementsBloc[${index}][type]`, element.type);
+            formDataToSend.append(`elementsBloc[${index}][data]`, element.file);
+          }
+          break;
+        case "gallery":
+          if (Array.isArray(element.gallery)) {
+            element.gallery.forEach(
+              (galleryItem: any, galleryIndex: number) => {
+                formDataToSend.append(
+                  `elementsBloc[${index}][type]`,
+                  element.type
+                );
+                formDataToSend.append(
+                  `elementsBloc[${index}][data][photo]`,
+                  galleryItem.photo
+                );
+
+                formDataToSend.append(
+                  `elementsBloc[${index}][data][${galleryIndex}][title]`,
+                  galleryItem.title
+                );
+
+                formDataToSend.append(
+                  `elementsBloc[${index}][data][${galleryIndex}][description]`,
+                  galleryItem.description
+                );
+
+                formDataToSend.append(
+                  `elementsBloc[${index}][data][${galleryIndex}][url]`,
+                  galleryItem.url
+                );
+              }
+            );
+          }
+          break;
+        default:
+          formDataToSend.append(`elementsBloc[${index}][type]`, element.type);
+          formDataToSend.append(`elementsBloc[${index}][data]`, element.data);
+          break;
       }
 
-      formDataToSend.append(`elementsBloc[${index}][type]`, element.type);
-      if (element.blocOptions) {
+      //@ts-expect-error
+      if (element.options_bloc.length > 0) {
         formDataToSend.append(
-          `elementsBloc[${index}].options_bloc[0]`,
-          JSON.stringify(element.blocOptions)
+          `elementsBloc[${index}][options_bloc]`,
+          //@ts-expect-error
+          JSON.stringify(element.options_bloc)
         );
       }
     });
-
-    formDataToSend.append("name", formData.name);
-
-    console.log([...formDataToSend]);
 
     const response = await axios.post<Bloc>(
       `${endpoint}/api/blocs`,
@@ -118,10 +123,45 @@ export const createBloc = async (formData: Bloc) => {
     throw error;
   }
 };
-
-export const updateBloc = async (id: number, blocData: Bloc) => {
+export const updateBloc = async (id: number, formData: Bloc) => {
   try {
-    await axios.put(`${endpoint}/api/blocs/${id}`, blocData, getAxiosConfig());
+    const config = {
+      headers: {
+        ...getAxiosConfig().headers,
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    const formDataToSend = new FormData();
+    formDataToSend.append("_method", "put");
+    formDataToSend.append("name", formData.name);
+
+    formData.elementsBloc.forEach((element: ElementBloc, index: number) => {
+      switch (element.type) {
+        case "photo":
+        case "video":
+        case "audio":
+          if (element.file) {
+            console.log({ element });
+            formDataToSend.append(`elementsBloc[${index}][type]`, element.type);
+            formDataToSend.append(`elementsBloc[${index}][data]`, element.file);
+          }
+          break;
+
+        default:
+          formDataToSend.append(`elementsBloc[${index}][type]`, element.type);
+          formDataToSend.append(`elementsBloc[${index}][data]`, element.data);
+          break;
+      }
+
+      if (element.blocOptions) {
+        formDataToSend.append(
+          `elementsBloc[${index}][options_bloc]`,
+          JSON.stringify(element.blocOptions)
+        );
+      }
+    });
+    await axios.post(`${endpoint}/api/blocs/${id}`, formDataToSend, config);
   } catch (error) {
     console.error(`Error updating bloc with ID ${id}: `, error);
     throw error;

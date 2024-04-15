@@ -85,7 +85,6 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
       .filter((elem) => elem.type === "media")
       .map((elem) => elem.data as string);
     setFacebookUrls(initialFacebookUrls);
-
     const fetchBlocNames = async () => {
       try {
         const blocs = await getAllBlocs();
@@ -127,30 +126,36 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
     index: number
   ) => {
     const files = e.target.files;
+    console.log({ files });
     if (files && files.length > 0) {
       const file = files[0];
       const updatedInputData = [...inputData];
       updatedInputData[index].data = file.name;
+      updatedInputData[index].file = file;
       if (file.size > 3e6) {
         window.alert("Please upload a file smaller than 3MB");
       }
-      setUploadedFileName(file.name);
       setFileInputs((prevFileInputs) => {
         const updatedFileInputs = [...prevFileInputs];
         updatedFileInputs[index] = file;
         return updatedFileInputs;
       });
       setInputData(updatedInputData);
-    } else {
-      setUploadedFileName(null);
+      handleGalerieInputChange(
+        { ...galleryForms[index], photo: file },
+        index,
+        file
+      );
     }
   };
-  const handleGalerieInputChange = (data: GalleryFormData, index: number) => {
-    setGalleryForms((prevForms) => {
-      const updatedForms = [...prevForms];
-      updatedForms[index] = data;
-      return updatedForms;
-    });
+  const handleGalerieInputChange = (
+    data: GalleryFormData,
+    index: number,
+    fileName: File
+  ) => {
+    const updatedForms = [...galleryForms];
+    updatedForms[index] = { ...data, photo: fileName };
+    setGalleryForms(updatedForms);
   };
 
   const handleConfirmDelete = async () => {
@@ -185,7 +190,10 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
       if (!bloc || bloc.id === undefined) {
         throw new Error("Bloc ID is undefined");
       }
+      message.success("Bloc has been duplicated successfully!");
       await duplicateBloc(bloc.id.valueOf());
+
+      window.location.reload();
     } catch (error) {
       console.error("Error duplicating bloc: ", error);
     }
@@ -197,33 +205,87 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
 
   const handleSaveBloc = async () => {
     try {
-      if (!bloc || bloc.id === undefined) {
-        throw new Error("Bloc ID is undefined");
+      console.log({ inputData });
+      const hasEmptyData = inputData.some((input) => {
+        return input.data === "";
+      });
+
+      if (hasEmptyData) {
+        message.error(
+          "Please fill all required fields before saving the bloc update."
+        );
+        throw new Error(
+          "Please fill all required fields before saving the bloc."
+        );
       }
+      const updatedElementsBloc = inputData.map((input, index) => {
+        switch (input.type) {
+          case "gallery":
+            return {
+              type: input.type,
+              data: "",
+              options_bloc: input.blocOptions,
+              gallery: galleryForms,
+            };
+          case "photo":
+          case "video":
+          case "audio":
+            return {
+              type: input.type,
+              data: uploadedFileName || input.data,
+              file: input.file,
+              options_bloc: input.blocOptions,
+            };
+          case "redirect":
+            return {
+              type: input.type,
+              data: blocNames[selectedBlocIndex!] || input.data,
+              options_bloc: input.blocOptions,
+            };
+            break;
+          case "media":
+            return {
+              type: input.type,
+              data: facebookUrls[index] || input.data,
+              options_bloc: input.blocOptions,
+            };
+          default:
+            return {
+              type: input.type,
+              data: input.data,
+              options_bloc: input.blocOptions,
+            };
+        }
+      });
 
       const updatedBloc: Bloc = {
         id: bloc.id,
         id_page: bloc.id_page,
         name: blocName,
         //@ts-expect-error
-        elementsBloc: inputData.map((input) => ({
-          type: input.type,
-          data: input.data,
-          options_bloc: input.blocOptions,
-        })),
+        elementsBloc: updatedElementsBloc,
       };
+
       console.log({ updatedBloc });
       message.success("Bloc has been updated successfully!");
+      //@ts-expect-error
       await updateBloc(bloc.id.valueOf(), updatedBloc);
       window.location.reload();
     } catch (error) {
       console.error("Error saving bloc: ", error);
     }
   };
+
   const handleAddGalleryForm = () => {
-    setGalleryForms((prevForms) => [
-      ...prevForms,
-      { photo: "", title: "", description: "", url: "" },
+    //@ts-ignore
+    setGalleryForms((prevState) => [
+      ...prevState,
+      {
+        photo: null,
+        title: "",
+        description: "",
+        url: "",
+      },
     ]);
   };
   const handleSave = () => {
@@ -290,7 +352,7 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
     updatedUrls[index] = url;
     setFacebookUrls(updatedUrls);
   };
-  const renderSlider = (index: number) => {
+  const renderSlider = (index: number, defaultValue: number) => {
     return (
       <div
         style={{
@@ -324,18 +386,16 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
             type="range"
             min={0}
             max={60}
-            defaultValue={0}
+            defaultValue={defaultValue}
             onChange={(event) => handleSliderChange(event, index)}
             style={{ width: "300px", height: "7px" }}
           />
         </div>
-        <div style={{ fontSize: "16px" }}>
-          {" "}
-          {inputData[index].data as string}
-        </div>
+        <div style={{ fontSize: "16px" }}>{defaultValue} seconds</div>
       </div>
     );
   };
+
   const handleSliderChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -348,13 +408,14 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
 
   const renderInput = (type: string, index: number) => {
     if (type === "typing") {
+      const defaultValue = parseInt(inputData[index]?.data) || 0;
       return (
         <Space
           direction="vertical"
           key={index}
           style={{ position: "relative" }}
         >
-          {renderSlider(index)}
+          {renderSlider(index, defaultValue)}
         </Space>
       );
     }
@@ -382,6 +443,8 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
       case "video":
       case "file":
       case "Audio":
+        const element = inputData.find((elem) => elem.type === type);
+        const fileName = element ? element.data : "";
         return (
           <Space
             direction="vertical"
@@ -434,7 +497,7 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
                 </Button>
               </label>
             </div>
-            {uploadedFileName && (
+            {fileName && (
               <p
                 style={{
                   marginLeft: "10px",
@@ -442,50 +505,49 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
                   color: "#87abcc",
                 }}
               >
-                {uploadedFileName}
+                {fileName}
               </p>
             )}
           </Space>
         );
-      default:
+
         break;
       case "galerie":
-      case "Generic":
         return (
           <div style={{ overflowX: "auto" }}>
             <Tooltip title="Delete">
               <Button
                 type="text"
                 icon={<DeleteOutlined />}
-                style={{ color: "red", borderRadius: "50%" }}
+                style={{ color: "red", borderRadius: "50%", fontSize: "16px" }}
                 onClick={() => handleDeleteInput(index)}
               />
             </Tooltip>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "center",
-                width: "max-content",
-              }}
-            >
-              <>
-                {galleryForms.map((form, galleryIndex) => (
-                  <div key={galleryIndex} style={{ marginRight: "20px" }}>
-                    <GalleryForm
-                      index={index}
-                      formData={form}
-                      photoName={form.photo}
-                      handleDeleteInput={() => handleDeleteGallerie(index)}
-                      handleGalerieInputChange={(data) =>
-                        handleGalerieInputChange(data, index)
-                      }
-                      handleSave={handleSave}
-                      handleAddOptionClick={handleAddOptionClick}
-                    />
-                  </div>
-                ))}
-              </>
+            <div style={{ display: "flex", marginBottom: "20px" }}>
+              {galleryForms.map((formData, idx) => (
+                <div key={idx} style={{ marginRight: "20px" }}>
+                  <GalleryForm
+                    index={idx}
+                    initialFormData={{
+                      photo: formData.photo,
+                      title: formData.title,
+                      description: formData.description,
+                      url: formData.url,
+                    }}
+                    handleDeleteInput={() => handleDeleteGallerie(idx)}
+                    handleGalerieInputChange={(
+                      data: GalleryFormData,
+                      idx: number,
+                      fileName: File
+                    ) => handleGalerieInputChange(data, idx, fileName)}
+                    handleAddOptionClick={handleAddOptionClick}
+                    handleSave={handleSave}
+                    handleFileInputChange={(
+                      e: React.ChangeEvent<HTMLInputElement>
+                    ) => handleFileInputChange(e, idx)}
+                  />
+                </div>
+              ))}
             </div>
             <div style={{ textAlign: "center", marginTop: "20px" }}>
               <Button
@@ -546,7 +608,8 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
           </Space>
         );
 
-      case "Redirection":
+      case "redirect":
+        const defaultRedirectionValue = inputData[index]?.data || "";
         return (
           <div>
             <Tooltip title="Delete">
@@ -558,13 +621,13 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
               />
             </Tooltip>
             <Select
-              defaultValue=""
+              defaultValue={defaultRedirectionValue}
               style={{ width: 200 }}
               onChange={(value) => handleRedirectionSelect(value)}
             >
               <Option value="">Select a bloc to redirect to...</Option>
               {blocNames.map((name, index) => (
-                <Option key={index} value={index}>
+                <Option key={index} value={name}>
                   {name}
                 </Option>
               ))}
@@ -607,7 +670,8 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
               icon={<FileAddOutlined />}
               style={{
                 color: "#333",
-                backgroundColor: "#87abcc",
+                backgroundColor: "white",
+                border: "2px solid #87abcc",
                 width: "100px",
                 height: "40px",
                 fontSize: "20px",
@@ -695,8 +759,13 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
           style={{
             textAlign: "center",
             backgroundColor: "white",
-            color: "#333",
-            height: "150px",
+            color: "blue",
+            height:
+              input.type === "gallery"
+                ? "550px"
+                : input.type === "media"
+                ? "250px"
+                : "180px",
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             borderRadius: "10px",
             marginBottom: "20px",

@@ -15,11 +15,22 @@ import Sidebar from "./CustomRequest/SideNavBar";
 import NavBar from "./CustomRequest/NavBar";
 import AutomatisationMessenger from "./Automatisation/AutomatisationMessenger";
 import HomeAuto from "./Automatisation/HomeAuto";
+import { useEffect } from "react";
 
 const { Content } = Layout;
 
 function App() {
   const location = useLocation();
+
+  const isAuthenticated =
+    localStorage.getItem("username") && localStorage.getItem("token");
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      // localStorage.removeItem("username");
+      // localStorage.removeItem("token");
+    }
+  }, [isAuthenticated]);
 
   const isHomeAutoPage = location.pathname === "/homeAuto";
 

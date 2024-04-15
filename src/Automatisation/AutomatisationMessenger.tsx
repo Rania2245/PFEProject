@@ -25,6 +25,8 @@ const AutomatisationMessenger: React.FC = () => {
   const [showAddBloc, setShowAddBloc] = useState(false);
   const [existingBlocs, setExistingBlocs] = useState<Bloc[]>([]);
   const [selectedBloc, setSelectedBloc] = useState<Bloc | null>(null);
+  const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
+  const [showDefaultMessage, setShowDefaultMessage] = useState(false);
 
   useEffect(() => {
     fetchExistingBlocs();
@@ -37,6 +39,17 @@ const AutomatisationMessenger: React.FC = () => {
     } catch (error) {
       console.error("Error fetching existing blocs: ", error);
     }
+  };
+  const handleWelcomeMessageClick = () => {
+    setShowWelcomeMessage(true);
+    setShowDefaultMessage(false);
+    setSelectedBloc(null);
+  };
+
+  const handleDefaultMessageClick = () => {
+    setShowDefaultMessage(true);
+    setShowWelcomeMessage(false);
+    setSelectedBloc(null);
   };
 
   const handleAddMenuClick = () => {
@@ -147,6 +160,7 @@ const AutomatisationMessenger: React.FC = () => {
                 color: "#333",
               }}
               hoverable
+              onClick={handleWelcomeMessageClick}
               onMouseEnter={handleWelcomeMouseEnter}
               onMouseLeave={handleWelcomeMouseLeave}
             >
@@ -176,6 +190,7 @@ const AutomatisationMessenger: React.FC = () => {
                 marginBottom: "10px",
               }}
               hoverable
+              onClick={handleDefaultMessageClick}
               onMouseEnter={handleDefaultMouseEnter}
               onMouseLeave={handleDefaultMouseLeave}
             >
