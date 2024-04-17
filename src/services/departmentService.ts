@@ -55,7 +55,7 @@ const getDeps = async () => {
 const updateDep = async (id: string, name: string) => {
   try {
     const { data } = await axios.put(
-      `${endpoint}/api/updateDepartment/${id}`,
+      `${endpoint}/api/departments/${id}`,
       { name },
       getAxiosConfig()
     );
@@ -69,7 +69,7 @@ const updateDep = async (id: string, name: string) => {
 const deleteDep = async (id: string) => {
   try {
     const { data } = await axios.delete(
-      `${endpoint}/api/deleteDepartment/${id}`,
+      `${endpoint}/api/departments/${id}`,
       getAxiosConfig()
     );
     return data;

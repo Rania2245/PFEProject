@@ -13,6 +13,7 @@ import { Bloc } from "../types/Bloc";
 import { getAllBlocs } from "../services/BlocService";
 import SelectedBloc from "./SelectedBloc";
 import "./button.css";
+import LogoutButton from "../CustomRequest/NavBar";
 
 const { Title } = Typography;
 

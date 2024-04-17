@@ -16,6 +16,8 @@ import NavBar from "./CustomRequest/NavBar";
 import AutomatisationMessenger from "./Automatisation/AutomatisationMessenger";
 import HomeAuto from "./Automatisation/HomeAuto";
 import { useEffect } from "react";
+import UserList from "./CustomRequest/UserList";
+import DepartmentList from "./CustomRequest/ListDep";
 
 const { Content } = Layout;
 
@@ -44,6 +46,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Login />} />
             <Route element={<PrivateRoutes />}>
+              <Route path="/listUser" element={<UserList />} />
+              <Route path="/listdep" element={<DepartmentList />} />
               <Route path="/homeAuto" element={<HomeAuto />} />
               <Route path="/requests" element={<RequestList />} />
               <Route path="/autoMess" element={<AutomatisationMessenger />} />

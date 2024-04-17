@@ -19,7 +19,9 @@ const Login = () => {
       console.log("Login successful, token:", token);
       localStorage.setItem("token", token);
       localStorage.setItem("userEmail", data.username);
+
       navigate("/homeAuto");
+      window.location.reload();
     } catch (error) {
       console.error("Login Error:", error);
     }

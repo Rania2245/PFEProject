@@ -4,12 +4,14 @@ import {
   ApartmentOutlined,
   ApiOutlined,
   DatabaseOutlined,
+  FolderAddOutlined,
   HistoryOutlined,
   LogoutOutlined,
   PlusCircleOutlined,
   RobotOutlined,
   UnorderedListOutlined,
   UserAddOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import RequestAdd from "./RequestAdd";
@@ -45,6 +47,7 @@ const Sidebar = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userEmail");
     navigate("/");
+    window.location.reload();
   };
 
   const [isRequestDrawerVisible, setIsRequestDrawerVisible] = useState(false);
@@ -92,7 +95,32 @@ const Sidebar = () => {
           transition: "background-color 0.3s",
         }}
       >
-        <UnorderedListOutlined style={{ fontSize: "24px", color: "#000" }} />
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: hovered ? 0 : 100,
+            right: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "64px",
+            cursor: "pointer",
+            transition: "background-color 0.3s",
+            zIndex: 10, // Ensure it's above other elements
+          }}
+        >
+          <img
+            src="src/assets/logo CommunikCRM.jpg"
+            alt="Login Image"
+            style={{
+              width: "200px", // Fixed width
+              height: "64px", // Fixed height
+              borderRadius: "0",
+              boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+            }}
+          />
+        </div>
       </div>
       <div
         style={{ height: "1px", backgroundColor: "#ccc", margin: "0 24px" }}
@@ -117,6 +145,30 @@ const Sidebar = () => {
         >
           <Link to="/requests" style={{ color: "#000" }}>
             Base de Connaissance
+          </Link>
+        </Menu.Item>
+        <Menu.Item
+          key="8"
+          icon={<ApartmentOutlined style={{ color: "#000" }} />}
+          style={{
+            transition: "background-color 0.3s",
+            marginBottom: "10px",
+          }}
+        >
+          <Link to="/listdep" style={{ color: "#000" }}>
+            Departmnet List
+          </Link>
+        </Menu.Item>
+        <Menu.Item
+          key="10"
+          icon={<UserOutlined style={{ color: "#000" }} />}
+          style={{
+            transition: "background-color 0.3s",
+            marginBottom: "10px",
+          }}
+        >
+          <Link to="/listUser" style={{ color: "#000" }}>
+            User List
           </Link>
         </Menu.Item>
 
@@ -170,7 +222,7 @@ const Sidebar = () => {
           key="addDepartment"
           onClick={handleAddDepartment}
           style={{ marginLeft: "10px", marginBottom: "350px" }}
-          icon={<ApartmentOutlined />}
+          icon={<FolderAddOutlined />}
         >
           Add Department
         </Menu.Item>

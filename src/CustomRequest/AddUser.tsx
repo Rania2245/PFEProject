@@ -32,15 +32,25 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
   const onFinish = async (values: User) => {
     setLoading(true);
     try {
-      await addUser(values);
+      // Ensure department field is an array of strings
+      const formData = {
+        ...values,
+
+        department: Array.isArray(values.department)
+          ? values.department.map((d: string) => d.trim())
+          : //@ts-expect-error
+            [values.department.trim()],
+      };
+
+      console.log(formData);
+      //@ts-expect-error
+      await addUser(formData);
       message.success("User added successfully");
       form.resetFields();
       onCancel();
     } catch (error) {
       console.error("Error adding user:", error);
-      message.error(
-        "Failed to add User, You did not complete the entire form  "
-      );
+      message.error("Failed to add User. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -77,7 +87,7 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
         label="Department"
         rules={[{ required: true, message: "Please select the department" }]}
       >
-        <Select>
+        <Select mode="multiple">
           {departments.map((department, index) => (
             <Option key={index} value={department}>
               {department}

@@ -109,36 +109,41 @@ const RequestList = () => {
   const handleAdd = () => {
     setIsRequestDrawerVisible(true);
   };
-
   const handleSearch = async (value: string) => {
     try {
       if (value.trim() === "") {
         fetchData();
       } else {
         const response = await getRequests();
+        //@ts-expect-error
         const formattedRequests: QuestionRequest[] = response.map(
           (item: any) => ({
             id: item.id,
             active: item.active,
             partage: item.partage,
-            questions: item.questions.map((q: { text: string }) => q.text),
-            responses: item.responses.map((r: { text: string }) => r.text),
+            questions: Object.values(item.questions).map((q: any) => ({
+              text: q,
+            })),
+            responses: Object.values(item.responses).map((r: any) => ({
+              text: r,
+            })),
             created_at: item.created_at,
             user_id: 0,
           })
         );
         const results = formattedRequests.filter((request) =>
           request.questions.some((question) =>
-            //@ts-expect-error
-            question.toLowerCase().includes(value.toLowerCase())
+            question.text.toLowerCase().includes(value.toLowerCase())
           )
         );
+        console.log(results);
         setRequests(results);
       }
     } catch (error) {
       console.error("Error while searching:", error);
     }
   };
+
   const renderQuestion = (record: QuestionRequest) => {
     return (
       <Select
