@@ -251,10 +251,10 @@ const AddMenu: React.FC = () => {
           "Please fill all required fields before saving the menu."
         );
       }
-      const blocData: Menu = {
+      const MenuData: Menu = {
         name: blocName,
         //@ts-expect-error
-        elementsBloc: inputData.map((input: ElementBloc, index: number) => {
+        elementsMenu: inputData.map((input: ElementBloc, index: number) => {
           if (input.type === "gallery") {
             if (galleryForms.length === 0) {
               message.error(
@@ -320,7 +320,7 @@ const AddMenu: React.FC = () => {
         }),
       };
       message.success("Bloc has been added successfully!");
-      await createMenu(blocData);
+      await createMenu(MenuData);
 
       setInputData([]);
       setModalVisible([]);

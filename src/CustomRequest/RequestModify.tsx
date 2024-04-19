@@ -100,8 +100,8 @@ const RequestModify: React.FC<Props> = ({ id, visible, onCancel }) => {
       message.success("Request updated successfully");
     } catch (error) {
       console.error("Error modifying request:", error);
+      message.error("Failed to updated ");
     } finally {
-      message.error('Failed to updated ')
       setLoading(false);
       onCancel();
     }

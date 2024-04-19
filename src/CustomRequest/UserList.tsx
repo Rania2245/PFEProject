@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Space, Popconfirm, Input, Pagination } from "antd";
+import {
+  Table,
+  Button,
+  Space,
+  Popconfirm,
+  Input,
+  Pagination,
+  Spin,
+  Select,
+} from "antd";
 import { deleteUser, getAllUsers } from "../services/UserService";
 import { User } from "../types/user";
 import {
@@ -10,6 +19,7 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { Department } from "../types/department";
 
 const { Search } = Input;
 
@@ -21,6 +31,11 @@ const UserList = () => {
     total: 0,
   });
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const handleSelectChange = (value: string, record: Department) => {
+    console.log("Selected value:", value);
+    console.log("Record:", record);
+  };
 
   useEffect(() => {
     fetchData();
@@ -28,10 +43,14 @@ const UserList = () => {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const response = await getAllUsers();
       setUsers(response);
+      console.log(response);
     } catch (error) {
       console.error("Error fetching users: ", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,9 +95,26 @@ const UserList = () => {
     },
     {
       title: "Department",
-      dataIndex: "department",
-      key: "department",
-      align: "center", // Center align the content
+      dataIndex: "departments",
+      key: "departments",
+      align: "center",
+      render: (departments: string[], record: User) => (
+        <Select
+          mode="tags"
+          style={{ width: 200 }}
+          placeholder="Select or input departments"
+          defaultValue={departments.length > 0 ? departments[0] : undefined}
+          onChange={(value) => handleSelectChange(value, record)}
+          allowClear
+        >
+          {departments.map((department, index) => (
+            //@ts-expect-error
+            <Option key={`department_${index}`} value={department}>
+              {department}
+            </Option>
+          ))}
+        </Select>
+      ),
     },
     {
       title: "Email",
@@ -140,13 +176,16 @@ const UserList = () => {
           suffix={<SearchOutlined style={{ color: "#1890ff" }} />}
         />
       </div>
-      <Table
-        dataSource={users}
-        //@ts-expect-error
-        columns={columns}
-        pagination={false}
-        rowKey="id"
-      />
+      <Spin spinning={loading}>
+        {" "}
+        <Table
+          dataSource={users}
+          //@ts-expect-error
+          columns={columns}
+          pagination={false}
+          rowKey="id"
+        />
+      </Spin>
       <Pagination
         style={{ marginTop: "20px", textAlign: "center" }}
         current={pagination.current}

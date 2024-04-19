@@ -7,6 +7,7 @@ import {
   Input,
   Drawer,
   Pagination,
+  Spin,
 } from "antd";
 
 import { Department } from "../types/department";
@@ -27,6 +28,7 @@ const { Search } = Input;
 const DepartmentList = () => {
   const [isDepartmentDrawerVisible, setIsDepartmentDrawerVisible] =
     useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [departments, setDepartments] = useState<Department[]>([]);
   const [pagination, setPagination] = useState({
@@ -42,6 +44,7 @@ const DepartmentList = () => {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const response = await getDeps();
       const formattedDepartments = response.map((name: any, index: any) => ({
         id: index.toString(), // You can use index as the ID if needed
@@ -50,6 +53,8 @@ const DepartmentList = () => {
       setDepartments(formattedDepartments);
     } catch (error) {
       console.error("Error fetching departments : ", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -168,13 +173,15 @@ const DepartmentList = () => {
           </Button>
         </div>
       </div>
-      <Table
-        dataSource={departments}
-        //@ts-expect-error
-        columns={columns}
-        pagination={false}
-        rowKey="id"
-      />
+      <Spin spinning={loading}>
+        <Table
+          dataSource={departments}
+          //@ts-expect-error
+          columns={columns}
+          pagination={false}
+          rowKey="id"
+        />
+      </Spin>
       <Pagination
         style={{ marginTop: "20px", textAlign: "center" }}
         current={pagination.current}

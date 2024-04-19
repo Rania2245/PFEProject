@@ -1,6 +1,7 @@
 import axios from "axios";
 import { endpoint } from "../constants";
 import { Menu } from "../types/Menu";
+import { ElementBloc } from "../types/elementBloc";
 
 const getAxiosConfig = () => {
   const token = localStorage.getItem("token");
@@ -30,21 +31,125 @@ export const getMenuById = async (id: number) => {
 
 export const createMenu = async (menuData: Menu) => {
   try {
+    const config = {
+      headers: {
+        ...getAxiosConfig().headers,
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    const formDataToSend = new FormData();
+    formDataToSend.append("name", menuData.name);
+
+    menuData.elementsMenu.forEach((element: ElementBloc, index: number) => {
+      console.log(menuData.elementsMenu);
+      switch (element.type) {
+        case "photo":
+        case "video":
+        case "audio":
+          if (element.file) {
+            formDataToSend.append(`elementsBloc[${index}][type]`, element.type);
+            formDataToSend.append(`elementsBloc[${index}][data]`, element.file);
+          }
+          break;
+        case "gallery":
+          if (Array.isArray(element.gallery)) {
+            element.gallery.forEach(
+              (galleryItem: any, galleryIndex: number) => {
+                formDataToSend.append(
+                  `elementsBloc[${index}][type]`,
+                  element.type
+                );
+                formDataToSend.append(
+                  `elementsBloc[${index}][data][photo]`,
+                  galleryItem.photo
+                );
+
+                formDataToSend.append(
+                  `elementsBloc[${index}][data][${galleryIndex}][title]`,
+                  galleryItem.title
+                );
+
+                formDataToSend.append(
+                  `elementsBloc[${index}][data][${galleryIndex}][description]`,
+                  galleryItem.description
+                );
+
+                formDataToSend.append(
+                  `elementsBloc[${index}][data][${galleryIndex}][url]`,
+                  galleryItem.url
+                );
+              }
+            );
+          }
+          break;
+        default:
+          formDataToSend.append(`elementsBloc[${index}][type]`, element.type);
+          formDataToSend.append(`elementsBloc[${index}][data]`, element.data);
+          break;
+      }
+      //@ts-expect-error
+      if (element.options_bloc.length > 0) {
+        formDataToSend.append(
+          `elementsBloc[${index}][options_bloc]`,
+          //@ts-expect-error
+
+          JSON.stringify(element.options_bloc)
+        );
+      }
+    });
+
     const response = await axios.post<Menu>(
-      `${endpoint}/api/menus`,
-      menuData,
-      getAxiosConfig()
+      `${endpoint}/api/menu`,
+      formDataToSend,
+      config
     );
     return response.data;
   } catch (error) {
-    console.error("Error creating menu: ", error);
+    console.error("Error creating bloc: ", error);
     throw error;
   }
 };
 
 export const updateMenu = async (id: number, menuData: Menu) => {
   try {
-    await axios.put(`${endpoint}/api/menus/${id}`, menuData, getAxiosConfig());
+    const config = {
+      headers: {
+        ...getAxiosConfig().headers,
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    const formDataToSend = new FormData();
+    formDataToSend.append("_method", "put");
+    formDataToSend.append("name", menuData.name);
+
+    menuData.elementsMenu.forEach((element: ElementBloc, index: number) => {
+      switch (element.type) {
+        case "photo":
+        case "video":
+        case "audio":
+          if (element.file) {
+            console.log({ element });
+            formDataToSend.append(`elementsBloc[${index}][type]`, element.type);
+            formDataToSend.append(`elementsBloc[${index}][data]`, element.file);
+          }
+          break;
+
+        default:
+          formDataToSend.append(`elementsBloc[${index}][type]`, element.type);
+          formDataToSend.append(`elementsBloc[${index}][data]`, element.data);
+          break;
+      }
+
+      if (element.blocOptions) {
+        formDataToSend.append(
+          `elementsBloc[${index}][options_bloc]`,
+          JSON.stringify(element.blocOptions)
+        );
+      }
+    });
+    await axios.post(`${endpoint}/api/Menu/${id}`, formDataToSend, config);
   } catch (error) {
     console.error(`Error updating menu with ID ${id}: `, error);
     throw error;

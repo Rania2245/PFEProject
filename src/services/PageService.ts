@@ -15,7 +15,7 @@ const getAxiosConfig = () => {
   }
 };
 
-export const getPageById = async (id: number) => {
+export const getPageById = async (id: string) => {
   try {
     const response = await axios.get<Page>(
       `${endpoint}/api/pages/${id}`,
@@ -56,6 +56,18 @@ export const deletePage = async (id: number) => {
     await axios.delete(`${endpoint}/api/pages/${id}`, getAxiosConfig());
   } catch (error) {
     console.error(`Error deleting page with ID ${id}: `, error);
+    throw error;
+  }
+};
+export const getAllPages = async () => {
+  try {
+    const response = await axios.get<Page[]>(
+      `${endpoint}/api/pages`,
+      getAxiosConfig()
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching all pages: ", error);
     throw error;
   }
 };

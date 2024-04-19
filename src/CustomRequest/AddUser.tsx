@@ -36,14 +36,14 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
       const formData = {
         ...values,
 
-        department: Array.isArray(values.department)
+        departments: Array.isArray(values.department)
           ? values.department.map((d: string) => d.trim())
           : //@ts-expect-error
             [values.department.trim()],
       };
 
       console.log(formData);
-      //@ts-expect-error
+
       await addUser(formData);
       message.success("User added successfully");
       form.resetFields();

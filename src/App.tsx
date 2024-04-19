@@ -18,6 +18,7 @@ import HomeAuto from "./Automatisation/HomeAuto";
 import { useEffect } from "react";
 import UserList from "./CustomRequest/UserList";
 import DepartmentList from "./CustomRequest/ListDep";
+import Landing from "./Automatisation/test";
 
 const { Content } = Layout;
 
@@ -46,11 +47,16 @@ function App() {
           <Routes>
             <Route path="/" element={<Login />} />
             <Route element={<PrivateRoutes />}>
+              Landing
               <Route path="/listUser" element={<UserList />} />
+              <Route path="/Landing" element={<Landing />} />
               <Route path="/listdep" element={<DepartmentList />} />
               <Route path="/homeAuto" element={<HomeAuto />} />
               <Route path="/requests" element={<RequestList />} />
-              <Route path="/autoMess" element={<AutomatisationMessenger />} />
+              <Route
+                path="/autoMess/:id"
+                element={<AutomatisationMessenger />}
+              />
               <Route path="/request/:id" element={<RequestModify />} />
               <Route path="/selectedRequest/:id" element={<RequestItem />} />
               <Route path="/addRequest" element={<RequestAdd />} />

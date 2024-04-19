@@ -48,7 +48,7 @@ interface SelectedBlocProps {
 const DefaultMessege: React.FC<SelectedBlocProps> = ({ bloc }) => {
   const [welcomeMessage, setWelcomeMessage] = useState<WelcomeMessage | null>(
     null
-  ); // Initialize with null
+  );
   const { Option } = Select;
   const [inputData, setInputData] = useState<ElementBloc[]>(
     bloc.elementsBloc.map((elem) => ({ ...elem, blocOptions: [] }))

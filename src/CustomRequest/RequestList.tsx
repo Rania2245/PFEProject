@@ -8,6 +8,7 @@ import {
   Drawer,
   Select,
   Pagination,
+  Spin,
 } from "antd";
 import { deleteRequest, getRequests } from "../services/CustomRequestService";
 import { QuestionRequest } from "../types/questionrequest";
@@ -43,9 +44,11 @@ const RequestList = () => {
   useEffect(() => {
     fetchData();
   }, [pagination.current, pagination.pageSize]);
+  const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const response = await getRequests(
         //@ts-expect-error
         pagination.current,
@@ -82,6 +85,8 @@ const RequestList = () => {
       });
     } catch (error) {
       console.error("Error fetching requests: ", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -286,14 +291,16 @@ const RequestList = () => {
           </div>
         </div>
       </div>
-      <Table
-        dataSource={requests}
-        columns={Actions}
-        rowKey={getRowKey}
-        bordered
-        pagination={false}
-        rowClassName={getRowClassName}
-      />
+      <Spin spinning={loading}>
+        <Table
+          dataSource={requests}
+          columns={Actions}
+          rowKey={getRowKey}
+          bordered
+          pagination={false}
+          rowClassName={getRowClassName}
+        />
+      </Spin>
       <Pagination
         style={{ marginTop: "20px", textAlign: "center" }}
         current={pagination.current}

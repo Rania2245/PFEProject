@@ -507,7 +507,7 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
                   color: "#87abcc",
                 }}
               >
-                {fileName}
+                <a>{fileName}</a>
               </p>
             )}
           </Space>

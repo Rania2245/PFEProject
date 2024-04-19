@@ -14,6 +14,8 @@ import { getAllBlocs } from "../services/BlocService";
 import SelectedBloc from "./SelectedBloc";
 import "./button.css";
 import LogoutButton from "../CustomRequest/NavBar";
+import { useParams } from "react-router-dom";
+import { getPageById } from "../services/PageService";
 
 const { Title } = Typography;
 
@@ -28,15 +30,23 @@ const AutomatisationMessenger: React.FC = () => {
   const [selectedBloc, setSelectedBloc] = useState<Bloc | null>(null);
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
   const [showDefaultMessage, setShowDefaultMessage] = useState(false);
+  const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
-    fetchExistingBlocs();
-  }, []);
+    if (id) {
+      fetchExistingBlocs();
+    }
+  }, [id]);
 
   const fetchExistingBlocs = async () => {
     try {
+      if (!id) return;
+      console.log(id);
+      const page = await getPageById(id);
+      console.log(page);
       const blocs = await getAllBlocs();
       setExistingBlocs(blocs);
+      console.log(blocs);
     } catch (error) {
       console.error("Error fetching existing blocs: ", error);
     }

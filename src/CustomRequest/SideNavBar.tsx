@@ -99,7 +99,7 @@ const Sidebar = () => {
           style={{
             position: "absolute",
             top: 0,
-            left: hovered ? 0 : 100,
+            left: 0,
             right: 0,
             display: "flex",
             alignItems: "center",
@@ -107,16 +107,16 @@ const Sidebar = () => {
             height: "64px",
             cursor: "pointer",
             transition: "background-color 0.3s",
-            zIndex: 10, // Ensure it's above other elements
+            zIndex: 10,
           }}
         >
           <img
-            src="src/assets/logo CommunikCRM.jpg"
+            src="src/assets/crm.jpg"
             alt="Login Image"
             style={{
-              width: "200px", // Fixed width
-              height: "64px", // Fixed height
-              borderRadius: "0",
+              width: "50%",
+              maxWidth: "50px",
+              borderRadius: "50%",
               boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
             }}
           />
