@@ -26,10 +26,11 @@ const VerifyPage: React.FC<VerifyPageProps> = ({ showModal, handleCancel }) => {
         message.error("Please fill all fields");
         return;
       }
-
+      //@ts-expect-error
       await createPage({ accessToken, verifyToken, appSecret });
 
       message.success("Page created successfully");
+      window.location.reload();
       setAccessToken("");
       setVerifyToken("");
       setAppSecret("");

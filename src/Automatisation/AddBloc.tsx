@@ -227,10 +227,7 @@ const AddBloc: React.FC = () => {
   };
   const handleDeleteGallerie = (index: number) => {
     setElementsBloc((prevState) => {
-      // Filter out the element at the given index
       const updatedElements = prevState.filter((_, i) => i !== index);
-
-      // Log the state before and after deletion for debugging
       console.log("Previous State:", prevState);
       console.log("Updated State:", updatedElements);
 
@@ -567,7 +564,6 @@ const AddBloc: React.FC = () => {
                 marginBottom: "8px",
               }}
             >
-             
               <Tooltip title="Delete">
                 <Button
                   type="text"
@@ -581,7 +577,6 @@ const AddBloc: React.FC = () => {
                 />
               </Tooltip>
               <p style={{ margin: 0 }}>
-              
                 The media model allows you to visualize videos, GIFs, and photos
                 from Facebook by adding their URL.
               </p>
@@ -599,7 +594,6 @@ const AddBloc: React.FC = () => {
                 marginTop: "8px",
               }}
             >
-             
               <Tooltip title="Add Option">
                 <Button
                   type="text"

@@ -3,6 +3,7 @@ import { endpoint } from "../constants";
 import { Bloc } from "../types/Bloc";
 import { ElementBloc } from "../types/elementBloc";
 import { GalleryFormData } from "../types/Galerie";
+import { BlocOption } from "../types/BlocOptions";
 
 const getAxiosConfig = () => {
   const token = localStorage.getItem("token");
@@ -99,13 +100,26 @@ export const createBloc = async (formData: Bloc) => {
           break;
       }
 
-      if (
-        Array.isArray(element.blocOptions) &&
-        element.blocOptions.length > 0
-      ) {
-        formDataToSend.append(
-          `elementsBloc[${index}][options_bloc]`,
-          JSON.stringify(element.blocOptions)
+      // Check if blocOptions exist and are an array
+      //@ts-expect-error
+      if (Array.isArray(element.options_bloc)) {
+        //@ts-expect-error
+        element.options_bloc.forEach(
+          (option: BlocOption, optionIndex: number) => {
+            // Append each option individually with correct index
+            formDataToSend.append(
+              `elementsBloc[${index}][options_bloc][${optionIndex}][name]`,
+              option.name
+            );
+            formDataToSend.append(
+              `elementsBloc[${index}][options_bloc][${optionIndex}][type]`,
+              option.type
+            );
+            formDataToSend.append(
+              `elementsBloc[${index}][options_bloc][${optionIndex}][value]`,
+              option.value
+            );
+          }
         );
       }
     });
