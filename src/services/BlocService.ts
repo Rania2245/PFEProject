@@ -55,7 +55,6 @@ export const createBloc = async (formData: Bloc) => {
     formDataToSend.append("name", formData.name);
 
     formData.elementsBloc.forEach((element: ElementBloc, index: number) => {
-      console.log(formData.elementsBloc);
       switch (element.type) {
         case "photo":
         case "video":
@@ -66,34 +65,32 @@ export const createBloc = async (formData: Bloc) => {
           }
           break;
         case "gallery":
-          if (Array.isArray(element.gallery)) {
-            element.gallery.forEach(
-              (galleryItem: any, galleryIndex: number) => {
-                formDataToSend.append(
-                  `elementsBloc[${index}][type]`,
-                  element.type
-                );
-                formDataToSend.append(
-                  `elementsBloc[${index}][data][photo]`,
-                  galleryItem.photo
-                );
+          if (Array.isArray(element.data)) {
+            element.data.forEach((galleryItem: any, galleryIndex: number) => {
+              formDataToSend.append(
+                `elementsBloc[${index}][type]`,
+                element.type
+              );
+              formDataToSend.append(
+                `elementsBloc[${index}][data][${galleryIndex}][photo]`,
+                galleryItem.photo
+              );
 
-                formDataToSend.append(
-                  `elementsBloc[${index}][data][${galleryIndex}][title]`,
-                  galleryItem.title
-                );
+              formDataToSend.append(
+                `elementsBloc[${index}][data][${galleryIndex}][title]`,
+                galleryItem.title
+              );
 
-                formDataToSend.append(
-                  `elementsBloc[${index}][data][${galleryIndex}][description]`,
-                  galleryItem.description
-                );
+              formDataToSend.append(
+                `elementsBloc[${index}][data][${galleryIndex}][description]`,
+                galleryItem.description
+              );
 
-                formDataToSend.append(
-                  `elementsBloc[${index}][data][${galleryIndex}][url]`,
-                  galleryItem.url
-                );
-              }
-            );
+              formDataToSend.append(
+                `elementsBloc[${index}][data][${galleryIndex}][url]`,
+                galleryItem.url
+              );
+            });
           }
           break;
         default:
@@ -102,12 +99,13 @@ export const createBloc = async (formData: Bloc) => {
           break;
       }
 
-      //@ts-expect-error
-      if (element.options_bloc.length > 0) {
+      if (
+        Array.isArray(element.blocOptions) &&
+        element.blocOptions.length > 0
+      ) {
         formDataToSend.append(
           `elementsBloc[${index}][options_bloc]`,
-          //@ts-expect-error
-          JSON.stringify(element.options_bloc)
+          JSON.stringify(element.blocOptions)
         );
       }
     });
@@ -123,6 +121,7 @@ export const createBloc = async (formData: Bloc) => {
     throw error;
   }
 };
+
 export const updateBloc = async (id: number, formData: Bloc) => {
   try {
     const config = {

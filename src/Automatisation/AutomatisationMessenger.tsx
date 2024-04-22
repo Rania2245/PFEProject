@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Row, Col, Card, Tooltip, Button } from "antd";
+import { Typography, Row, Col, Card, Tooltip, Button, Spin } from "antd";
 import {
   ApiOutlined,
   MessageOutlined,
@@ -31,6 +31,7 @@ const AutomatisationMessenger: React.FC = () => {
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
   const [showDefaultMessage, setShowDefaultMessage] = useState(false);
   const { id } = useParams<{ id: string }>();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (id) {
@@ -44,10 +45,13 @@ const AutomatisationMessenger: React.FC = () => {
       console.log(id);
       const page = await getPageById(id);
       console.log(page);
+
       const blocs = await getAllBlocs();
       setExistingBlocs(blocs);
+      setLoading(false);
       console.log(blocs);
     } catch (error) {
+      setLoading(false);
       console.error("Error fetching existing blocs: ", error);
     }
   };
@@ -216,6 +220,16 @@ const AutomatisationMessenger: React.FC = () => {
               }}
             >
               <div style={{ marginBottom: "10px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  {loading && <Spin />}
+                </div>
+
                 {existingBlocs.map((bloc) => (
                   <Button
                     key={String(bloc.id)}

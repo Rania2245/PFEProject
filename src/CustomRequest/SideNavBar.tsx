@@ -112,7 +112,7 @@ const Sidebar = () => {
         >
           <img
             src="src/assets/crm.jpg"
-            alt="Login Image"
+            alt="sidebar Image"
             style={{
               width: "50%",
               maxWidth: "50px",
@@ -202,14 +202,7 @@ const Sidebar = () => {
         >
           Add Request
         </Menu.Item>
-        <Menu.Item
-          key="AutomatisationMessenger"
-          onClick={handleAutoMess}
-          style={{ marginLeft: "10px", marginBottom: "10px" }}
-          icon={<ApiOutlined />}
-        >
-          Automatistion Messenger
-        </Menu.Item>
+
         <Menu.Item
           key="addUser"
           onClick={handleAddUser}
@@ -221,10 +214,22 @@ const Sidebar = () => {
         <Menu.Item
           key="addDepartment"
           onClick={handleAddDepartment}
-          style={{ marginLeft: "10px", marginBottom: "350px" }}
+          style={{ marginLeft: "10px", marginBottom: "10px" }}
           icon={<FolderAddOutlined />}
         >
           Add Department
+        </Menu.Item>
+        <Menu.Item
+          key="14"
+          icon={<HistoryOutlined style={{ color: "#000" }} />}
+          style={{
+            transition: "background-color 0.3s",
+            marginBottom: "300px",
+          }}
+        >
+          <Link to="/homePages" style={{ color: "#000" }}>
+            home Pages
+          </Link>
         </Menu.Item>
 
         <Menu.Item

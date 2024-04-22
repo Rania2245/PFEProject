@@ -53,6 +53,7 @@ function App() {
               <Route path="/listdep" element={<DepartmentList />} />
               <Route path="/homeAuto" element={<HomeAuto />} />
               <Route path="/requests" element={<RequestList />} />
+              <Route path="/homePages" element={<HomeAuto />} />
               <Route
                 path="/autoMess/:id"
                 element={<AutomatisationMessenger />}
