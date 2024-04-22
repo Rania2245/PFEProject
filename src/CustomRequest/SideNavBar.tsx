@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import RequestAdd from "./RequestAdd";
 import AddUserForm from "./AddUser";
 import AddDepartmentForm from "./AddDep";
+import sidebarLogo from "../assets/crm.jpg";
 
 const { Sider } = Layout;
 
@@ -117,7 +118,7 @@ const Sidebar = () => {
           }}
         >
           <img
-            src="src/assets/crm.jpg"
+            src={sidebarLogo}
             alt="sidebar Image"
             style={{
               width: "50%",

@@ -851,22 +851,6 @@ const AddBloc: React.FC = () => {
                   onClick={handleSaveBloc}
                 />
               </Tooltip>
-              <Tooltip title="Duplicate">
-                <Button
-                  type="text"
-                  icon={<CopyOutlined />}
-                  style={{ color: "blue" }}
-                  onClick={handleDuplicateBloc}
-                />
-              </Tooltip>
-              <Tooltip title="Delete">
-                <Button
-                  type="text"
-                  icon={<DeleteOutlined />}
-                  style={{ color: "red" }}
-                  onClick={handleDeleteBloc}
-                />
-              </Tooltip>
             </div>
           </div>
         </div>

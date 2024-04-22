@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { endpoint } from "../constants";
 import { Bloc } from "../types/Bloc";
 import { ElementBloc } from "../types/elementBloc";
@@ -212,6 +212,45 @@ export const getAllBlocs = async () => {
     return response.data;
   } catch (error) {
     console.error("Error fetching all blocs: ", error);
+    throw error;
+  }
+};
+
+export const getWelcomeMessage = async () => {
+  try {
+    const response: AxiosResponse<Bloc> = await axios.get(
+      `${endpoint}/api/welcome-message`,
+      getAxiosConfig()
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching welcome message: ", error);
+    throw error;
+  }
+};
+
+export const getDefaultMessage = async (): Promise<Bloc> => {
+  try {
+    const response: AxiosResponse<Bloc> = await axios.get(
+      `${endpoint}/api/default-message`,
+      getAxiosConfig()
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching default message: ", error);
+    throw error;
+  }
+};
+
+export const getMenu = async (): Promise<Bloc> => {
+  try {
+    const response: AxiosResponse<Bloc> = await axios.get(
+      `${endpoint}/api/blocmenus`,
+      getAxiosConfig()
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching menu bloc: ", error);
     throw error;
   }
 };

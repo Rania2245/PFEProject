@@ -10,7 +10,12 @@ import {
 import AddBloc from "./AddBloc";
 import AddMenu from "./AddMenu";
 import { Bloc } from "../types/Bloc";
-import { getAllBlocs } from "../services/BlocService";
+import {
+  getAllBlocs,
+  getDefaultMessage,
+  getMenu,
+  getWelcomeMessage,
+} from "../services/BlocService";
 import SelectedBloc from "./SelectedBloc";
 import "./button.css";
 import LogoutButton from "../CustomRequest/NavBar";
@@ -27,15 +32,19 @@ const AutomatisationMessenger: React.FC = () => {
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [showAddBloc, setShowAddBloc] = useState(false);
   const [existingBlocs, setExistingBlocs] = useState<Bloc[]>([]);
+  const [existingMenus, setExistingMenus] = useState<Bloc[]>([]);
   const [selectedBloc, setSelectedBloc] = useState<Bloc | null>(null);
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
   const [showDefaultMessage, setShowDefaultMessage] = useState(false);
+  const [welcomeMessage, setWelcomeMessage] = useState<Bloc | null>(null);
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
+  const [loading2, setLoading2] = useState(false);
 
   useEffect(() => {
     if (id) {
       fetchExistingBlocs();
+      fetchExistingMenus();
     }
   }, [id]);
 
@@ -55,16 +64,77 @@ const AutomatisationMessenger: React.FC = () => {
       console.error("Error fetching existing blocs: ", error);
     }
   };
-  const handleWelcomeMessageClick = () => {
-    setShowWelcomeMessage(true);
-    setShowDefaultMessage(false);
-    setSelectedBloc(null);
+  const fetchExistingMenus = async () => {
+    try {
+      if (!id) return;
+      console.log(id);
+      const page = await getPageById(id);
+      console.log(page);
+
+      const menus = await getMenu();
+      console.log(menus); //@ts-expect-error
+
+      setExistingMenus(menus);
+
+      setLoading(false);
+      console.log(menus);
+    } catch (error) {
+      setLoading(false);
+      console.error("Error fetching existing menus: ", error);
+    }
   };
 
-  const handleDefaultMessageClick = () => {
-    setShowDefaultMessage(true);
-    setShowWelcomeMessage(false);
-    setSelectedBloc(null);
+  const fetchWelcomeMessage = async () => {
+    try {
+      const welcomeMsg = await getWelcomeMessage();
+      console.log(welcomeMsg);
+      setWelcomeMessage(welcomeMsg);
+    } catch (error) {
+      console.error("Error fetching welcome message: ", error);
+    }
+  };
+
+  const handleWelcomeMessageClick = async () => {
+    try {
+      setLoading2(true);
+      setShowWelcomeMessage(true);
+      setShowDefaultMessage(false);
+      setSelectedBloc(null);
+
+      const welcomeMsg = await getWelcomeMessage();
+
+      setSelectedBloc(welcomeMsg);
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+
+      setLoading2(false);
+    } catch (error) {
+      console.error("Error handling welcome message click: ", error);
+      setLoading2(false);
+    }
+  };
+
+  const handleDefaultMessageClick = async () => {
+    try {
+      setLoading2(true);
+      setShowDefaultMessage(true);
+      setShowWelcomeMessage(false);
+      setSelectedBloc(null);
+      const defaultMsg = await getDefaultMessage();
+      setSelectedBloc(defaultMsg);
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+
+      setLoading2(false);
+    } catch (error) {
+      console.error("Error handling default message click: ", error);
+      setLoading2(false);
+    }
   };
 
   const handleAddMenuClick = () => {
@@ -105,6 +175,10 @@ const AutomatisationMessenger: React.FC = () => {
 
   const handleSelectBloc = (bloc: Bloc) => {
     setSelectedBloc(bloc);
+    if (showWelcomeMessage && welcomeMessage) {
+      setWelcomeMessage(welcomeMessage);
+      setSelectedBloc(welcomeMessage);
+    }
   };
 
   return (
@@ -321,16 +395,18 @@ const AutomatisationMessenger: React.FC = () => {
                   fontSize: "18px",
                   fontWeight: "bold",
                   color: "#333",
+                  textAlign: "center",
                 }}
               >
                 <MenuOutlined /> Eléments de menu
               </div>
             }
             style={{
+              textAlign: "left",
               cursor: "pointer",
               backgroundColor: "white",
               color: "#333",
-              height: "200px",
+
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
               borderRadius: "10px",
               width: "100%",
@@ -349,13 +425,40 @@ const AutomatisationMessenger: React.FC = () => {
               Le menu aide les utilisateurs à accéder à des fonctionnalités tout
               au long de la conversation.
             </span>
-            <div
-              style={{
-                textAlign: "left",
-                marginTop: "10px",
-                marginBottom: "10px",
-              }}
-            >
+            {existingMenus.map((bloc) => (
+              <Button
+                key={String(bloc.id)}
+                style={{
+                  marginRight: "10px",
+                  marginBottom: "10px",
+                  backgroundColor: "#fff",
+                  color: "black",
+                  border: "2px solid #87abcc",
+                  width: "120px",
+                  height: "50px",
+                  fontFamily: "Arial, sans-serif",
+                  fontSize: "16px",
+                  padding: "0",
+                  transition:
+                    "background-color 0.3s, border-color 0.3s, color 0.3s",
+                }}
+                onClick={() => handleSelectBloc(bloc)}
+                className="custom-button"
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = "#e6f7ff";
+                  e.currentTarget.style.borderColor = "#1890ff";
+                  e.currentTarget.style.color = "#1890ff";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = "#fff";
+                  e.currentTarget.style.borderColor = "#87abcc";
+                  e.currentTarget.style.color = "black";
+                }}
+              >
+                {bloc.name}
+              </Button>
+            ))}
+            <div>
               <Tooltip title="Add Menu">
                 <Button
                   type="primary"
@@ -368,14 +471,14 @@ const AutomatisationMessenger: React.FC = () => {
                     fontSize: "16px",
                     fontWeight: "bold",
                   }}
-                  onClick={handleAddMenuClick}
+                  onClick={handleAddBlocClick}
                 ></Button>
               </Tooltip>
             </div>
           </Card>
         </div>
-
         <Col span={12}>
+          <Spin spinning={loading2}></Spin>
           {selectedBloc !== null ? <SelectedBloc bloc={selectedBloc} /> : null}
           {showAddMenu && <AddMenu />}
           {showAddBloc && <AddBloc />}
