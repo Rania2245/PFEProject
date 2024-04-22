@@ -102,11 +102,11 @@ const HomeAuto = () => {
               animation: "slideFromLeft 1s ease-in-out",
             }}
           >
-            <h2 style={{ fontFamily: "Arial", color: "#333" }}>
+            <h2 style={{ fontFamily: "cursive", color: "#333" }}>
               <UserOutlined style={{ marginRight: "10px" }} />
               Automatisez votre service client de votre page Facebook
             </h2>
-            <p style={{ fontFamily: "Arial", color: "#666" }}>
+            <p style={{ fontFamily: "cursive", color: "#666" }}>
               <MessageOutlined style={{ marginRight: "10px" }} />
               Créez votre chatbot et automatisez vos réponses sur Messenger.
               L'application vous permet de générer votre base de connaissance
@@ -119,6 +119,7 @@ const HomeAuto = () => {
         <div
           className="cadre"
           style={{
+            fontFamily: "cursive",
             backgroundColor: "#f0f2f5",
             borderRadius: "10px",
             padding: "20px",
@@ -133,7 +134,7 @@ const HomeAuto = () => {
             (e.currentTarget.style.backgroundColor = "#f0f2f5")
           }
         >
-          <div>
+          <div style={{ fontFamily: "cursive" }}>
             <h2>Créez votre chatbot</h2>
             <p>Automatisez Votre Service Client de votre page Facebook</p>
           </div>
@@ -164,6 +165,7 @@ const HomeAuto = () => {
             display: "flex",
             overflowX: "auto",
             marginBottom: "20px",
+            fontFamily: "cursive",
           }}
         >
           {pages.map((page, index) => (

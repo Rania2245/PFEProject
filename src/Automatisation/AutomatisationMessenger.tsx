@@ -117,6 +117,7 @@ const AutomatisationMessenger: React.FC = () => {
           color: "#87abcc",
           marginBottom: "10px",
           paddingBottom: "5px",
+          fontFamily: "cursive",
         }}
       >
         <BellOutlined /> Automatisation Messenger
@@ -132,7 +133,7 @@ const AutomatisationMessenger: React.FC = () => {
                   borderRadius: "4px",
                   display: "inline-block",
                   width: "100%",
-                  fontFamily: "Arial, sans-serif",
+                  fontFamily: "cursive",
                   fontSize: "18px",
                   color: "#333",
                 }}
@@ -152,7 +153,7 @@ const AutomatisationMessenger: React.FC = () => {
           >
             <Card
               title={
-                <>
+                <div style={{ display: "flex", alignItems: "center" }}>
                   <span
                     style={{
                       marginRight: "8px",
@@ -163,27 +164,37 @@ const AutomatisationMessenger: React.FC = () => {
                       color: "#3b5998",
                     }}
                   >
+                    <MessageOutlined
+                      style={{
+                        fontSize: "14px",
+                        fontFamily: "cursive",
+                        marginRight: "5px",
+                      }}
+                    />
                     Welcome Message
                   </span>
-
-                  <MessageOutlined />
-                </>
+                </div>
               }
               style={{
                 marginBottom: "10px",
                 backgroundColor: welcomeHovered ? " #87abcc" : "#cfd7df",
                 color: "#333",
+                borderRadius: "10px",
+                fontFamily: "Arial, sans-serif",
               }}
               hoverable
               onClick={handleWelcomeMessageClick}
               onMouseEnter={handleWelcomeMouseEnter}
               onMouseLeave={handleWelcomeMouseLeave}
             >
-              Welcome message content
+              <p style={{ fontSize: "14px", fontFamily: "cursive" }}>
+                The Welcome Message serves as the initial interaction point for
+                users initiating a new conversation with your page.
+              </p>
             </Card>
             <Card
               title={
-                <>
+                <div style={{ display: "flex", alignItems: "center" }}>
                   <span
                     style={{
                       marginRight: "8px",
@@ -194,24 +205,35 @@ const AutomatisationMessenger: React.FC = () => {
                       color: "#3b5998",
                     }}
                   >
+                    <ApiOutlined
+                      style={{
+                        fontSize: "14px",
+                        fontFamily: "cursive",
+                        marginRight: "5px",
+                      }}
+                    />
                     Default Message
                   </span>
-                  <ApiOutlined />
-                </>
+                </div>
               }
               style={{
                 backgroundColor: defaultHovered ? " #87abcc" : "#cfd7df",
                 color: "#333",
+                borderRadius: "10px",
                 marginBottom: "10px",
+                fontFamily: "Arial, sans-serif",
               }}
               hoverable
               onClick={handleDefaultMessageClick}
               onMouseEnter={handleDefaultMouseEnter}
               onMouseLeave={handleDefaultMouseLeave}
             >
-              Default message content
+              <p style={{ fontSize: "14px", fontFamily: "cursive" }}>
+                This typically occurs when the message is unclear, contains
+                typos, or falls outside the scope of the chatbot's programmed
+                capabilities.
+              </p>
             </Card>
-
             <div
               style={{
                 textAlign: "left",
@@ -295,7 +317,7 @@ const AutomatisationMessenger: React.FC = () => {
                   borderRadius: "4px",
                   display: "inline-block",
                   width: "100%",
-                  fontFamily: "Arial, sans-serif",
+                  fontFamily: "cursive",
                   fontSize: "18px",
                   fontWeight: "bold",
                   color: "#333",
@@ -323,7 +345,7 @@ const AutomatisationMessenger: React.FC = () => {
                 marginBottom: "10px",
               }}
             />
-            <span>
+            <span style={{ fontFamily: "cursive" }}>
               Le menu aide les utilisateurs à accéder à des fonctionnalités tout
               au long de la conversation.
             </span>

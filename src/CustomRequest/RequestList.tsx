@@ -265,7 +265,7 @@ const RequestList = () => {
           marginBottom: "20px",
         }}
       >
-        <h2>
+        <h2 style={{ fontFamily: "cursive" }}>
           Base de connaissance {<DatabaseOutlined style={{ color: "#000" }} />}
         </h2>
 

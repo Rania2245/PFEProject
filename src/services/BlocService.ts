@@ -100,13 +100,11 @@ export const createBloc = async (formData: Bloc) => {
           break;
       }
 
-      // Check if blocOptions exist and are an array
       //@ts-expect-error
       if (Array.isArray(element.options_bloc)) {
         //@ts-expect-error
         element.options_bloc.forEach(
           (option: BlocOption, optionIndex: number) => {
-            // Append each option individually with correct index
             formDataToSend.append(
               `elementsBloc[${index}][options_bloc][${optionIndex}][name]`,
               option.name
@@ -148,6 +146,7 @@ export const updateBloc = async (id: number, formData: Bloc) => {
     const formDataToSend = new FormData();
     formDataToSend.append("_method", "put");
     formDataToSend.append("name", formData.name);
+    formDataToSend.append("typeBloc", formData.typeBloc);
 
     formData.elementsBloc.forEach((element: ElementBloc, index: number) => {
       switch (element.type) {
@@ -167,10 +166,24 @@ export const updateBloc = async (id: number, formData: Bloc) => {
           break;
       }
 
-      if (element.blocOptions) {
-        formDataToSend.append(
-          `elementsBloc[${index}][options_bloc]`,
-          JSON.stringify(element.blocOptions)
+      //@ts-expect-error
+      if (Array.isArray(element.options_bloc)) {
+        //@ts-expect-error
+        element.options_bloc.forEach(
+          (option: BlocOption, optionIndex: number) => {
+            formDataToSend.append(
+              `elementsBloc[${index}][options_bloc][${optionIndex}][name]`,
+              option.name
+            );
+            formDataToSend.append(
+              `elementsBloc[${index}][options_bloc][${optionIndex}][type]`,
+              option.type
+            );
+            formDataToSend.append(
+              `elementsBloc[${index}][options_bloc][${optionIndex}][value]`,
+              option.value
+            );
+          }
         );
       }
     });

@@ -81,7 +81,13 @@ const Sidebar = () => {
   return (
     <Sider
       width={hovered ? 250 : 80}
-      style={{ backgroundColor: "#f0f0f0", color: "#000" }}
+      style={{
+        backgroundColor: "#f0f0f0",
+        color: "#000",
+        left: 0,
+        top: 0,
+        overflowY: "auto",
+      }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -224,7 +230,7 @@ const Sidebar = () => {
           icon={<HistoryOutlined style={{ color: "#000" }} />}
           style={{
             transition: "background-color 0.3s",
-            marginBottom: "300px",
+            marginBottom: "280px",
           }}
         >
           <Link to="/homePages" style={{ color: "#000" }}>

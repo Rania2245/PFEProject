@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Card, Button, Input, Space, Tooltip, Slider, Select } from "antd";
+import {
+  Card,
+  Button,
+  Input,
+  Space,
+  Tooltip,
+  Slider,
+  Select,
+  Dropdown,
+  Radio,
+  Menu,
+} from "antd";
 import {
   FileAddOutlined,
   DeleteOutlined,
@@ -39,6 +50,7 @@ import ButtonCard from "./ButtonCard";
 import GalleryForm from "./GalerieForm";
 import button from "antd/es/button";
 const { Option } = Select;
+import { RadioChangeEvent } from "antd/lib/radio";
 
 const AddBloc: React.FC = () => {
   const [inputData, setInputData] = useState<ElementBloc[]>([]);
@@ -63,6 +75,27 @@ const AddBloc: React.FC = () => {
 
   const [elementsBloc, setElementsBloc] = useState<ElementBloc[]>([]);
   const [galleryForms, setGalleryForms] = useState<GalleryFormData[]>([]);
+  const [blocType, setBlocType] = useState<string>("bloc");
+  const handleTypeChange = (e: RadioChangeEvent) => {
+    setBlocType(e.target.value);
+    switch (e.target.value) {
+      case "default":
+        setBlocName("default messege Name");
+        break;
+      case "welcome":
+        setBlocName("Welcome messege Name");
+        break;
+      case "bloc":
+        setBlocName("Bloc Name");
+        break;
+      case "menu":
+        setBlocName("Menu  Name");
+        break;
+      default:
+        setBlocName("Add Bloc");
+        break;
+    }
+  };
 
   (url: string, index: number) => {
     const updatedUrls = [...facebookUrls];
@@ -258,7 +291,9 @@ const AddBloc: React.FC = () => {
       // }
       const blocData: Bloc = {
         name: blocName,
+        typeBloc: blocType,
         //@ts-expect-error
+
         elementsBloc: inputData.map((input: ElementBloc, index: number) => {
           if (input.type === "gallery") {
             console.log("gallery");
@@ -779,46 +814,60 @@ const AddBloc: React.FC = () => {
             borderRadius: "4px",
           }}
         >
-          <Tooltip title="Add Bloc">
-            <FileAddOutlined
-              style={{
-                borderRadius: "50%",
-                backgroundColor: "grey",
-                color: "white",
-                padding: "8px",
-              }}
+          <Radio.Group onChange={handleTypeChange} value={blocType}>
+            <Space direction="horizontal">
+              <Radio.Button value="defaultMessage">
+                Default Message
+              </Radio.Button>
+              <Radio.Button value="welcomeMessage">
+                Welcome Message
+              </Radio.Button>
+              <Radio.Button value="bloc">Block</Radio.Button>
+              <Radio.Button value="menu">Menu</Radio.Button>
+            </Space>
+          </Radio.Group>
+          <div style={{ marginTop: "10px" }}>
+            <Tooltip title="Add Bloc">
+              <FileAddOutlined
+                style={{
+                  borderRadius: "50%",
+                  backgroundColor: "grey",
+                  color: "white",
+                  padding: "8px",
+                }}
+              />
+            </Tooltip>{" "}
+            <Input
+              value={blocName}
+              onChange={handleBlocNameChange}
+              style={{ width: "200px" }}
             />
-          </Tooltip>
-          <Input
-            value={blocName}
-            onChange={handleBlocNameChange}
-            style={{ width: "150px" }}
-          />
-          <div style={{ float: "right" }}>
-            <Tooltip title="Save">
-              <Button
-                type="text"
-                icon={<SaveOutlined />}
-                style={{ color: "green" }}
-                onClick={handleSaveBloc}
-              />
-            </Tooltip>
-            <Tooltip title="Duplicate">
-              <Button
-                type="text"
-                icon={<CopyOutlined />}
-                style={{ color: "blue" }}
-                onClick={handleDuplicateBloc}
-              />
-            </Tooltip>
-            <Tooltip title="Delete">
-              <Button
-                type="text"
-                icon={<DeleteOutlined />}
-                style={{ color: "red" }}
-                onClick={handleDeleteBloc}
-              />
-            </Tooltip>
+            <div style={{ float: "right" }}>
+              <Tooltip title="Save">
+                <Button
+                  type="text"
+                  icon={<SaveOutlined />}
+                  style={{ color: "green" }}
+                  onClick={handleSaveBloc}
+                />
+              </Tooltip>
+              <Tooltip title="Duplicate">
+                <Button
+                  type="text"
+                  icon={<CopyOutlined />}
+                  style={{ color: "blue" }}
+                  onClick={handleDuplicateBloc}
+                />
+              </Tooltip>
+              <Tooltip title="Delete">
+                <Button
+                  type="text"
+                  icon={<DeleteOutlined />}
+                  style={{ color: "red" }}
+                  onClick={handleDeleteBloc}
+                />
+              </Tooltip>
+            </div>
           </div>
         </div>
       }

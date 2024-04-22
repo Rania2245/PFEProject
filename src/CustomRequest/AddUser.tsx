@@ -32,12 +32,12 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
   const onFinish = async (values: User) => {
     setLoading(true);
     try {
-      // Ensure department field is an array of strings
       const formData = {
-        ...values,
+        ...values, //@ts-expect-error
 
         departments: Array.isArray(values.department)
-          ? values.department.map((d: string) => d.trim())
+          ? //@ts-expect-error
+            values.department.map((d: string) => d.trim())
           : //@ts-expect-error
             [values.department.trim()],
       };

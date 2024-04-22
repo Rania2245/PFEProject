@@ -120,13 +120,13 @@ const UserList = () => {
       title: "Email",
       dataIndex: "email",
       key: "email",
-      align: "center", // Center align the content
+      align: "center",
     },
     {
       title: "Actions",
       key: "actions",
-      align: "center", // Center align the content
-      width: 200, // Set fixed width for the actions column
+      align: "center",
+      width: 200,
       render: (_: any, record: User) => (
         <Space>
           <Button
@@ -160,7 +160,7 @@ const UserList = () => {
 
   return (
     <div style={{ textAlign: "center" }}>
-      <h2 style={{ marginBottom: "20px" }}>
+      <h2 style={{ marginBottom: "20px", fontFamily: "cursive" }}>
         User List{" "}
         <PlusOutlined
           style={{ marginLeft: "10px", color: "red" }}

@@ -142,6 +142,7 @@ const DepartmentList = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          fontFamily: "cursive",
         }}
       >
         Department List{" "}
