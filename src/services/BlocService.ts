@@ -54,6 +54,7 @@ export const createBloc = async (formData: Bloc) => {
 
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.name);
+    formDataToSend.append("typeBloc", formData.typeBloc);
 
     formData.elementsBloc.forEach((element: ElementBloc, index: number) => {
       switch (element.type) {

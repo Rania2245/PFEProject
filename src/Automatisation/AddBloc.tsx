@@ -822,7 +822,7 @@ const AddBloc: React.FC = () => {
               <Radio.Button value="welcomeMessage">
                 Welcome Message
               </Radio.Button>
-              <Radio.Button value="bloc">Block</Radio.Button>
+              <Radio.Button value="bloc">Bloc</Radio.Button>
               <Radio.Button value="menu">Menu</Radio.Button>
             </Space>
           </Radio.Group>
