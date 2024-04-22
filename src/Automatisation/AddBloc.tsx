@@ -79,10 +79,10 @@ const AddBloc: React.FC = () => {
   const handleTypeChange = (e: RadioChangeEvent) => {
     setBlocType(e.target.value);
     switch (e.target.value) {
-      case "default":
+      case "defaultMessage":
         setBlocName("default messege Name");
         break;
-      case "welcome":
+      case "welcomeMessage":
         setBlocName("Welcome messege Name");
         break;
       case "bloc":
