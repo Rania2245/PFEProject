@@ -48,7 +48,7 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
     bloc.elementsBloc.map((elem) => ({ ...elem, blocOptions: [] }))
   );
   const [fileInputs, setFileInputs] = useState<File[]>([]);
-
+  const [selectedBlocIndex, setSelectedBlocIndex] = useState<number[]>([]);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [blocName, setBlocName] = useState<string>(bloc.name);
   const [confirmDeleteVisible, setConfirmDeleteVisible] =
@@ -77,7 +77,7 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
     setGalleryForms(initialGalleryForms);
 
     const initialBlocNames = bloc.elementsBloc
-      .filter((elem) => elem.type === "Redirection")
+      .filter((elem) => elem.type === "redirect")
       .map((elem) => elem.data as string);
     setBlocNames(initialBlocNames);
 
@@ -104,9 +104,6 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
     setModalVisible(new Array(bloc.elementsBloc.length).fill(false));
     setCurrentBlockIndex(-1);
   }, [bloc]);
-  const [selectedBlocIndex, setSelectedBlocIndex] = useState<number | null>(
-    null
-  );
 
   const handleDeleteInput = (index: number) => {
     if (index === -1) {
@@ -117,10 +114,19 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
       setModalVisible((prev) => prev.filter((_, i) => i !== index));
     }
   };
-  const handleRedirectionSelect = (value: string) => {
-    const index = parseInt(value);
-    setSelectedBlocIndex(index);
+
+  const handleRedirectionSelect = (value: string, index: number) => {
+    console.log("Selected value:", value);
+    if (value !== "") {
+      const selectedIndex = parseInt(value);
+      setSelectedBlocIndex((prevIndexes) => {
+        const updatedIndexes = [...prevIndexes];
+        updatedIndexes[index] = selectedIndex;
+        return updatedIndexes;
+      });
+    }
   };
+
   const handleFileInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -237,12 +243,21 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
               options_bloc: input.blocOptions,
             };
           case "redirect":
+            if (
+              selectedBlocIndex[index] === undefined ||
+              selectedBlocIndex[index] === null
+            ) {
+              message.error(
+                "Please select a bloc to redirect to before saving the bloc."
+              );
+              throw new Error("Missing selected bloc index for redirect.");
+            }
+            const selectedBlocName = blocNames[selectedBlocIndex[index]];
             return {
               type: input.type,
-              data: blocNames[selectedBlocIndex!] || input.data,
+              data: selectedBlocName,
               options_bloc: input.blocOptions,
             };
-            break;
           case "media":
             return {
               type: input.type,
@@ -611,7 +626,7 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
         );
 
       case "redirect":
-        const defaultRedirectionValue = inputData[index]?.data || "";
+        const defaultRedirectionValue = inputData[index]?.data;
         return (
           <div>
             <Tooltip title="Delete">
@@ -625,14 +640,19 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
             <Select
               defaultValue={defaultRedirectionValue}
               style={{ width: 200 }}
-              onChange={(value) => handleRedirectionSelect(value)}
+              onChange={(value) => handleRedirectionSelect(value, index)}
             >
               <Option value="">Select a bloc to redirect to...</Option>
-              {blocNames.map((name, index) => (
-                <Option key={index} value={name}>
-                  {name}
-                </Option>
-              ))}
+              {blocNames.map(
+                (
+                  name,
+                  idx // Use a unique key for each option
+                ) => (
+                  <Option key={idx} value={name}>
+                    {name}
+                  </Option>
+                )
+              )}
             </Select>
           </div>
         );

@@ -59,9 +59,8 @@ const AddBloc: React.FC = () => {
   const [currentBlockIndex, setCurrentBlockIndex] = useState<number>(-1);
   const [optionIdCounter, setOptionIdCounter] = useState<number>(0);
   const [blocNames, setBlocNames] = useState<string[]>([]);
-  const [selectedBlocIndex, setSelectedBlocIndex] = useState<number | null>(
-    null
-  );
+  const [selectedBlocIndex, setSelectedBlocIndex] = useState<number[]>([]);
+
   const [forms, setForms] = useState<GalleryFormData[]>([]);
 
   const [uploadedFileName, setUploadedFileName] = useState<File[]>([]);
@@ -182,9 +181,16 @@ const AddBloc: React.FC = () => {
     fetchBlocNames();
   }, [galleryForms]);
 
-  const handleRedirectionSelect = (value: string) => {
-    const index = parseInt(value);
-    setSelectedBlocIndex(index);
+  const handleRedirectionSelect = (value: string, index: number) => {
+    console.log("Selected value:", value);
+    if (value !== "") {
+      const selectedIndex = parseInt(value);
+      setSelectedBlocIndex((prevIndexes) => {
+        const updatedIndexes = [...prevIndexes];
+        updatedIndexes[index] = selectedIndex;
+        return updatedIndexes;
+      });
+    }
   };
 
   const handleButtonClick = (type: string) => {
@@ -327,13 +333,19 @@ const AddBloc: React.FC = () => {
               file: input.file,
               options_bloc: input.blocOptions,
             };
-          } else if (input.type === "redirect" && selectedBlocIndex !== null) {
-            const selectedBlocName = blocNames[selectedBlocIndex];
-            if (selectedBlocName === "") {
+          }
+          if (input.type === "redirect") {
+            // Ensure selectedBlocIndex exists for this redirect element
+            if (
+              selectedBlocIndex[index] === undefined ||
+              selectedBlocIndex[index] === null
+            ) {
               message.error(
-                "Please fill all required fields of the selected bloc before saving the bloc."
+                "Please select a bloc to redirect to before saving the bloc."
               );
+              throw new Error("Missing selected bloc index for redirect.");
             }
+            const selectedBlocName = blocNames[selectedBlocIndex[index]];
             return {
               type: input.type,
               data: selectedBlocName,
@@ -663,7 +675,7 @@ const AddBloc: React.FC = () => {
             <Select
               defaultValue=""
               style={{ width: 200 }}
-              onChange={(value) => handleRedirectionSelect(value)}
+              onChange={(value) => handleRedirectionSelect(value, index)} // Provide index here
               showSearch
               filterOption={(input, option) =>
                 option?.children

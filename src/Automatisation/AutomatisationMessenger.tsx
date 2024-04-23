@@ -138,6 +138,7 @@ const AutomatisationMessenger: React.FC = () => {
       setSelectedBloc(null);
       const defaultMsg = await getDefaultMessage();
       setSelectedBloc(defaultMsg);
+      console.log(defaultMsg);
       window.scrollTo({
         top: 0,
         behavior: "smooth",
