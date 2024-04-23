@@ -193,9 +193,9 @@ const Sidebar = () => {
         </Menu.Item>
 
         <Menu.Item
-          key="chatbot"
+          key="9"
           onClick={handleChatBot}
-          style={{ marginLeft: "10px", marginBottom: "10px" }}
+          style={{ transition: "background-color 0.3s", marginBottom: "10px" }}
           icon={<RobotOutlined />}
         >
           ChatBot
@@ -204,7 +204,10 @@ const Sidebar = () => {
         <Menu.Item
           key="addRequest"
           onClick={handleAddRequest}
-          style={{ marginLeft: "10px", marginBottom: "10px" }}
+          style={{
+            marginLeft: "10px",
+            marginBottom: "10px",
+          }}
           icon={<PlusCircleOutlined />}
         >
           Add Request

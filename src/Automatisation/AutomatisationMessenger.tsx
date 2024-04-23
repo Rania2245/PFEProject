@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Row, Col, Card, Tooltip, Button, Spin } from "antd";
+import {
+  Typography,
+  Row,
+  Col,
+  Card,
+  Tooltip,
+  Button,
+  Spin,
+  message,
+} from "antd";
 import {
   ApiOutlined,
   MessageOutlined,
@@ -72,7 +81,8 @@ const AutomatisationMessenger: React.FC = () => {
       console.log(page);
 
       const menus = await getMenu();
-      console.log(menus); //@ts-expect-error
+      console.log(menus);
+      //@ts-expect-error
 
       setExistingMenus(menus);
 
@@ -113,6 +123,9 @@ const AutomatisationMessenger: React.FC = () => {
       setLoading2(false);
     } catch (error) {
       console.error("Error handling welcome message click: ", error);
+      message.error(
+        "no welcome messege found ,Please inter your welcome messege first ! "
+      );
       setLoading2(false);
     }
   };
@@ -134,13 +147,10 @@ const AutomatisationMessenger: React.FC = () => {
     } catch (error) {
       console.error("Error handling default message click: ", error);
       setLoading2(false);
+      message.error(
+        "no default message found ,Please inter your default messagefirst ! "
+      );
     }
-  };
-
-  const handleAddMenuClick = () => {
-    setShowAddMenu(true);
-    setShowAddBloc(false);
-    setSelectedBloc(null);
   };
 
   const handleAddBlocClick = () => {

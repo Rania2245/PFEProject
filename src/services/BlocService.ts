@@ -147,7 +147,6 @@ export const updateBloc = async (id: number, formData: Bloc) => {
     const formDataToSend = new FormData();
     formDataToSend.append("_method", "put");
     formDataToSend.append("name", formData.name);
-    formDataToSend.append("typeBloc", formData.typeBloc);
 
     formData.elementsBloc.forEach((element: ElementBloc, index: number) => {
       switch (element.type) {
@@ -197,6 +196,7 @@ export const updateBloc = async (id: number, formData: Bloc) => {
 
 export const deleteBloc = async (id: Number) => {
   try {
+    console.log("deleted");
     await axios.delete(`${endpoint}/api/blocs/${id}`, getAxiosConfig());
   } catch (error) {
     console.error(`Error deleting bloc with ID ${id}: `, error);
