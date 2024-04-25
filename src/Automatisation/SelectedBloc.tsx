@@ -48,6 +48,7 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
     bloc.elementsBloc.map((elem) => ({ ...elem, blocOptions: [] }))
   );
   const [fileInputs, setFileInputs] = useState<File[]>([]);
+  const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedBlocIndex, setSelectedBlocIndex] = useState<number[]>([]);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [blocName, setBlocName] = useState<string>(bloc.name);
@@ -80,6 +81,7 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
       .filter((elem) => elem.type === "redirect")
       .map((elem) => elem.data as string);
     setBlocNames(initialBlocNames);
+    setSelectedBlocIndex(initialBlocNames.map((value, index) => index));
 
     const initialFacebookUrls = bloc.elementsBloc
       .filter((elem) => elem.type === "media")
@@ -116,14 +118,21 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
   };
 
   const handleRedirectionSelect = (value: string, index: number) => {
-    console.log("Selected value:", value);
+    console.log(index);
     if (value !== "") {
       const selectedIndex = parseInt(value);
+
       setSelectedBlocIndex((prevIndexes) => {
         const updatedIndexes = [...prevIndexes];
         updatedIndexes[index] = selectedIndex;
+        console.log(updatedIndexes);
         return updatedIndexes;
       });
+
+      const selectedBlocName = blocNames[selectedIndex];
+      const updatedInputData = [...inputData];
+      updatedInputData[index].data = selectedBlocName;
+      setInputData(updatedInputData);
     }
   };
 
@@ -212,18 +221,6 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
   const handleSaveBloc = async () => {
     try {
       console.log({ inputData });
-      const hasEmptyData = inputData.some((input) => {
-        return input.data === "";
-      });
-
-      if (hasEmptyData) {
-        message.error(
-          "Please fill all required fields before saving the bloc update."
-        );
-        throw new Error(
-          "Please fill all required fields before saving the bloc."
-        );
-      }
       const updatedElementsBloc = inputData.map((input, index) => {
         switch (input.type) {
           case "gallery":
@@ -242,7 +239,7 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
               file: input.file,
               options_bloc: input.blocOptions,
             };
-          case "redirect":
+          case "redirect": {
             if (
               selectedBlocIndex[index] === undefined ||
               selectedBlocIndex[index] === null
@@ -258,12 +255,20 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
               data: selectedBlocName,
               options_bloc: input.blocOptions,
             };
-          case "media":
+          }
+          case "media": {
+            console.log({ facebookUrls });
+            if (facebookUrls[index] === "") {
+              message.error(
+                "Please fill all required fields of the gallerie before saving the bloc."
+              );
+            }
             return {
               type: input.type,
-              data: facebookUrls[index] || input.data,
+              data: facebookUrls[index],
               options_bloc: input.blocOptions,
             };
+          }
           default:
             return {
               type: input.type,
@@ -288,6 +293,9 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
       window.location.reload();
     } catch (error) {
       console.error("Error saving bloc: ", error);
+      message.error(
+        "An error occurred while saving the bloc. Please try again."
+      );
     }
   };
 
@@ -325,6 +333,7 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
   const [facebookUrls, setFacebookUrls] = useState(
     Array(inputData.length).fill("")
   );
+
   const handleModalAdd = async (options: BlocOption[]) => {
     try {
       console.log("Options received:", options);
@@ -356,6 +365,7 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
     updatedUrls[index] = url;
     setFacebookUrls(updatedUrls);
   };
+
   const handleDeleteGallerie = (index: number) => {
     setGalleryForms((prevForms) => prevForms.filter((_, i) => i !== index));
   };
@@ -528,7 +538,6 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
           </Space>
         );
 
-        break;
       case "galerie":
         return (
           <div style={{ overflowX: "auto" }}>
@@ -626,7 +635,8 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
         );
 
       case "redirect":
-        const defaultRedirectionValue = inputData[index]?.data;
+        const defaultRedirectionValue = inputData[index]?.data || "";
+
         return (
           <div>
             <Tooltip title="Delete">
@@ -637,22 +647,40 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
                 onClick={() => handleDeleteInput(index)}
               />
             </Tooltip>
+
             <Select
-              defaultValue={defaultRedirectionValue}
+              value={defaultRedirectionValue}
               style={{ width: 200 }}
-              onChange={(value) => handleRedirectionSelect(value, index)}
+              onChange={(value) => {
+                const inputIndex = inputData.findIndex(
+                  (item, i) => i == index && item.type === "redirect"
+                );
+                if (inputIndex !== -1) {
+                  handleRedirectionSelect(value, inputIndex);
+                }
+              }}
+              showSearch
+              filterOption={(input, option) =>
+                option?.children
+                  ? option.children
+                      .toString()
+                      .toLowerCase()
+                      .indexOf(input.toLowerCase()) >= 0
+                  : false
+              }
             >
-              <Option value="">Select a bloc to redirect to...</Option>
-              {blocNames.map(
-                (
-                  name,
-                  idx // Use a unique key for each option
-                ) => (
-                  <Option key={idx} value={name}>
-                    {name}
-                  </Option>
+              <Select.Option value="">
+                Select a bloc to redirect to...
+              </Select.Option>
+              {blocNames
+                .filter((name) =>
+                  name.toLowerCase().includes(searchKeyword.toLowerCase())
                 )
-              )}
+                .map((name, idx) => (
+                  <Select.Option key={idx} value={idx}>
+                    {name}
+                  </Select.Option>
+                ))}
             </Select>
           </div>
         );

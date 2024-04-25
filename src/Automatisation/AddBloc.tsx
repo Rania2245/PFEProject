@@ -335,7 +335,6 @@ const AddBloc: React.FC = () => {
             };
           }
           if (input.type === "redirect") {
-            // Ensure selectedBlocIndex exists for this redirect element
             if (
               selectedBlocIndex[index] === undefined ||
               selectedBlocIndex[index] === null
@@ -675,7 +674,7 @@ const AddBloc: React.FC = () => {
             <Select
               defaultValue=""
               style={{ width: 200 }}
-              onChange={(value) => handleRedirectionSelect(value, index)} // Provide index here
+              onChange={(value) => handleRedirectionSelect(value, index)}
               showSearch
               filterOption={(input, option) =>
                 option?.children
