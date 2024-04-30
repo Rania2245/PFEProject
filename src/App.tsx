@@ -18,6 +18,7 @@ import HomeAuto from "./Automatisation/HomeAuto";
 import { useEffect } from "react";
 import UserList from "./CustomRequest/UserList";
 import DepartmentList from "./CustomRequest/ListDep";
+import QuestionRequestAi from "./Ai/QuestionRequestAi";
 
 const { Content } = Layout;
 
@@ -55,6 +56,10 @@ function App() {
               <Route
                 path="/autoMess/:id"
                 element={<AutomatisationMessenger />}
+              />
+              <Route
+                path="/questionRequestAi"
+                element={<QuestionRequestAi />}
               />
               <Route path="/request/:id" element={<RequestModify />} />
               <Route path="/selectedRequest/:id" element={<RequestItem />} />
