@@ -38,7 +38,6 @@ const UserModify: React.FC<Props> = ({ id, visible, onCancel }) => {
       const response = await getUserById(Number(id));
       console.log(response);
       const partageData: { type: PartageOption; value: string }[] = JSON.parse(
-        //@ts-expect-error
         response.data.partage
       );
       const initialType = partageData[0].type;

@@ -7,6 +7,7 @@ import {
   FolderAddOutlined,
   HistoryOutlined,
   LogoutOutlined,
+  OpenAIOutlined,
   PlusCircleOutlined,
   RobotOutlined,
   UnorderedListOutlined,
@@ -18,6 +19,7 @@ import RequestAdd from "./RequestAdd";
 import AddUserForm from "./AddUser";
 import AddDepartmentForm from "./AddDep";
 import sidebarLogo from "../assets/crm.jpg";
+import AddRoleForm from "./AddRole";
 
 const { Sider } = Layout;
 
@@ -56,6 +58,8 @@ const Sidebar = () => {
   const [isDepartmentDrawerVisible, setIsDepartmentDrawerVisible] =
     useState(false);
 
+  const [isRoleDrawerVisible, setIsRoleDrawerVisible] = useState(false);
+
   const handleAddRequest = () => {
     setIsRequestDrawerVisible(true);
   };
@@ -66,6 +70,9 @@ const Sidebar = () => {
 
   const handleAddDepartment = () => {
     setIsDepartmentDrawerVisible(true);
+  };
+  const handleAddRole = () => {
+    setIsRoleDrawerVisible(true);
   };
 
   const handleChatBot = () => {
@@ -142,6 +149,19 @@ const Sidebar = () => {
           display: hovered ? "block" : "none",
         }}
       >
+        {" "}
+        <Menu.Item
+          key="60"
+          icon={<OpenAIOutlined style={{ color: "#000" }} />}
+          style={{
+            transition: "background-color 0.3s",
+            marginBottom: "10px",
+          }}
+        >
+          <Link to="/questionRequestAi" style={{ color: "#000" }}>
+            Generer Base de Connaissanceavec AI
+          </Link>
+        </Menu.Item>
         <Menu.Item
           key="1"
           icon={<DatabaseOutlined style={{ color: "#000" }} />}
@@ -178,7 +198,18 @@ const Sidebar = () => {
             User List
           </Link>
         </Menu.Item>
-
+        <Menu.Item
+          key="107"
+          icon={<UserOutlined style={{ color: "#000" }} />}
+          style={{
+            transition: "background-color 0.3s",
+            marginBottom: "10px",
+          }}
+        >
+          <Link to="/listRole" style={{ color: "#000" }}>
+            Role List
+          </Link>
+        </Menu.Item>
         <Menu.Item
           key="2"
           icon={<HistoryOutlined style={{ color: "#000" }} />}
@@ -191,7 +222,6 @@ const Sidebar = () => {
             Historique
           </Link>
         </Menu.Item>
-
         <Menu.Item
           key="9"
           onClick={handleChatBot}
@@ -200,7 +230,6 @@ const Sidebar = () => {
         >
           ChatBot
         </Menu.Item>
-
         <Menu.Item
           key="addRequest"
           onClick={handleAddRequest}
@@ -212,7 +241,6 @@ const Sidebar = () => {
         >
           Add Request
         </Menu.Item>
-
         <Menu.Item
           key="addUser"
           onClick={handleAddUser}
@@ -230,18 +258,25 @@ const Sidebar = () => {
           Add Department
         </Menu.Item>
         <Menu.Item
+          key="add Role"
+          onClick={handleAddRole}
+          style={{ marginLeft: "10px", marginBottom: "10px" }}
+          icon={<FolderAddOutlined />}
+        >
+          Add Role
+        </Menu.Item>
+        <Menu.Item
           key="14"
           icon={<HistoryOutlined style={{ color: "#000" }} />}
           style={{
             transition: "background-color 0.3s",
-            marginBottom: "280px",
+            marginBottom: "100px",
           }}
         >
           <Link to="/homePages" style={{ color: "#000" }}>
             home Pages
           </Link>
         </Menu.Item>
-
         <Menu.Item
           key="logout"
           icon={<LogoutOutlined style={{ color: "#000" }} />}
@@ -282,11 +317,21 @@ const Sidebar = () => {
         closable={true}
         onClose={() => setIsDepartmentDrawerVisible(false)}
         visible={isDepartmentDrawerVisible}
-        width={800}
+        width={400}
       >
         <AddDepartmentForm
           onCancel={() => setIsDepartmentDrawerVisible(false)}
         />
+      </Drawer>
+      <Drawer
+        title="Add role"
+        placement="right"
+        closable={true}
+        onClose={() => setIsRoleDrawerVisible(false)}
+        visible={isRoleDrawerVisible}
+        width={400}
+      >
+        <AddRoleForm onCancel={() => setIsRoleDrawerVisible(false)} />
       </Drawer>
     </Sider>
   );

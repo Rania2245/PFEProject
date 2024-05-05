@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { Department } from "../types/department";
 
 const { Search } = Input;
+const { Option } = Select; // Add this line to import Option
 
 const UserList = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -32,7 +33,8 @@ const UserList = () => {
   });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const handleSelectChange = (value: string, record: Department) => {
+
+  const handleSelectChange = (value: string, record: User) => {
     console.log("Selected value:", value);
     console.log("Record:", record);
   };
@@ -75,23 +77,21 @@ const UserList = () => {
     navigate("/user/add");
   };
 
-  const handleSearch = async (value: string) => {
-    // Implement search functionality here
-  };
+  const handleSearch = async (value: string) => {};
 
   const columns = [
     {
       title: "ID",
       dataIndex: "id",
       key: "id",
-      width: 100, // Set fixed width for all columns
-      align: "center", // Center align the content
+      width: 100,
+      align: "center",
     },
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      align: "center", // Center align the content
+      align: "center",
     },
     {
       title: "Department",
@@ -108,9 +108,30 @@ const UserList = () => {
           allowClear
         >
           {departments.map((department, index) => (
-            //@ts-expect-error
             <Option key={`department_${index}`} value={department}>
               {department}
+            </Option>
+          ))}
+        </Select>
+      ),
+    },
+    {
+      title: "Roles",
+      dataIndex: "roles", // Changed to 'roles' to match data
+      key: "roles",
+      align: "center",
+      render: (roles: string[], record: User) => (
+        <Select
+          mode="tags"
+          style={{ width: 200 }}
+          placeholder="Select or input role"
+          defaultValue={roles.length > 0 ? roles[0] : undefined}
+          onChange={(value) => handleSelectChange(value, record)}
+          allowClear
+        >
+          {roles.map((role, index) => (
+            <Option key={`roles${index}`} value={role}>
+              {role}
             </Option>
           ))}
         </Select>
@@ -177,7 +198,6 @@ const UserList = () => {
         />
       </div>
       <Spin spinning={loading}>
-        {" "}
         <Table
           dataSource={users}
           //@ts-expect-error

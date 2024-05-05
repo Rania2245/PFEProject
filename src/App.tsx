@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { Layout } from "antd";
 import RequestList from "./CustomRequest/RequestList";
 import RequestAdd from "./CustomRequest/RequestAdd";
@@ -19,21 +19,23 @@ import { useEffect } from "react";
 import UserList from "./CustomRequest/UserList";
 import DepartmentList from "./CustomRequest/ListDep";
 import QuestionRequestAi from "./Ai/QuestionRequestAi";
+import AddRoleForm from "./CustomRequest/AddRole";
+import RoletList from "./CustomRequest/ListeRoles";
 
 const { Content } = Layout;
 
 function App() {
+  const navigate = useNavigate();
   const location = useLocation();
 
   const isAuthenticated =
     localStorage.getItem("username") && localStorage.getItem("token");
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      // localStorage.removeItem("username");
-      // localStorage.removeItem("token");
+    if (isAuthenticated && location.pathname === "/") {
+      navigate("/homeAuto");
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, location.pathname, navigate]);
 
   const isHomeAutoPage = location.pathname === "/homeAuto";
 
@@ -68,6 +70,8 @@ function App() {
               <Route path="/addUser" element={<AddUserForm />} />
               <Route path="/history" element={<History />} />
               <Route path="/addDep" element={<AddDepartmentForm />} />
+              <Route path="/addRole" element={<AddRoleForm />} />
+              <Route path="/listRole" element={<RoletList />} />
             </Route>
           </Routes>
         </Content>

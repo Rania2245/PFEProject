@@ -4,7 +4,6 @@ import {
   EyeOutlined,
   InfoCircleOutlined,
   KeyOutlined,
-  LinkOutlined,
   LockOutlined,
   MessageOutlined,
   PlusOutlined,
@@ -16,8 +15,96 @@ import { Page } from "../types/Page";
 import { getAllPages } from "../services/PageService";
 import { useNavigate } from "react-router-dom";
 import "./homeAuto.css";
+const AppSecretDisplay: React.FC<TokenDisplayProps> = ({ token }) => {
+  const [showFullSecret, setShowFullSecret] = useState(false);
 
-const HomeAuto = () => {
+  const handleToggleSecret = () => {
+    setShowFullSecret(!showFullSecret);
+  };
+
+  const truncatedSecret = showFullSecret
+    ? token
+    : token.slice(0, 4) + "*".repeat(token.length - 4);
+
+  return (
+    <div style={{ marginBottom: "16px" }}>
+      <p style={{ fontSize: "16px", color: "#333", marginBottom: "8px" }}>
+        <LockOutlined style={{ marginRight: "8px" }} />
+        App Secret:
+      </p>
+      <p
+        style={{
+          fontFamily: "Arial, sans-serif",
+          fontSize: "14px",
+          color: "#666",
+          maxWidth: "300px",
+          overflowY: "auto",
+        }}
+      >
+        {truncatedSecret}
+        {!showFullSecret && (
+          <button
+            onClick={handleToggleSecret}
+            style={{
+              marginLeft: "8px",
+              border: "none",
+              background: "none",
+              cursor: "pointer",
+            }}
+          >
+            <EyeOutlined />
+          </button>
+        )}
+      </p>
+    </div>
+  );
+};
+
+interface TokenDisplayProps {
+  token: string;
+}
+
+const TokenDisplay: React.FC<TokenDisplayProps> = ({ token }) => {
+  const [showFullToken, setShowFullToken] = useState(false);
+  const truncatedToken = showFullToken
+    ? token
+    : token.slice(0, 4) + "*".repeat(token.length - 4);
+
+  return (
+    <div style={{ marginBottom: "16px" }}>
+      <p style={{ fontSize: "16px", color: "#333", marginBottom: "8px" }}>
+        <InfoCircleOutlined style={{ marginRight: "8px" }} />
+        Access Token:
+      </p>
+      <p
+        style={{
+          fontFamily: "Arial, sans-serif",
+          fontSize: "14px",
+          color: "#666",
+          maxWidth: "300px",
+          overflowY: "auto",
+        }}
+      >
+        {truncatedToken}
+        {!showFullToken && (
+          <button
+            onClick={() => setShowFullToken(true)}
+            style={{
+              marginLeft: "8px",
+              border: "none",
+              background: "none",
+              cursor: "pointer",
+            }}
+          >
+            <EyeOutlined />
+          </button>
+        )}
+      </p>
+    </div>
+  );
+};
+
+const HomeAuto: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [verifyToken, setVerifyToken] = useState("");
   const [accessToken, setAccessToken] = useState("");
@@ -86,6 +173,7 @@ const HomeAuto = () => {
               animation: "slideFromRight 1s ease-in-out",
             }}
           >
+            
             <img
               src="https://www.grit.online/wp-content/uploads/2019/06/Chatbot-Concept-animated.gif"
               alt="Chatbot Concept"
@@ -187,93 +275,72 @@ const HomeAuto = () => {
                 (e.currentTarget.style.backgroundColor = "#f0f2f5")
               }
             >
+              <TokenDisplay token={page.accessToken.toString()} />
+              <AppSecretDisplay token={page.appSecret.toString()} />
+
+              {/* <div style={{ marginBottom: "16px" }}>
+                <p
+                  style={{
+                    fontSize: "16px",
+                    color: "#333",
+                    marginBottom: "8px",
+                  }}
+                >
+                  <LockOutlined style={{ marginRight: "8px" }} />
+                  App Secret:
+                </p>
+                <p
+                  style={{
+                    fontFamily: "Arial, sans-serif",
+                    fontSize: "14px",
+                    color: "#666",
+                  }}
+                >
+                  {page.appSecret.slice(0, 4) +
+                    "*".repeat(page.appSecret.length - 4)}
+                </p>
+              </div> */}
               <div>
-                <div style={{ marginBottom: "16px" }}>
-                  <p
-                    style={{
-                      fontSize: "16px",
-                      color: "#333",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    <InfoCircleOutlined style={{ marginRight: "8px" }} />
-                    Access Token:
-                  </p>
-                  <p
-                    style={{
-                      fontFamily: "Arial, sans-serif",
-                      fontSize: "14px",
-                      color: "#666",
-                      maxWidth: "300px",
-                      overflowY: "auto",
-                    }}
-                  >
-                    {page.accessToken}
-                  </p>
-                </div>
-                <div style={{ marginBottom: "16px" }}>
-                  <p
-                    style={{
-                      fontSize: "16px",
-                      color: "#333",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    <LockOutlined style={{ marginRight: "8px" }} />
-                    App Secret:
-                  </p>
-                  <p
-                    style={{
-                      fontFamily: "Arial, sans-serif",
-                      fontSize: "14px",
-                      color: "#666",
-                    }}
-                  >
-                    {page.appSecret}
-                  </p>
-                </div>
-                <div>
-                  <p
-                    style={{
-                      fontSize: "16px",
-                      color: "#333",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    <KeyOutlined style={{ marginRight: "8px" }} />
-                    Verify Token:
-                  </p>
-                  <p
-                    style={{
-                      fontFamily: "Arial, sans-serif",
-                      fontSize: "14px",
-                      color: "#666",
-                    }}
-                  >
-                    {page.verifyToken}
-                  </p>
-                </div>
-                <div style={{ alignSelf: "center" }}>
-                  <Button
-                    className="automatizer-button"
-                    type="primary"
-                    style={{
-                      backgroundColor: "white",
-                      border: "2px solid #1890ff",
-                      borderRadius: "30px",
-                      width: "150px",
-                      color: "#1890ff",
-                    }}
-                    icon={<RobotOutlined style={{ marginRight: "5px" }} />}
-                    onClick={() => {
-                      handleView(page.id);
-                      console.log(page.id);
-                    }}
-                    title="Automatiser cette page"
-                  >
-                    Automatiser
-                  </Button>
-                </div>
+                <p
+                  style={{
+                    fontSize: "16px",
+                    color: "#333",
+                    marginBottom: "8px",
+                  }}
+                >
+                  <KeyOutlined style={{ marginRight: "8px" }} />
+                  Verify Token:
+                </p>
+                <p
+                  style={{
+                    fontFamily: "Arial, sans-serif",
+                    fontSize: "14px",
+                    color: "#666",
+                  }}
+                >
+                  {page.verifyToken}
+                </p>
+              </div>
+              <div style={{ alignSelf: "center" }}>
+                <Button
+                  className="automatizer-button"
+                  type="primary"
+                  style={{
+                    backgroundColor: "white",
+                    border: "2px solid #1890ff",
+                    borderRadius: "30px",
+                    width: "150px",
+                    color: "#1890ff",
+                  }}
+                  icon={<RobotOutlined style={{ marginRight: "5px" }} />}
+                  onClick={() => {
+                    handleView(page.id);
+                    console.log(page.id);
+                  }}
+                  title="Automatiser cette page"
+                >
+                  Automatiser
+                </Button>
               </div>
             </div>
           ))}

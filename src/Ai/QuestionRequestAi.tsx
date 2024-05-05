@@ -1,173 +1,327 @@
 import React, { useState } from "react";
-import { Radio, Input, Button, Checkbox } from "antd";
-import { DatabaseOutlined, PlusOutlined } from "@ant-design/icons";
+import { Radio, Input, Button, Checkbox, Tooltip } from "antd";
+import {
+  AreaChartOutlined,
+  DatabaseOutlined,
+  FacebookOutlined,
+  PlusOutlined,
+  QrcodeOutlined,
+  ReloadOutlined,
+  SafetyOutlined,
+} from "@ant-design/icons";
+import { CheckboxValueType } from "antd/lib/checkbox/Group";
 
 const QuestionRequestAi = () => {
+  const [selectedServices, setSelectedServices] = useState<CheckboxValueType[]>(
+    []
+  );
+  const [selectedProducts, setSelectedProducts] = useState<CheckboxValueType[]>(
+    []
+  );
+  const [selectedSalesServices, setSelectedSalesServices] = useState<
+    CheckboxValueType[]
+  >([]);
+
+  const [selectedPageType, setSelectedPageType] = useState(null);
+
   const [additionalDescriptions, setAdditionalDescriptions] = useState<
     string[]
   >([]);
 
-  const handleAddDescription = (index: number) => {
-    setAdditionalDescriptions((prevDescriptions) => {
-      const updatedDescriptions = [...prevDescriptions];
-      updatedDescriptions[index] = "";
-      return updatedDescriptions;
-    });
-  };
-
-  const handleDescriptionChange = (index: number, value: string) => {
-    setAdditionalDescriptions((prevDescriptions) => {
-      const updatedDescriptions = [...prevDescriptions];
-      updatedDescriptions[index] = value;
-      return updatedDescriptions;
-    });
+  const handleGenerateScenario = () => {
+    console.log("Page Type:", selectedPageType);
+    console.log("Selected Services:", selectedServices);
+    console.log("Selected Products:", selectedProducts);
+    console.log("Selected Sales Services:", selectedSalesServices);
+    console.log("Additional Descriptions:", additionalDescriptions);
   };
 
   return (
     <div
       style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
         backgroundColor: "#f5f5f5",
-        padding: "20px",
-        borderRadius: "5px",
+        marginTop: "-30px",
       }}
     >
-      <h2 style={{ fontFamily: "cursive" }}>
-        Generate Base de connaissance En Utilisant Ai{" "}
-        {<DatabaseOutlined style={{ color: "#000" }} />}
-      </h2>
+      <div
+        style={{
+          backgroundColor: "#fff",
+          padding: "20px",
+          borderRadius: "5px",
+          maxWidth: "800px",
+          width: "100%",
+        }}
+      >
+        <h2
+          style={{
+            fontFamily: "cursive",
+            textAlign: "center",
+            color: "#5072A7",
+          }}
+        >
+          Générer votre base de connaissances avec l'IA
+          <DatabaseOutlined style={{ color: "green" }} />
+        </h2>
 
-      <div>
-        <h2 style={{ fontFamily: "cursive" }}>Page Type</h2>
-        <Radio.Group>
-          <Radio value={1}>Business Pages</Radio>
-          <Radio value={2}>Brand Pages</Radio>
-          <Radio value={3}>Community Pages</Radio>
-          <Radio value={4}>Fan Pages</Radio>
-          <Radio value={5}>Personal Blog Pages</Radio>
-          <Radio value={6}>Educational Pages</Radio>
-          <Radio value={7}>Nonprofit Pages</Radio>
-          <Radio value={8}>Entertainment Pages</Radio>
-          <Radio value={9}>News and Media Pages</Radio>
-          <Radio value={10}>Health and Wellness Pages</Radio>
-          <Radio value={11}>Food and Recipe Pages</Radio>
-          <Radio value={12}>Travel Pages</Radio>
-          <Radio value={13}>Photography Pages</Radio>
-          <Radio value={14}>Pet Pages</Radio>
-          <Radio value={15}>Fashion and Beauty Pages</Radio>
-        </Radio.Group>
-      </div>
+        <div>
+          <h3
+            style={{
+              fontFamily: "cursive",
+              textAlign: "left",
+              color: "#72A0C1",
+            }}
+          >
+            Type De Page <FacebookOutlined style={{ color: "green" }} />
+          </h3>
+          <Radio.Group onChange={(e) => setSelectedPageType(e.target.value)}>
+            <Radio value="Business Pages">Pages professionnelles</Radio>
+            <Radio value="Brand Pages">Pages de marque</Radio>
+            <Radio value="Community Pages">Pages communautaires</Radio>
+            <Radio value="Fan Pages">Pages de fans</Radio>
+            <Radio value="Personal Blog Pages">
+              Pages de blog personnelles
+            </Radio>
+            <Radio value="Educational Pages">Pages éducatives</Radio>
+            <Radio value="Nonprofit Pages">Pages à but non lucratif</Radio>
+            <Radio value="Entertainment Pages">Pages de divertissement</Radio>
+            <Radio value="News and Media Pages">
+              Pages d'actualités et de médias
+            </Radio>
+            <Radio value="Health and Wellness Pages">
+              Pages de santé et de bien-être
+            </Radio>
+            <Radio value="Food and Recipe Pages">
+              Pages de recettes et de cuisine
+            </Radio>
+            <Radio value="Travel Pages">Pages de voyage</Radio>
+            <Radio value="Photography Pages">Pages de photographie</Radio>
+            <Radio value="Pet Pages">Pages d'animaux de compagnie</Radio>
+            <Radio value="Fashion and Beauty Pages">
+              Pages de mode et de beauté
+            </Radio>
+          </Radio.Group>
+        </div>
 
-      <div>
-        <h3 style={{ fontFamily: "cursive" }}>Services</h3>
-        <Checkbox.Group style={{ width: "100%" }}>
-          <Checkbox value="Website Development">Website Development</Checkbox>
-          <Checkbox value="App Development">App Development</Checkbox>
-          <Checkbox value="Community Management">Community Management</Checkbox>
-          <Checkbox value="Brand Management">Brand Management</Checkbox>
-          <Checkbox value="SEO Services">SEO Services</Checkbox>
-          <Checkbox value="PPC Advertising">PPC Advertising</Checkbox>
-          <Checkbox value="Email Marketing">Email Marketing</Checkbox>
-          <Checkbox value="Content Marketing">Content Marketing</Checkbox>
-          <Checkbox value="Event Management">Event Management</Checkbox>
-          <Checkbox value="Analytics and Reporting">
-            Analytics and Reporting
-          </Checkbox>
-        </Checkbox.Group>
-      </div>
+        <div>
+          <h3
+            style={{
+              fontFamily: "cursive",
+              textAlign: "left",
+              color: "#72A0C1",
+            }}
+          >
+            {" "}
+            Services
+            <SafetyOutlined style={{ color: "green" }} />
+          </h3>
+          <Checkbox.Group
+            style={{ width: "100%" }}
+            onChange={(values) => setSelectedServices(values)}
+          >
+            <Checkbox value="Website Development">
+              Développement de site web
+            </Checkbox>
+            <Checkbox value="App Development">
+              Développement d'application
+            </Checkbox>
+            <Checkbox value="Community Management">
+              Gestion de communauté
+            </Checkbox>
+            <Checkbox value="Brand Management">Gestion de marque</Checkbox>
+            <Checkbox value="SEO Services">
+              Services de référencement (SEO)
+            </Checkbox>
+            <Checkbox value="PPC Advertising">Publicité PPC</Checkbox>
+            <Checkbox value="Email Marketing">Marketing par e-mail</Checkbox>
+            <Checkbox value="Content Marketing">Marketing de contenu</Checkbox>
+            <Checkbox value="Event Management">Gestion d'événements</Checkbox>
+            <Checkbox value="Analytics and Reporting">
+              Analyse et rapports
+            </Checkbox>
+          </Checkbox.Group>
+        </div>
 
-      <div>
-        <h3 style={{ fontFamily: "cursive" }}>Products</h3>
-        <Checkbox.Group style={{ width: "100%" }}>
-          <Checkbox value="Social Media Toolkit">Social Media Toolkit</Checkbox>
-          <Checkbox value="Graphic Design Package">
-            Graphic Design Package
-          </Checkbox>
-          <Checkbox value="Content Creation Bundle">
-            Content Creation Bundle
-          </Checkbox>
-          <Checkbox value="Digital Marketing Suite">
-            Digital Marketing Suite
-          </Checkbox>
-          <Checkbox value="Website Builder Kit">Website Builder Kit</Checkbox>
-          <Checkbox value="Mobile App Development Package">
-            Mobile App Development Package
-          </Checkbox>
-          <Checkbox value="Brand Identity Package">
-            Brand Identity Package
-          </Checkbox>
-          <Checkbox value="SEO Optimization Service">
-            SEO Optimization Service
-          </Checkbox>
-          <Checkbox value="PPC Campaign Management Tool">
-            PPC Campaign Management Tool
-          </Checkbox>
-          <Checkbox value="Email Marketing Software">
-            Email Marketing Software
-          </Checkbox>
-          <Checkbox value="Content Marketing Planner">
-            Content Marketing Planner
-          </Checkbox>
-          <Checkbox value="Event Planning Toolkit">
-            Event Planning Toolkit
-          </Checkbox>
-          <Checkbox value="Analytics Dashboard">Analytics Dashboard</Checkbox>
-          <Checkbox value="Influencer Marketing Platform">
-            Influencer Marketing Platform
-          </Checkbox>
-          <Checkbox value="Customer Relationship Management (CRM) System">
-            Customer Relationship Management (CRM) System
-          </Checkbox>
-        </Checkbox.Group>
-      </div>
+        <div>
+          <h3
+            style={{
+              fontFamily: "cursive",
+              textAlign: "left",
+              color: "#72A0C1",
+            }}
+          >
+            {" "}
+            Produits
+            <QrcodeOutlined style={{ color: "green" }} />
+          </h3>
+          <Checkbox.Group
+            style={{ width: "100%" }}
+            onChange={(values) => setSelectedProducts(values)}
+          >
+            <Checkbox value="Social Media Toolkit">
+              Boîte à outils des médias sociaux
+            </Checkbox>
+            <Checkbox value="Graphic Design Package">
+              Pack de conception graphique
+            </Checkbox>
+            <Checkbox value="Content Creation Bundle">
+              Ensemble de création de contenu
+            </Checkbox>
+            <Checkbox value="Digital Marketing Suite">
+              Suite de marketing numérique
+            </Checkbox>
+            <Checkbox value="Website Builder Kit">
+              Kit de création de site web
+            </Checkbox>
+            <Checkbox value="Mobile App Development Package">
+              Pack de développement d'applications mobiles
+            </Checkbox>
+            <Checkbox value="Brand Identity Package">
+              Pack d'identité de marque
+            </Checkbox>
+            <Checkbox value="SEO Optimization Service">
+              Service d'optimisation SEO
+            </Checkbox>
+            <Checkbox value="PPC Campaign Management Tool">
+              Outil de gestion de campagnes PPC
+            </Checkbox>
+            <Checkbox value="Email Marketing Software">
+              Logiciel de marketing par e-mail
+            </Checkbox>
+            <Checkbox value="Content Marketing Planner">
+              Planificateur de marketing de contenu
+            </Checkbox>
+            <Checkbox value="Event Planning Toolkit">
+              Boîte à outils de planification d'événements
+            </Checkbox>
+            <Checkbox value="Analytics Dashboard">
+              Tableau de bord d'analyse
+            </Checkbox>
+            <Checkbox value="Influencer Marketing Platform">
+              Plateforme de marketing d'influence
+            </Checkbox>
+            <Checkbox value="Customer Relationship Management (CRM) System">
+              Système de gestion de la relation client (CRM)
+            </Checkbox>
+          </Checkbox.Group>
+        </div>
 
-      <div>
-        <h3 style={{ fontFamily: "cursive" }}>Sales Services</h3>
-        <Checkbox.Group style={{ width: "100%" }}>
-          <Checkbox value="Sales Consultation">Sales Consultation</Checkbox>
-          <Checkbox value="Lead Generation">Lead Generation</Checkbox>
-          <Checkbox value="Sales Training">Sales Training</Checkbox>
-          <Checkbox value="Sales Funnel Optimization">
-            Sales Funnel Optimization
-          </Checkbox>
-          <Checkbox value="Customer Relationship Management (CRM)">
-            Customer Relationship Management (CRM)
-          </Checkbox>
-          <Checkbox value="Sales Strategy Development">
-            Sales Strategy Development
-          </Checkbox>
-          <Checkbox value="Sales Pipeline Management">
-            Sales Pipeline Management
-          </Checkbox>
-          <Checkbox value="Sales Enablement Solutions">
-            Sales Enablement Solutions
-          </Checkbox>
-          <Checkbox value="Sales Forecasting">Sales Forecasting</Checkbox>
-          <Checkbox value="Sales Performance Analysis">
-            Sales Performance Analysis
-          </Checkbox>
-        </Checkbox.Group>
-      </div>
-
-      <div>
-        <Button type="primary">Generate Scenario</Button>
-      </div>
-
-      <div>
-        {additionalDescriptions.map((description, index) => (
-          <div key={index} style={{ marginTop: "10px" }}>
+        <div>
+          <h3
+            style={{
+              fontFamily: "cursive",
+              textAlign: "left",
+              color: "#72A0C1",
+            }}
+          >
+            {" "}
+            Services de Vente
+            <AreaChartOutlined style={{ color: "green" }} />
+          </h3>
+          <Checkbox.Group
+            style={{ width: "100%" }}
+            onChange={(values) => setSelectedSalesServices(values)}
+          >
+            <Checkbox value="Sales Consultation">
+              Consultation en Vente
+            </Checkbox>
+            <Checkbox value="Lead Generation">Génération de Leads</Checkbox>
+            <Checkbox value="Sales Training">Formation en Vente</Checkbox>
+            <Checkbox value="Sales Funnel Optimization">
+              Optimisation du Tunnel de Vente
+            </Checkbox>
+            <Checkbox value="Customer Relationship Management (CRM)">
+              Gestion de la Relation Client (CRM)
+            </Checkbox>
+            <Checkbox value="Sales Strategy Development">
+              Développement de Stratégie de Vente
+            </Checkbox>
+            <Checkbox value="Sales Pipeline Management">
+              Gestion du Pipeline de Vente
+            </Checkbox>
+            <Checkbox value="Sales Enablement Solutions">
+              Solutions d'Autonomisation des Ventes
+            </Checkbox>
+            <Checkbox value="Sales Forecasting">Prévision des Ventes</Checkbox>
+            <Checkbox value="Sales Performance Analysis">
+              Analyse de Performance des Ventes
+            </Checkbox>
+          </Checkbox.Group>
+        </div>
+        <div style={{ marginTop: "20px" }}>
+          <div
+            style={{
+              marginTop: "10px",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
             <Input
-              placeholder="Additional Description"
-              value={description}
-              onChange={(e) => handleDescriptionChange(index, e.target.value)}
-              style={{ width: "80%" }}
-            />
-            <Button
-              type="link"
-              onClick={() => handleAddDescription(index)}
-              icon={<PlusOutlined />}
+              placeholder="Ajouter plus de description de votre page"
+              onChange={(e) => {
+                const updatedDescriptions = [...additionalDescriptions];
+              }}
+              style={{
+                width: "100%",
+                height: "80px",
+                backgroundColor: "#e6f7ff",
+              }}
             />
           </div>
-        ))}
+        </div>
+
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <Tooltip title="Appuyez pour générer votre base de connaissances avec l'IA selon vos choix sélectionnés">
+            <Button
+              style={{
+                fontFamily: "cursive",
+                textAlign: "left",
+                color: "#72A0C1",
+              }}
+              onClick={handleGenerateScenario}
+            >
+              <ReloadOutlined style={{ color: "green" }} />
+              Générer la base de connaissance
+            </Button>
+          </Tooltip>
+        </div>
+        <div style={{ marginTop: "20px" }}>
+          {additionalDescriptions.map((description, index) => (
+            <div
+              key={index}
+              style={{
+                marginTop: "10px",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <Input
+                placeholder="Ajouter plus de description de votre page"
+                value={description}
+                onChange={(e) => {
+                  const updatedDescriptions = [...additionalDescriptions];
+
+                  updatedDescriptions[index] = e.target.value;
+                  setAdditionalDescriptions(updatedDescriptions);
+                }}
+                style={{ width: "80%", backgroundColor: "#e6f7ff" }}
+              />
+              <Button
+                type="link"
+                onClick={() => {
+                  const updatedDescriptions = [...additionalDescriptions];
+
+                  updatedDescriptions.push("");
+                  setAdditionalDescriptions(updatedDescriptions);
+                }}
+                icon={<PlusOutlined />}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

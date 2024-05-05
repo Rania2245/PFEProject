@@ -30,7 +30,8 @@ import "./button.css";
 import LogoutButton from "../CustomRequest/NavBar";
 import { useParams } from "react-router-dom";
 import { getPageById } from "../services/PageService";
-
+import WelcomeMsgImg from "../assets/welcomemessege.png";
+import DefaultImg from "../assets/defaultmsg.jpg";
 const { Title } = Typography;
 
 const AutomatisationMessenger: React.FC = () => {
@@ -154,10 +155,16 @@ const AutomatisationMessenger: React.FC = () => {
     }
   };
 
-  const handleAddBlocClick = () => {
+  const handleAddBlocClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     setShowAddBloc(true);
     setShowAddMenu(false);
     setSelectedBloc(null);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   const handleWelcomeMouseEnter = () => {
@@ -190,6 +197,10 @@ const AutomatisationMessenger: React.FC = () => {
       setWelcomeMessage(welcomeMessage);
       setSelectedBloc(welcomeMessage);
     }
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -272,7 +283,31 @@ const AutomatisationMessenger: React.FC = () => {
               onMouseEnter={handleWelcomeMouseEnter}
               onMouseLeave={handleWelcomeMouseLeave}
             >
-              <p style={{ fontSize: "14px", fontFamily: "cursive" }}>
+              <div>
+                {" "}
+                <Tooltip title="welcome Messege Dans Messenger">
+                  <img
+                    src={WelcomeMsgImg}
+                    alt="welcome messege Image"
+                    style={{
+                      width: "80%",
+                      height: "10%",
+                      borderRadius: "3%",
+
+                      boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+                    }}
+                  />
+                </Tooltip>
+              </div>
+
+              <p
+                style={{
+                  fontSize: "14px",
+                  fontFamily: "cursive",
+                  backgroundColor: "white",
+                  borderRadius: "20%",
+                }}
+              >
                 The Welcome Message serves as the initial interaction point for
                 users initiating a new conversation with your page.
               </p>
@@ -313,7 +348,27 @@ const AutomatisationMessenger: React.FC = () => {
               onMouseEnter={handleDefaultMouseEnter}
               onMouseLeave={handleDefaultMouseLeave}
             >
-              <p style={{ fontSize: "14px", fontFamily: "cursive" }}>
+              <Tooltip title="Default Messege Dans Messenger">
+                <img
+                  src={DefaultImg}
+                  alt="DefaultImg messege Image"
+                  style={{
+                    width: "40%",
+                    height: "20%",
+                    borderRadius: "15%",
+
+                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+                  }}
+                />
+              </Tooltip>
+              <p
+                style={{
+                  fontSize: "14px",
+                  fontFamily: "cursive",
+                  backgroundColor: "white",
+                  borderRadius: "20%",
+                }}
+              >
                 This typically occurs when the message is unclear, contains
                 typos, or falls outside the scope of the chatbot's programmed
                 capabilities.

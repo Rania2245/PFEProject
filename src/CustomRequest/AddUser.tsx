@@ -3,6 +3,7 @@ import { Form, Input, Button, Select, message } from "antd";
 import { addUser } from "../services/UserService";
 import { User } from "../types/user";
 import { getDeps } from "../services/departmentService";
+import { getRoles } from "../services/RoleService";
 
 const { Option } = Select;
 
@@ -14,6 +15,7 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [departments, setDepartments] = useState<string[]>([]);
+  const [roles, setRoles] = useState<string[]>([]);
 
   useEffect(() => {
     fetchDepartments();
@@ -26,6 +28,15 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
     } catch (error) {
       console.error("Error fetching departments:", error);
       message.error("Failed to fetch departments. Please try again later.");
+    }
+  };
+  const fetchRoles = async () => {
+    try {
+      const roles = await getRoles();
+      setRoles(roles);
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+      message.error("Failed to fetch roles. Please try again later.");
     }
   };
 
@@ -91,6 +102,19 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
           {departments.map((department, index) => (
             <Option key={index} value={department}>
               {department}
+            </Option>
+          ))}
+        </Select>
+      </Form.Item>
+      <Form.Item
+        name="Rôle"
+        label="Rôle"
+        rules={[{ required: true, message: "Please select the Rôle" }]}
+      >
+        <Select mode="multiple">
+          {roles.map((roles, index) => (
+            <Option key={index} value={roles}>
+              {roles}
             </Option>
           ))}
         </Select>
