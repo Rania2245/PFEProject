@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Input, Button, Typography, Divider, Tooltip, Spin } from "antd"; // Import Spin component from antd
 import {
+  DeleteOutlined,
   EyeOutlined,
   InfoCircleOutlined,
   KeyOutlined,
@@ -12,7 +13,7 @@ import {
 } from "@ant-design/icons";
 import VerifyPage from "./VerifyPage";
 import { Page } from "../types/Page";
-import { getAllPages } from "../services/PageService";
+import { deletePage, getAllPages } from "../services/PageService";
 import { useNavigate } from "react-router-dom";
 import "./homeAuto.css";
 const AppSecretDisplay: React.FC<TokenDisplayProps> = ({ token }) => {
@@ -115,7 +116,32 @@ const HomeAuto: React.FC = () => {
   const [pages, setPages] = useState<Page[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [deletePageId, setDeletePageId] = useState<string | null>(null);
 
+  const handleDelete = (pageId: string) => {
+    setDeletePageId(pageId);
+    setShowDeleteConfirmation(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      if (deletePageId) {
+        await deletePage(deletePageId);
+        console.log("Page deleted:", deletePageId);
+        setPages(pages.filter((page) => page.id !== deletePageId));
+      }
+      setDeletePageId(null);
+      setShowDeleteConfirmation(false);
+    } catch (error) {
+      console.error("Error deleting page:", error);
+    }
+  };
+
+  const cancelDelete = () => {
+    setDeletePageId(null);
+    setShowDeleteConfirmation(false);
+  };
   useEffect(() => {
     const fetchPages = async () => {
       try {
@@ -276,7 +302,24 @@ const HomeAuto: React.FC = () => {
                 (e.currentTarget.style.backgroundColor = "#f0f2f5")
               }
             >
-              {" "}
+              <div
+                style={{
+                  marginLeft: "350px",
+                }}
+              >
+                <Tooltip title="Delete">
+                  <Button
+                    type="text"
+                    icon={<DeleteOutlined />}
+                    style={{
+                      color: "red",
+                      borderRadius: "100%",
+                      position: "absolute",
+                    }}
+                    onClick={() => handleDelete(page.id)}
+                  />
+                </Tooltip>
+              </div>
               <div
                 style={{
                   borderRadius: "50%",
@@ -299,7 +342,7 @@ const HomeAuto: React.FC = () => {
                 />
               </div>
               <div>
-                <h3 style={{ margin: 0 }}>{page.name}</h3>
+                <h3 style={{ margin: 0 }}> Page Name: {page.name}</h3>
                 <p>
                   Visit the page:{" "}
                   <a href={page.link} target="_blank" rel="noopener noreferrer">
@@ -354,6 +397,21 @@ const HomeAuto: React.FC = () => {
             </div>
           ))}
         </div>
+        <Modal
+          visible={showDeleteConfirmation}
+          title="Confirm Delete"
+          onCancel={cancelDelete}
+          footer={[
+            <Button key="cancel" onClick={cancelDelete}>
+              Cancel
+            </Button>,
+            <Button key="delete" type="primary" onClick={confirmDelete}>
+              Delete
+            </Button>,
+          ]}
+        >
+          <p>Are you sure you want to delete this page?</p>
+        </Modal>
 
         <VerifyPage
           showModal={showModal}

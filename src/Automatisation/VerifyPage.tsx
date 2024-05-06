@@ -35,8 +35,7 @@ const VerifyPage: React.FC<VerifyPageProps> = ({ showModal, handleCancel }) => {
         return;
       }
 
-      //@ts-expect-error
-      const page = await createPage({ accessToken, verifyToken, appSecret });
+      const page = { accessToken, verifyToken, appSecret };
       if (page) {
         message.success("Page created successfully");
       }

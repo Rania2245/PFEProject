@@ -51,7 +51,7 @@ export const updatePage = async (id: number, pageData: Page) => {
   }
 };
 
-export const deletePage = async (id: number) => {
+export const deletePage = async (id: string) => {
   try {
     await axios.delete(`${endpoint}/api/pages/${id}`, getAxiosConfig());
   } catch (error) {
