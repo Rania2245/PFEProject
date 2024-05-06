@@ -1,5 +1,5 @@
 export type GalleryFormData = {
-  id?: string;
+  id?: Number;
   photo: File;
   title: string;
   description: string;

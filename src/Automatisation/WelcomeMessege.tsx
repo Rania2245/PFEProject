@@ -75,7 +75,7 @@ const WelcomeMessege: React.FC<SelectedBlocProps> = ({ bloc }) => {
     setFileInputs(initialFileInputs);
 
     const initialGalleryForms = bloc.elementsBloc
-      .filter((elem) => elem.type === "galerie")
+      .filter((elem) => elem.type === "gallery")
       .map((elem) => {
         const galleryFormData: GalleryFormData = JSON.parse(elem.data);
         return galleryFormData;
@@ -519,7 +519,7 @@ const WelcomeMessege: React.FC<SelectedBlocProps> = ({ bloc }) => {
         );
 
         break;
-      case "galerie":
+      case "gallery":
         return (
           <div style={{ overflowX: "auto" }}>
             <Tooltip title="Delete">
@@ -755,7 +755,7 @@ const WelcomeMessege: React.FC<SelectedBlocProps> = ({ bloc }) => {
               {input.type === "photo" && <BellOutlined />}
               {input.type === "audio" && <BellOutlined />}
               {input.type === "media" && <BellOutlined />}
-              {input.type === "galerie" && <BellOutlined />}
+              {input.type === "gallery" && <BellOutlined />}
               {input.type === "redirection" && <BellOutlined />}
               {input.type === "typing" && <BellOutlined />}
               {input.type === "video" && <VideoCameraAddOutlined />}
@@ -768,7 +768,7 @@ const WelcomeMessege: React.FC<SelectedBlocProps> = ({ bloc }) => {
             color: "blue",
             height:
               input.type === "Generic" ||
-              input.type === "galerie" ||
+              input.type === "gallery" ||
               input.type === "media"
                 ? "550px"
                 : "170px",
