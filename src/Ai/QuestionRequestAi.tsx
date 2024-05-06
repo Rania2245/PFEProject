@@ -39,7 +39,7 @@ const QuestionRequestAi = () => {
     };
     console.log(data);
 
-    //generateAI(data);
+    generateAI(data);
   };
 
   return (
