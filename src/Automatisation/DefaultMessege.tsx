@@ -519,7 +519,7 @@ const DefaultMessege: React.FC<SelectedBlocProps> = ({ bloc }) => {
         );
 
         break;
-      case "galerie":
+      case "gallery":
         return (
           <div style={{ overflowX: "auto" }}>
             <Tooltip title="Delete">
