@@ -140,7 +140,7 @@ export const updateBloc = async (id: number, formData: Bloc) => {
     const config = {
       headers: {
         ...getAxiosConfig().headers,
-        "Content-Type": "multipart/x-www-form-urlencoded",
+        "Content-Type": "multipart/form-data",
       },
     };
 
@@ -187,7 +187,7 @@ export const updateBloc = async (id: number, formData: Bloc) => {
         );
       }
     });
-    await axios.post(`${endpoint}/api/blocs/${id}`, formDataToSend, config);
+    await axios.put(`${endpoint}/api/blocs/${id}`, formDataToSend, config);
   } catch (error) {
     console.error(`Error updating bloc with ID ${id}: `, error);
     throw error;
