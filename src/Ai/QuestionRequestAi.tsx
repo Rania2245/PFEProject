@@ -10,6 +10,7 @@ import {
   SafetyOutlined,
 } from "@ant-design/icons";
 import { CheckboxValueType } from "antd/lib/checkbox/Group";
+import { generateAI } from "../services/CustomRequestService";
 
 const QuestionRequestAi = () => {
   const [selectedServices, setSelectedServices] = useState<CheckboxValueType[]>(
@@ -29,11 +30,16 @@ const QuestionRequestAi = () => {
   >([]);
 
   const handleGenerateScenario = () => {
-    console.log("Page Type:", selectedPageType);
-    console.log("Selected Services:", selectedServices);
-    console.log("Selected Products:", selectedProducts);
-    console.log("Selected Sales Services:", selectedSalesServices);
-    console.log("Additional Descriptions:", additionalDescriptions);
+    const data = {
+      selectedPageType,
+      selectedServices,
+      selectedProducts,
+      selectedSalesServices,
+      additionalDescriptions: additionalDescriptions.join("\n"),
+    };
+    console.log(data);
+
+    //generateAI(data);
   };
 
   return (
@@ -300,15 +306,15 @@ const QuestionRequestAi = () => {
             >
               <Input
                 placeholder="Ajouter plus de description de votre page"
-                value={description}
                 onChange={(e) => {
                   const updatedDescriptions = [...additionalDescriptions];
-
                   updatedDescriptions[index] = e.target.value;
                   setAdditionalDescriptions(updatedDescriptions);
                 }}
+                value={description}
                 style={{ width: "80%", backgroundColor: "#e6f7ff" }}
               />
+
               <Button
                 type="link"
                 onClick={() => {

@@ -15,6 +15,35 @@ const getAxiosConfig = () => {
   }
 };
 
+export const generateAI = async (data: any) => {
+  try {
+    const response = await axios.put(
+      `${endpoint}/api/question-requests`,
+      data,
+      getAxiosConfig()
+    );
+    console.log("Request generated successfully:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error generating the request using AI:", error);
+    throw error;
+  }
+};
+export const modifyRequest = async (
+  id: number,
+  data: Partial<QuestionRequest>
+) => {
+  try {
+    await axios.put(
+      `${endpoint}/api/question-requests/${id}`,
+      data,
+      getAxiosConfig()
+    );
+  } catch (error) {
+    console.error(`Error modifying request with ID ${id}: `, error);
+    throw error;
+  }
+};
 export const getRequests = async () => {
   try {
     const response = await axios.get<QuestionRequest[]>(
@@ -58,21 +87,6 @@ export const deleteRequest = async (id: number) => {
   }
 };
 
-export const modifyRequest = async (
-  id: number,
-  data: Partial<QuestionRequest>
-) => {
-  try {
-    await axios.put(
-      `${endpoint}/api/question-requests/${id}`,
-      data,
-      getAxiosConfig()
-    );
-  } catch (error) {
-    console.error(`Error modifying request with ID ${id}: `, error);
-    throw error;
-  }
-};
 export const addRequest = async (formData: any) => {
   try {
     const transformedData = {
