@@ -227,25 +227,32 @@ const AutomatisationMessenger: React.FC = () => {
                   backgroundColor: "#f5f5f5",
                   padding: "11px 100px",
                   borderRadius: "4px",
-                  display: "inline-block",
-                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
                   fontFamily: "cursive",
                   fontSize: "18px",
                   color: "#333",
                 }}
               >
                 <MessageOutlined /> Liste des blocs
+                <div style={{ marginLeft: "auto" }}>
+                  <Tooltip title="Add Bloc">
+                    <Button
+                      icon={<PlusOutlined />}
+                      style={{
+                        backgroundColor: "#fff",
+                        borderColor: "#c9c9c9",
+
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        marginBottom: "10px",
+                      }}
+                      onClick={handleAddBlocClick}
+                    />
+                  </Tooltip>
+                </div>
               </div>
             }
-            bordered={false}
-            style={{
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-              backgroundColor: "white",
-              borderRadius: "10px",
-              width: "100%",
-              marginRight: "16px",
-              marginBottom: "10px",
-            }}
           >
             <Card
               title={

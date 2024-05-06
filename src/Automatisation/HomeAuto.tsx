@@ -29,7 +29,7 @@ const AppSecretDisplay: React.FC<TokenDisplayProps> = ({ token }) => {
   return (
     <div style={{ marginBottom: "16px" }}>
       <p style={{ fontSize: "16px", color: "#333", marginBottom: "8px" }}>
-        <LockOutlined style={{ marginRight: "8px" }} />
+        <LockOutlined style={{ textAlign: "center", marginRight: "8px" }} />
         App Secret:
       </p>
       <p
@@ -73,7 +73,9 @@ const TokenDisplay: React.FC<TokenDisplayProps> = ({ token }) => {
   return (
     <div style={{ marginBottom: "16px" }}>
       <p style={{ fontSize: "16px", color: "#333", marginBottom: "8px" }}>
-        <InfoCircleOutlined style={{ marginRight: "8px" }} />
+        <InfoCircleOutlined
+          style={{ textAlign: "center", marginRight: "8px" }}
+        />
         Access Token:
       </p>
       <p
@@ -83,6 +85,7 @@ const TokenDisplay: React.FC<TokenDisplayProps> = ({ token }) => {
           color: "#666",
           maxWidth: "300px",
           overflowY: "auto",
+          verticalAlign: "middle",
         }}
       >
         {truncatedToken}
@@ -157,7 +160,6 @@ const HomeAuto: React.FC = () => {
           style={{
             display: "flex",
             alignItems: "center",
-            //    background: `url('https://t3.ftcdn.net/jpg/02/56/78/360_F_213567841_SiyyM6H4y067caRy58iLulWazeezPaui.jpg')`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             borderRadius: "10px",
@@ -173,7 +175,6 @@ const HomeAuto: React.FC = () => {
               animation: "slideFromRight 1s ease-in-out",
             }}
           >
-            
             <img
               src="https://www.grit.online/wp-content/uploads/2019/06/Chatbot-Concept-animated.gif"
               alt="Chatbot Concept"
@@ -265,7 +266,7 @@ const HomeAuto: React.FC = () => {
                 borderRadius: "10px",
                 padding: "20px",
                 margin: "0 10px",
-                minWidth: "300px",
+                minWidth: "100px",
                 transition: "background-color 0.3s",
               }}
               onMouseEnter={(e) =>
@@ -275,52 +276,60 @@ const HomeAuto: React.FC = () => {
                 (e.currentTarget.style.backgroundColor = "#f0f2f5")
               }
             >
-              <TokenDisplay token={page.accessToken.toString()} />
-              <AppSecretDisplay token={page.appSecret.toString()} />
-
-              {/* <div style={{ marginBottom: "16px" }}>
-                <p
+              {" "}
+              <div
+                style={{
+                  borderRadius: "50%",
+                  overflow: "hidden",
+                  width: "50px",
+                  height: "50px",
+                  marginRight: "10px",
+                  boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
+                }}
+              >
+                <img
+                  src={page.picture}
+                  alt="Page Image"
                   style={{
-                    fontSize: "16px",
-                    color: "#333",
-                    marginBottom: "8px",
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    borderRadius: "50%",
                   }}
-                >
-                  <LockOutlined style={{ marginRight: "8px" }} />
-                  App Secret:
-                </p>
-                <p
-                  style={{
-                    fontFamily: "Arial, sans-serif",
-                    fontSize: "14px",
-                    color: "#666",
-                  }}
-                >
-                  {page.appSecret.slice(0, 4) +
-                    "*".repeat(page.appSecret.length - 4)}
-                </p>
-              </div> */}
+                />
+              </div>
               <div>
-                <p
-                  style={{
-                    fontSize: "16px",
-                    color: "#333",
-                    marginBottom: "8px",
-                  }}
-                >
-                  <KeyOutlined style={{ marginRight: "8px" }} />
-                  Verify Token:
-                </p>
-                <p
-                  style={{
-                    fontFamily: "Arial, sans-serif",
-                    fontSize: "14px",
-                    color: "#666",
-                  }}
-                >
-                  {page.verifyToken}
+                <h3 style={{ margin: 0 }}>{page.name}</h3>
+                <p>
+                  Visit the page:{" "}
+                  <a href={page.link} target="_blank" rel="noopener noreferrer">
+                    {page.link}
+                  </a>
                 </p>
               </div>
+              <TokenDisplay token={page.accessToken.toString()} />
+              <AppSecretDisplay token={page.appSecret.toString()} />
+              <p
+                style={{
+                  fontSize: "16px",
+                  color: "#333",
+                  marginBottom: "8px",
+                  textAlign: "center",
+                }}
+              >
+                <KeyOutlined style={{ marginRight: "8px" }} />
+                Verify Token:
+              </p>
+              <p
+                style={{
+                  fontFamily: "Arial, sans-serif",
+                  fontSize: "14px",
+                  color: "#666",
+                  textAlign: "center",
+                }}
+              >
+                {page.verifyToken}
+              </p>
               <div style={{ alignSelf: "center" }}>
                 <Button
                   className="automatizer-button"

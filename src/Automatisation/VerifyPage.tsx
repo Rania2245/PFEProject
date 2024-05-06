@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Input, Button, message } from "antd";
 import { PlusOutlined, RobotOutlined } from "@ant-design/icons";
-import { createPage } from "../services/PageService";
+import { createPage, getAllPages } from "../services/PageService";
 
 interface VerifyPageProps {
   showModal: boolean;
@@ -26,10 +26,22 @@ const VerifyPage: React.FC<VerifyPageProps> = ({ showModal, handleCancel }) => {
         message.error("Please fill all fields");
         return;
       }
+      const pages = await getAllPages();
+      const existingPage = pages.find(
+        (page) => page.accessToken === accessToken
+      );
+      if (existingPage) {
+        message.error("Page with this Access Token already exists");
+        return;
+      }
+
+      //@ts-expect-error
+      const page = await createPage({ accessToken, verifyToken, appSecret });
+      if (page) {
+        message.success("Page created successfully");
+      }
       //@ts-expect-error
       await createPage({ accessToken, verifyToken, appSecret });
-
-      message.success("Page created successfully");
       window.location.reload();
       setAccessToken("");
       setVerifyToken("");

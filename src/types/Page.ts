@@ -4,6 +4,9 @@ import { User } from "./user";
 
 export type Page = {
   id: string;
+  picture: string;
+  link: string;
+  name: string;
   accessToken: String;
   verifyToken: String;
   appSecret: String;
