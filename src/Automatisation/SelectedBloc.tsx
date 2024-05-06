@@ -287,7 +287,13 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
       };
 
       console.log({ updatedBloc });
-      message.success("Bloc has been updated successfully!");
+
+      //@ts-expect-error
+      const Bloc1 = await updateBloc(bloc.id.valueOf(), updatedBloc);
+      //@ts-expect-error
+      if (Bloc1) {
+        message.success("Bloc has been updated successfully!");
+      }
       //@ts-expect-error
       await updateBloc(bloc.id.valueOf(), updatedBloc);
       window.location.reload();

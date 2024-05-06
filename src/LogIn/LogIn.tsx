@@ -14,15 +14,24 @@ const Login = () => {
       }
 
       console.log("Submitting form...");
-      message.success("Logged In successfully!");
+      const token1 = await loginUser(data.username, data.password);
+      if (token1) {
+        message.success("Logged In successfully!");
+      }
+
       const token = await loginUser(data.username, data.password);
+
       console.log("Login successful, token:", token);
       localStorage.setItem("token", token);
+
       localStorage.setItem("userEmail", data.username);
 
       navigate("/homeAuto");
       window.location.reload();
     } catch (error) {
+      message.error(
+        "Error whene Logging in , verify your email and password !"
+      );
       console.error("Login Error:", error);
     }
   };
