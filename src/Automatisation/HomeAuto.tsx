@@ -160,6 +160,10 @@ const HomeAuto: React.FC = () => {
   const handleView = (page: string) => {
     console.log(page);
     if (page) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
       console.log(page);
       navigate(`/autoMess/${page}`);
     } else {

@@ -14,24 +14,29 @@ const Login = () => {
       }
 
       console.log("Submitting form...");
-      const token1 = await loginUser(data.username, data.password);
-      if (token1) {
+      const response = await loginUser(data.username, data.password);
+      if (response && response.token && response.roles) {
+        const { token, roles } = response;
+
         message.success("Logged In successfully!");
+        localStorage.setItem("token", token);
+        if (Array.isArray(roles) && roles.length > 0) {
+          const role = roles[0];
+          localStorage.setItem("role", role);
+        }
+
+        localStorage.setItem("userEmail", data.username);
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+        navigate("/homeAuto");
+        window.location.reload();
+      } else {
+        message.error("Invalid response from server. Please try again.");
       }
-
-      const token = await loginUser(data.username, data.password);
-
-      console.log("Login successful, token:", token);
-      localStorage.setItem("token", token);
-
-      localStorage.setItem("userEmail", data.username);
-
-      navigate("/homeAuto");
-      window.location.reload();
     } catch (error) {
-      message.error(
-        "Error whene Logging in , verify your email and password !"
-      );
+      message.error("Error when Logging in, verify your email and password!");
       console.error("Login Error:", error);
     }
   };
@@ -122,6 +127,22 @@ const Login = () => {
                   >
                     LOGIN
                   </Button>
+                  <div
+                    style={{
+                      marginTop: "10px",
+                      textAlign: "center",
+                      color: " #FF4500",
+                    }}
+                  >
+                    <a
+                      style={{
+                        color: "#FF4500",
+                      }}
+                      href="/forgot-password"
+                    >
+                      Mot de passe oublié?
+                    </a>
+                  </div>
                 </Form.Item>
               </Space>
             </Form>

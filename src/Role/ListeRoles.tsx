@@ -8,36 +8,36 @@ import {
   Drawer,
   Pagination,
   Spin,
+  Modal,
 } from "antd";
 
 import { Role } from "../types/Role";
 import {
-  EyeOutlined,
   EditOutlined,
   DeleteOutlined,
   PlusOutlined,
   SearchOutlined,
-  FolderAddOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { deleteDep, getDeps } from "../services/departmentService";
-import AddDepartmentForm from "./AddDep";
-import { deleteRoles, getRoles } from "../services/RoleService";
+import { getRoles, deleteRoles, findRoleByName } from "../services/RoleService";
+import AddRoleForm from "./AddRole";
+import RoleModify from "./UpdateRole";
 
 const { Search } = Input;
 
 const RoletList = () => {
   const [isRoleDrawerVisible, setIsRoleDrawerVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const [Role, setRole] = useState<Role[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
     total: 0,
   });
   const navigate = useNavigate();
+  const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
+  const [isModifyDrawerVisible, setIsModifyDrawerVisible] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -47,13 +47,9 @@ const RoletList = () => {
     try {
       setLoading(true);
       const response = await getRoles();
-      const formattedRoles = response.map((name: any, index: any) => ({
-        id: index.toString(),
-        name: name,
-      }));
-      setRole(formattedRoles);
+      setRoles(response);
     } catch (error) {
-      console.error("Error fetching role : ", error);
+      console.error("Error fetching roles:", error);
     } finally {
       setLoading(false);
     }
@@ -63,25 +59,31 @@ const RoletList = () => {
     setIsRoleDrawerVisible(true);
   };
 
-  const handleView = (RoleId: string) => {
-    navigate(`/role/${RoleId}`);
+  const handleModify = (record: Role) => {
+    setSelectedRoleId(record.id);
+    setIsModifyDrawerVisible(true);
   };
 
-  const handleModify = (RoleId: string) => {
-    navigate(`/role/${RoleId}/edit`);
-  };
-
-  const handleDelete = async (RoleId: string) => {
+  const handleDelete = async (roleId: string) => {
     try {
-      await deleteRoles(RoleId);
+      await deleteRoles(roleId);
       fetchData();
     } catch (error) {
-      console.error("Error deleting role: ", error);
+      console.error("Error deleting role:", error);
     }
   };
 
-  const handleSearch = async (value: string) => {};
-
+  const handleSearch = async (value: string) => {
+    try {
+      setLoading(true);
+      const response = await findRoleByName(value);
+      setRoles(response);
+    } catch (error) {
+      console.error("Error searching roles:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   const columns = [
     {
       title: "ID",
@@ -104,16 +106,9 @@ const RoletList = () => {
       render: (_: any, record: Role) => (
         <Space>
           <Button
-            type="primary"
-            icon={<EyeOutlined />}
-            onClick={() => handleView(record.id)}
-          >
-            View
-          </Button>
-          <Button
             type="default"
             icon={<EditOutlined />}
-            onClick={() => handleModify(record.id)}
+            onClick={() => handleModify(record)}
           >
             Modify
           </Button>
@@ -134,46 +129,24 @@ const RoletList = () => {
 
   return (
     <div style={{ textAlign: "center" }}>
-      {" "}
-      <h2
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontFamily: "cursive",
-        }}
-      >
-        Role List icon={<UserOutlined style={{ color: "#000" }} />}
+      <h2 style={{ fontFamily: "cursive" }}>
+        Role List <UserOutlined style={{ color: "#000" }} />
       </h2>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          marginBottom: "20px",
-        }}
-      >
-        <div style={{ marginRight: "20px" }}>
-          <Search
-            placeholder="Search Rôle"
-            allowClear
-            onSearch={handleSearch}
-            style={{ width: 300 }}
-            suffix={<SearchOutlined style={{ color: "#1890ff" }} />}
-          />
-        </div>
-        <div>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={handleAddRole}
-          >
-            Add Role
-          </Button>
-        </div>
+      <div style={{ marginBottom: "20px" }}>
+        <Search
+          placeholder="Search Role"
+          allowClear
+          onSearch={handleSearch}
+          style={{ width: 300, marginRight: "20px" }}
+          suffix={<SearchOutlined style={{ color: "#1890ff" }} />}
+        />
+        <Button type="primary" icon={<PlusOutlined />} onClick={handleAddRole}>
+          Add Role
+        </Button>
       </div>
       <Spin spinning={loading}>
         <Table
-          dataSource={Role}
+          dataSource={roles}
           //@ts-expect-error
           columns={columns}
           pagination={false}
@@ -202,8 +175,22 @@ const RoletList = () => {
         visible={isRoleDrawerVisible}
         width={300}
       >
-        <AddDepartmentForm onCancel={() => setIsRoleDrawerVisible(false)} />
+        <AddRoleForm onCancel={() => setIsRoleDrawerVisible(false)} />
       </Drawer>
+      <Modal
+        title="Modify Role"
+        visible={isModifyDrawerVisible}
+        onCancel={() => setIsModifyDrawerVisible(false)}
+        footer={null}
+      >
+        {selectedRoleId && (
+          <RoleModify
+            id={selectedRoleId} // Pass the id prop here
+            visible={isModifyDrawerVisible}
+            onCancel={() => setIsModifyDrawerVisible(false)}
+          />
+        )}
+      </Modal>
     </div>
   );
 };

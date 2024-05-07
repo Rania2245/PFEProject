@@ -19,6 +19,7 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
 
   useEffect(() => {
     fetchDepartments();
+    fetchRoles();
   }, []);
 
   const fetchDepartments = async () => {
@@ -44,16 +45,19 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
     setLoading(true);
     try {
       const formData = {
-        ...values, //@ts-expect-error
-
-        departments: Array.isArray(values.department)
-          ? //@ts-expect-error
-            values.department.map((d: string) => d.trim())
+        ...values,
+        departments: Array.isArray(values.departments)
+          ? values.departments.map((d: string) => d.trim())
           : //@ts-expect-error
-            [values.department.trim()],
+            [values.departments?.trim()],
+        roles: Array.isArray(values.roles)
+          ? values.roles.map((r: string) => r?.trim())
+          : //@ts-expect-error
+            [values.roles?.trim()],
       };
 
       console.log(formData);
+      //@ts-expect-error
 
       await addUser(formData);
       message.success("User added successfully");
@@ -94,7 +98,7 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
       </Form.Item>
 
       <Form.Item
-        name="department"
+        name="departments"
         label="Department"
         rules={[{ required: true, message: "Please select the department" }]}
       >
@@ -107,7 +111,7 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
         </Select>
       </Form.Item>
       <Form.Item
-        name="Rôle"
+        name="roles"
         label="Rôle"
         rules={[{ required: true, message: "Please select the Rôle" }]}
       >

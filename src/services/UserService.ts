@@ -8,7 +8,11 @@ export const loginUser = async (email: string, password: string) => {
       email,
       password,
     });
-    return data.token;
+    // Assuming the response contains a 'token' and 'roles' property
+    return {
+      token: data.token,
+      roles: data.roles,
+    };
   } catch (error) {
     console.error("Error logging in:", error);
     throw error;
@@ -85,6 +89,20 @@ export const deleteUser = async (userId: string) => {
     return response.data;
   } catch (error) {
     console.error("Error deleting user:", error);
+    throw error;
+  }
+};
+export const getUserById = async (userId: string) => {
+  try {
+    const token = localStorage.getItem("token");
+    const { data } = await axios.get(`${endpoint}/api/users/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return data;
+  } catch (error) {
+    console.error("Error fetching user by ID:", error);
     throw error;
   }
 };

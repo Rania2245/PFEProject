@@ -78,5 +78,31 @@ const deleteDep = async (id: string) => {
     throw error;
   }
 };
+const getDepById = async (roleId: string) => {
+  try {
+    const response = await axios.get(
+      `${endpoint}/api/departments/${roleId}`,
+      getAxiosConfig()
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching department:", error);
+    throw error;
+  }
+};
+export const findDepByName = async (name: string) => {
+  try {
+    const { data } = await axios.get(
+      `${endpoint}/api/departmentSearch`,
 
-export { getAxiosConfig, addDep, getDeps, updateDep, deleteDep };
+      { params: { name } },
+      //@ts-expect-error
+      getAxiosConfig()
+    );
+    return data;
+  } catch (error) {
+    console.error(`Error finding departments by name: ${error}`);
+    throw error;
+  }
+};
+export { getAxiosConfig, addDep, getDeps, updateDep, deleteDep, getDepById };
