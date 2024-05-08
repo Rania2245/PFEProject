@@ -34,7 +34,7 @@ const addRole = async (name: string) => {
     );
     return data;
   } catch (error) {
-    console.error(`Error adding department: ${error}`);
+    console.error(`Error adding role: ${error}`);
     throw error;
   }
 };
@@ -58,7 +58,7 @@ const updateRole = async (id: string, name: string) => {
     );
     return data;
   } catch (error) {
-    console.error(`Error updating department: ${error}`);
+    console.error(`Error updating role: ${error}`);
     throw error;
   }
 };
@@ -75,5 +75,38 @@ const deleteRoles = async (id: string) => {
     throw error;
   }
 };
+const getRoleById = async (roleId: string) => {
+  try {
+    const response = await axios.get(
+      `${endpoint}/api/roles/${roleId}`,
+      getAxiosConfig()
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching role:", error);
+    throw error;
+  }
+};
+export const findRoleByName = async (name: string) => {
+  try {
+    const { data } = await axios.get(
+      `${endpoint}/api/rolesSearch`,
+      { params: { name } },
+      //@ts-expect-error
+      getAxiosConfig()
+    );
+    return data;
+  } catch (error) {
+    console.error(`Error finding role by name: ${error}`);
+    throw error;
+  }
+};
 
-export { getAxiosConfig, addRole, getRoles, updateRole, deleteRoles };
+export {
+  getAxiosConfig,
+  addRole,
+  getRoles,
+  updateRole,
+  deleteRoles,
+  getRoleById,
+};

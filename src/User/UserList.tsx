@@ -8,6 +8,7 @@ import {
   Pagination,
   Spin,
   Select,
+  Drawer,
 } from "antd";
 import { deleteUser, getAllUsers } from "../services/UserService";
 import { User } from "../types/user";
@@ -17,12 +18,15 @@ import {
   DeleteOutlined,
   PlusOutlined,
   SearchOutlined,
+  UsergroupAddOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { Department } from "../types/department";
+import AddUserForm from "./AddUser";
+import UserModify from "./UserModifier";
 
 const { Search } = Input;
-const { Option } = Select; // Add this line to import Option
+const { Option } = Select;
 
 const UserList = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -33,11 +37,13 @@ const UserList = () => {
   });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-
+  const [isUserDrawerVisible, setIsUserDrawerVisible] = useState(false);
   const handleSelectChange = (value: string, record: User) => {
     console.log("Selected value:", value);
     console.log("Record:", record);
   };
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const [isModifyDrawerVisible, setIsModifyDrawerVisible] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -55,29 +61,48 @@ const UserList = () => {
       setLoading(false);
     }
   };
+  const refreshPage = () => {
+    fetchData();
+  };
 
   const handleView = (userId: string) => {
     navigate(`/user/${userId}`);
   };
 
-  const handleModify = (userId: string) => {
-    navigate(`/user/${userId}/edit`);
+  const handleModify = (record: User) => {
+    if (record.id) {
+      setSelectedUserId(record.id);
+      setIsModifyDrawerVisible(true);
+    }
   };
 
-  const handleDelete = async (userId: string) => {
+  const handleDelete = async (record: User) => {
     try {
-      await deleteUser(userId);
+      await deleteUser(record.id);
       fetchData();
     } catch (error) {
       console.error("Error deleting user: ", error);
     }
   };
-
   const handleAdd = () => {
-    navigate("/user/add");
+    setIsUserDrawerVisible(true);
   };
+  // Inside the UserList component
 
-  const handleSearch = async (value: string) => {};
+  const handleSearch = async (value: string) => {
+    try {
+      setLoading(true);
+      const response = await getAllUsers();
+      const filteredUsers = response.filter((user: User) =>
+        user.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setUsers(filteredUsers);
+    } catch (error) {
+      console.error("Error searching users: ", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const columns = [
     {
@@ -117,7 +142,7 @@ const UserList = () => {
     },
     {
       title: "Roles",
-      dataIndex: "roles", // Changed to 'roles' to match data
+      dataIndex: "roles",
       key: "roles",
       align: "center",
       render: (roles: string[], record: User) => (
@@ -151,22 +176,15 @@ const UserList = () => {
       render: (_: any, record: User) => (
         <Space>
           <Button
-            type="primary"
-            icon={<EyeOutlined />}
-            onClick={() => handleView(record.id)}
-          >
-            View
-          </Button>
-          <Button
             type="default"
             icon={<EditOutlined />}
-            onClick={() => handleModify(record.id)}
+            onClick={() => handleModify(record)}
           >
             Modify
           </Button>
           <Popconfirm
             title="Are you sure you want to delete this user?"
-            onConfirm={() => handleDelete(record.id)}
+            onConfirm={() => handleDelete(record)}
             okText="Yes"
             cancelText="No"
           >
@@ -182,20 +200,32 @@ const UserList = () => {
   return (
     <div style={{ textAlign: "center" }}>
       <h2 style={{ marginBottom: "20px", fontFamily: "cursive" }}>
-        User List{" "}
-        <PlusOutlined
+        <UsergroupAddOutlined
           style={{ marginLeft: "10px", color: "red" }}
           onClick={handleAdd}
         />
+        User List
       </h2>
-      <div style={{ marginBottom: "20px" }}>
-        <Search
-          placeholder="Search users"
-          allowClear
-          onSearch={handleSearch}
-          style={{ width: 300 }}
-          suffix={<SearchOutlined style={{ color: "#1890ff" }} />}
-        />
+
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div style={{ marginBottom: "20px" }}>
+          <Search
+            placeholder="Search users"
+            allowClear
+            onSearch={handleSearch}
+            style={{ width: 300 }}
+            suffix={<SearchOutlined style={{ color: "#1890ff" }} />}
+          />
+          <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+            Add User
+          </Button>
+        </div>
       </div>
       <Spin spinning={loading}>
         <Table
@@ -220,6 +250,34 @@ const UserList = () => {
           setPagination({ ...pagination, current: 1, pageSize: size })
         }
       />
+      <Drawer
+        title="Add User"
+        placement="right"
+        closable={true}
+        onClose={() => setIsUserDrawerVisible(false)}
+        visible={isUserDrawerVisible}
+        width={800}
+      >
+        <AddUserForm onCancel={() => setIsUserDrawerVisible(false)} />
+      </Drawer>
+      {selectedUserId && (
+        <Drawer
+          title="Modify User"
+          placement="right"
+          closable={true}
+          onClose={() => setIsModifyDrawerVisible(false)}
+          visible={isModifyDrawerVisible}
+          width={700}
+          destroyOnClose={true}
+          afterVisibleChange={refreshPage}
+        >
+          <UserModify
+            id={selectedUserId}
+            visible={isModifyDrawerVisible}
+            onCancel={() => setIsModifyDrawerVisible(false)}
+          />
+        </Drawer>
+      )}
     </div>
   );
 };

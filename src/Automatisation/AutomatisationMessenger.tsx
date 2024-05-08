@@ -27,7 +27,7 @@ import {
 } from "../services/BlocService";
 import SelectedBloc from "./SelectedBloc";
 import "./button.css";
-import LogoutButton from "../CustomRequest/NavBar";
+import LogoutButton from "../Shared/NavBar";
 import { useParams } from "react-router-dom";
 import { getPageById } from "../services/PageService";
 import WelcomeMsgImg from "../assets/welcomemessege.png";

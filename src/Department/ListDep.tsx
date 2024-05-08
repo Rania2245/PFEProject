@@ -8,8 +8,8 @@ import {
   Drawer,
   Pagination,
   Spin,
+  Modal,
 } from "antd";
-
 import { Department } from "../types/department";
 import {
   EyeOutlined,
@@ -20,8 +20,13 @@ import {
   FolderAddOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { deleteDep, getDeps } from "../services/departmentService";
+import {
+  deleteDep,
+  findDepByName,
+  getDeps,
+} from "../services/departmentService";
 import AddDepartmentForm from "./AddDep";
+import DepModify from "./UpdateDep";
 
 const { Search } = Input;
 
@@ -29,6 +34,8 @@ const DepartmentList = () => {
   const [isDepartmentDrawerVisible, setIsDepartmentDrawerVisible] =
     useState(false);
   const [loading, setLoading] = useState(false);
+  const [isModifyDrawerVisible, setIsModifyDrawerVisible] = useState(false);
+  const [selecteddepId, setSelecteddepId] = useState<string | null>(null);
 
   const [departments, setDepartments] = useState<Department[]>([]);
   const [pagination, setPagination] = useState({
@@ -46,13 +53,14 @@ const DepartmentList = () => {
     try {
       setLoading(true);
       const response = await getDeps();
-      const formattedDepartments = response.map((name: any, index: any) => ({
-        id: index.toString(), // You can use index as the ID if needed
-        name: name,
+      console.log(response);
+      const formattedDepartments = response.map((department: Department) => ({
+        id: department.id.toString(), // Assuming department.id is a number
+        name: department.name,
       }));
       setDepartments(formattedDepartments);
     } catch (error) {
-      console.error("Error fetching departments : ", error);
+      console.error("Error fetching departments:", error);
     } finally {
       setLoading(false);
     }
@@ -66,8 +74,9 @@ const DepartmentList = () => {
     navigate(`/department/${departmentId}`);
   };
 
-  const handleModify = (departmentId: string) => {
-    navigate(`/department/${departmentId}/edit`);
+  const handleModify = (record: Department) => {
+    setSelecteddepId(record.id);
+    setIsModifyDrawerVisible(true);
   };
 
   const handleDelete = async (departmentId: string) => {
@@ -75,12 +84,21 @@ const DepartmentList = () => {
       await deleteDep(departmentId);
       fetchData();
     } catch (error) {
-      console.error("Error deleting department: ", error);
+      console.error("Error deleting department:", error);
     }
   };
 
   const handleSearch = async (value: string) => {
-    // Implement search functionality here
+    try {
+      setLoading(true);
+      const response = await findDepByName(value);
+      console.log(response);
+      setDepartments(response);
+    } catch (error) {
+      console.error("Error searching departments:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const columns = [
@@ -88,33 +106,26 @@ const DepartmentList = () => {
       title: "ID",
       dataIndex: "id",
       key: "id",
-      width: 100, // Set fixed width for all columns
-      align: "center", // Center align the content
+      width: 100,
+      align: "center",
     },
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      align: "center", // Center align the content
+      align: "center",
     },
     {
       title: "Actions",
       key: "actions",
-      align: "center", // Center align the content
-      width: 200, // Set fixed width for the actions column
+      align: "center",
+      width: 200,
       render: (_: any, record: Department) => (
         <Space>
           <Button
-            type="primary"
-            icon={<EyeOutlined />}
-            onClick={() => handleView(record.id)}
-          >
-            View
-          </Button>
-          <Button
             type="default"
             icon={<EditOutlined />}
-            onClick={() => handleModify(record.id)}
+            onClick={() => handleModify(record)}
           >
             Modify
           </Button>
@@ -135,8 +146,6 @@ const DepartmentList = () => {
 
   return (
     <div style={{ textAlign: "center" }}>
-      {" "}
-      {/* Center align the table */}
       <h2
         style={{
           display: "flex",
@@ -157,7 +166,7 @@ const DepartmentList = () => {
       >
         <div style={{ marginRight: "20px" }}>
           <Search
-            placeholder="Search departments"
+            placeholder="Search departments by name"
             allowClear
             onSearch={handleSearch}
             style={{ width: 300 }}
@@ -209,6 +218,20 @@ const DepartmentList = () => {
           onCancel={() => setIsDepartmentDrawerVisible(false)}
         />
       </Drawer>
+      <Modal
+        title="Modify Dep"
+        visible={isModifyDrawerVisible}
+        onCancel={() => setIsModifyDrawerVisible(false)}
+        footer={null}
+      >
+        {selecteddepId && (
+          <DepModify
+            id={selecteddepId}
+            visible={isModifyDrawerVisible}
+            onCancel={() => setIsModifyDrawerVisible(false)}
+          />
+        )}
+      </Modal>
     </div>
   );
 };

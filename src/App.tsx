@@ -8,19 +8,21 @@ import "./App.css";
 import Chatbot from "./CustomRequest/ChatBot";
 import Login from "./Login/LogIn";
 import PrivateRoutes from "./PrivateRoutes";
-import AddUserForm from "./CustomRequest/AddUser";
-import AddDepartmentForm from "./CustomRequest/AddDep";
-import History from "./CustomRequest/Historiqe";
-import Sidebar from "./CustomRequest/SideNavBar";
-import NavBar from "./CustomRequest/NavBar";
+import AddUserForm from "./User/AddUser";
+import AddDepartmentForm from "./Department/AddDep";
+import Sidebar from "./Shared/SideNavBar";
+import NavBar from "./Shared/NavBar";
+import History from "./Shared/Historiqe";
 import AutomatisationMessenger from "./Automatisation/AutomatisationMessenger";
 import HomeAuto from "./Automatisation/HomeAuto";
 import { useEffect } from "react";
-import UserList from "./CustomRequest/UserList";
-import DepartmentList from "./CustomRequest/ListDep";
+import UserList from "./User/UserList";
 import QuestionRequestAi from "./Ai/QuestionRequestAi";
-import AddRoleForm from "./CustomRequest/AddRole";
-import RoletList from "./CustomRequest/ListeRoles";
+import AddRoleForm from "./Role/AddRole";
+import RoletList from "./Role/ListeRoles";
+import DepartmentList from "./Department/ListDep";
+import ForgotPassport from "./Login/Forgot_password";
+import ResetPassword from "./Login/Reset_password";
 
 const { Content } = Layout;
 
@@ -47,6 +49,8 @@ function App() {
 
         <Content style={{ padding: "64px", height: "100%" }}>
           <Routes>
+            <Route path="/forgot-password" element={<ForgotPassport />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/" element={<Login />} />
             <Route element={<PrivateRoutes />}>
               <Route path="/listUser" element={<UserList />} />
