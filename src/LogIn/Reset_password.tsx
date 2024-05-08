@@ -1,47 +1,35 @@
 import { Form, Input, Button, Row, Col, Space, message } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import { loginUser } from "../services/UserService";
+import { UserOutlined } from "@ant-design/icons";
+import { resetPassword } from "../services/UserService";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+const ResetPassword = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-  const onFinish = async (data: { username: string; password: string }) => {
+  const onFinish = async (values: any) => {
+    const { useremail, password, confirmPassword } = values;
     try {
-      if (data.username === "" || data.password === "") {
-        message.error("Error: Username or password cannot be empty!");
-        return;
+      setLoading(true);
+      if (!useremail || !password || !confirmPassword) {
+        throw new Error("Please fill in all fields!");
       }
-
+      if (password !== confirmPassword) {
+        message.error('Passwords do not match!"');
+        throw new Error("Passwords do not match!");
+      }
       console.log("Submitting form...");
-      const response = await loginUser(data.username, data.password);
-      if (response && response.token && response.roles) {
-        const { token, roles } = response;
-
-        message.success("Logged In successfully!");
-        localStorage.setItem("token", token);
-        if (Array.isArray(roles) && roles.length > 0) {
-          const role = roles[0];
-          localStorage.setItem("role", role);
-        }
-
-        localStorage.setItem("userEmail", data.username);
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
-        navigate("/homeAuto");
-        window.location.reload();
-      } else {
-        message.error("Invalid response from server. Please try again.");
-      }
+      await resetPassword(useremail, password);
+      message.success(
+        "Your password has been reset successfully. You can now login with your new password."
+      );
+      setLoading(false);
+      navigate("/login");
     } catch (error) {
-      message.error("Error when Logging in, verify your email and password!");
-      console.error("Login Error:", error);
+      message.error("An error occurred. Please try again.");
+      setLoading(false);
     }
-  };
-  const handleForgotPassword = () => {
-    navigate(`/forgot-password`);
   };
 
   return (
@@ -67,7 +55,7 @@ const Login = () => {
               maxWidth: "400px",
             }}
           >
-            <Form name="login" onFinish={onFinish} autoComplete="off">
+            <Form name="resetPassword" onFinish={onFinish} autoComplete="off">
               <Space
                 direction="vertical"
                 size="middle"
@@ -84,35 +72,50 @@ const Login = () => {
                   }}
                 />
                 <Form.Item
-                  name="username"
-                  label="Username"
+                  name="useremail"
+                  label="Email"
                   style={{ marginBottom: 0 }}
                   rules={[
-                    { required: true, message: "Please input your username!" },
+                    { required: true, message: "Please input your email!" },
                   ]}
                 >
                   <Input
                     prefix={<UserOutlined />}
-                    placeholder="Username"
+                    placeholder="Email"
                     style={{ fontSize: "18px", width: "100%" }}
                   />
                 </Form.Item>
-
                 <Form.Item
                   name="password"
-                  label="Password"
+                  label="New Password"
                   style={{ marginBottom: 0 }}
                   rules={[
                     { required: true, message: "Please input your password!" },
                   ]}
                 >
                   <Input.Password
-                    prefix={<LockOutlined />}
-                    placeholder="Password"
+                    prefix={<UserOutlined />}
+                    placeholder="New Password"
                     style={{ fontSize: "18px", width: "100%" }}
                   />
                 </Form.Item>
-
+                <Form.Item
+                  name="confirmPassword"
+                  label="Confirm Password"
+                  style={{ marginBottom: 0 }}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please confirm your password!",
+                    },
+                  ]}
+                >
+                  <Input.Password
+                    prefix={<UserOutlined />}
+                    placeholder="Confirm Password"
+                    style={{ fontSize: "18px", width: "100%" }}
+                  />
+                </Form.Item>
                 <Form.Item style={{ marginBottom: 0 }}>
                   <Button
                     type="primary"
@@ -127,25 +130,10 @@ const Login = () => {
                       borderRadius: "5px",
                     }}
                     className="custom-button"
+                    loading={loading}
                   >
-                    LOGIN
+                    Reset Password
                   </Button>
-                  <div
-                    style={{
-                      marginTop: "10px",
-                      textAlign: "center",
-                      color: " #FF4500",
-                    }}
-                  >
-                    <button
-                      style={{
-                        color: "#FF4500",
-                      }}
-                      onClick={handleForgotPassword}
-                    >
-                      Mot de passe oublié?
-                    </button>
-                  </div>
                 </Form.Item>
               </Space>
             </Form>
@@ -156,4 +144,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ResetPassword;

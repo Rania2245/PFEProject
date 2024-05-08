@@ -21,6 +21,8 @@ import QuestionRequestAi from "./Ai/QuestionRequestAi";
 import AddRoleForm from "./Role/AddRole";
 import RoletList from "./Role/ListeRoles";
 import DepartmentList from "./Department/ListDep";
+import ForgotPassport from "./Login/Forgot_password";
+import ResetPassword from "./Login/Reset_password";
 
 const { Content } = Layout;
 
@@ -47,6 +49,8 @@ function App() {
 
         <Content style={{ padding: "64px", height: "100%" }}>
           <Routes>
+            <Route path="/forgot-password" element={<ForgotPassport />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/" element={<Login />} />
             <Route element={<PrivateRoutes />}>
               <Route path="/listUser" element={<UserList />} />
