@@ -118,7 +118,12 @@ export const forgotPassword = async (useremail: string) => {
     throw new Error("Error sending reset password email");
   }
 };
-export const resetPassword = async (email: string, password: string, confirmPassword: string, token: string) => {
+export const resetPassword = async (
+  email: string,
+  password: string,
+  confirmPassword: string,
+  token: string
+) => {
   try {
     const response = await axios.post(`${endpoint}/api/password/reset`, {
       email,
