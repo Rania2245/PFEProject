@@ -6,7 +6,7 @@ export type QuestionRequest = {
   questions: Question[];
   responses: Response[];
   created_at?: Date;
-  active: boolean;
+  langue: string;
   partage: PartageOption;
 
   user_id?: number;

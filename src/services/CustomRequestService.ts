@@ -91,6 +91,7 @@ export const addRequest = async (formData: any) => {
   try {
     const transformedData = {
       ...formData,
+
       partage: formData.partage.map((item: any) => ({
         type: item.type,
         value: item.value,

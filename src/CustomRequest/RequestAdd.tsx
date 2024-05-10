@@ -21,6 +21,11 @@ const RequestAdd: React.FC<Props> = ({ onCancel }) => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [userEmails, setUserEmails] = useState<string[]>([]);
   const navigate = useNavigate();
+  const [langue, setLanguage] = useState("anglais");
+
+  const handleChange = (langue: string) => {
+    setLanguage(langue);
+  };
 
   useEffect(() => {
     fetchDepartments();
@@ -69,7 +74,7 @@ const RequestAdd: React.FC<Props> = ({ onCancel }) => {
       }
 
       const requestData = {
-        active: values.active,
+        langue: langue,
         partage: partage,
         questions: values.questions.map((question: any) => ({
           text: question.text,
@@ -217,8 +222,11 @@ const RequestAdd: React.FC<Props> = ({ onCancel }) => {
       </Form.Item>
       {renderValueFields()}
 
-      <Form.Item label="Active" name="active" valuePropName="checked">
-        <Switch />
+      <Form.Item label="Language" name="langue">
+        <Select defaultValue="en" onChange={handleChange}>
+          <Select.Option value="anglais">English</Select.Option>
+          <Select.Option value="français">French</Select.Option>
+        </Select>
       </Form.Item>
 
       <Form.Item>

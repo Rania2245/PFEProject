@@ -26,7 +26,11 @@ const RequestModify: React.FC<Props> = ({ id, visible, onCancel }) => {
   const [departments, setDepartments] = useState<any[]>([]);
   const [initialPartageValue, setInitialPartageValue] =
     useState<PartageOption>();
+  const [langue, setLanguage] = useState("anglais");
 
+  const handleChange = (langue: string) => {
+    setLanguage(langue);
+  };
   useEffect(() => {
     if (visible) {
       fetchData();
@@ -45,7 +49,7 @@ const RequestModify: React.FC<Props> = ({ id, visible, onCancel }) => {
       setInitialPartageValue(initialType);
 
       form.setFieldsValue({
-        active: response.data.active,
+        langue: langue,
         partage: initialType,
         questions: response.data.questions.map(({ text }) => text),
         //@ts-expect-error
@@ -86,7 +90,7 @@ const RequestModify: React.FC<Props> = ({ id, visible, onCancel }) => {
           : [{ type: values.partage, value: "" }];
 
       const modifiedValues = {
-        active: values.active,
+        langue: langue,
         partage: modifiedPartage,
         questions: values.questions.map((question: string) => ({
           text: question,
@@ -95,8 +99,10 @@ const RequestModify: React.FC<Props> = ({ id, visible, onCancel }) => {
           text: response,
         })),
       };
+      console.log(modifiedValues);
       //@ts-expect-error
       await modifyRequest(Number(id), modifiedValues);
+
       message.success("Request updated successfully");
     } catch (error) {
       console.error("Error modifying request:", error);
@@ -188,10 +194,13 @@ const RequestModify: React.FC<Props> = ({ id, visible, onCancel }) => {
           </>
         )}
       </Form.List>
-
-      <Form.Item label="Active" name="active" valuePropName="checked">
-        <Switch />
+      <Form.Item label="Language" name="langue">
+        <Select defaultValue="en" onChange={handleChange}>
+          <Select.Option value="anglais">English</Select.Option>
+          <Select.Option value="français">French</Select.Option>
+        </Select>
       </Form.Item>
+
       <Form.Item
         label="Partage"
         name="partage"

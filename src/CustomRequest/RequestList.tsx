@@ -9,6 +9,7 @@ import {
   Select,
   Pagination,
   Spin,
+  Radio,
 } from "antd";
 import { deleteRequest, getRequests } from "../services/CustomRequestService";
 import { QuestionRequest } from "../types/questionrequest";
@@ -40,7 +41,7 @@ const RequestList = () => {
     total: 0,
   });
   const navigate = useNavigate();
-
+  const [language, setLanguage] = useState("français");
   useEffect(() => {
     fetchData();
   }, [pagination.current, pagination.pageSize]);
@@ -68,7 +69,7 @@ const RequestList = () => {
 
         return {
           id: item.id,
-          active: item.active,
+          langue: item.langue,
           partage: item.partage,
           questions: questions,
           responses: responses,
@@ -124,7 +125,7 @@ const RequestList = () => {
         const formattedRequests: QuestionRequest[] = response.map(
           (item: any) => ({
             id: item.id,
-            active: item.active,
+            langue: item.langue,
             partage: item.partage,
             questions: Object.values(item.questions).map((q: any) => ({
               text: q,
@@ -142,6 +143,39 @@ const RequestList = () => {
           )
         );
         console.log(results);
+        setRequests(results);
+      }
+    } catch (error) {
+      console.error("Error while searching:", error);
+    }
+  };
+  const handleSearchLangue = async (value: string) => {
+    try {
+      if (value.trim() === "") {
+        fetchData();
+      } else {
+        const response = await getRequests();
+        //@ts-expect-error
+        const formattedRequests: QuestionRequest[] = response.map(
+          (item: any) => ({
+            id: item.id,
+            langue: item.langue,
+            partage: item.partage,
+            questions: Object.values(item.questions).map((q: any) => ({
+              text: q,
+            })),
+            responses: Object.values(item.responses).map((r: any) => ({
+              text: r,
+            })),
+            created_at: item.created_at,
+            user_id: 0,
+          })
+        );
+
+        const results = formattedRequests.filter((request) =>
+          request.langue.toLowerCase().includes(value.toLowerCase())
+        );
+
         setRequests(results);
       }
     } catch (error) {
@@ -267,6 +301,25 @@ const RequestList = () => {
       >
         <h2 style={{ fontFamily: "cursive" }}>
           Base de connaissance {<DatabaseOutlined style={{ color: "#000" }} />}
+          <br />
+          <Radio.Group
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            buttonStyle="solid"
+          >
+            <Radio.Button
+              value="français"
+              onClick={() => handleSearchLangue("français")}
+            >
+              Français
+            </Radio.Button>
+            <Radio.Button
+              value="anglais"
+              onClick={() => handleSearchLangue("anglais")}
+            >
+              English
+            </Radio.Button>
+          </Radio.Group>
         </h2>
 
         <div

@@ -1,7 +1,7 @@
 import { Form, Input, Button, message, Space, Row, Col } from "antd";
 import { useParams, useNavigate } from "react-router-dom";
 import { resetPassword } from "../services/UserService";
-
+import Logo from "../assets/crm.jpg";
 interface FormValues {
   email: string;
   password: string;
@@ -23,14 +23,13 @@ const ResetPassword = () => {
       }
 
       if (!token) {
-        throw new Error("Token is missing."); // Handle token being undefined
+        throw new Error("Token is missing.");
       }
 
-      // Make API call to reset password
       await resetPassword(email, password, confirmPassword, token);
 
       message.success("Your password has been reset successfully.");
-      navigate("/login"); // Redirect to the login page after successful reset
+      navigate("/");
     } catch (error) {
       message.error("An error occurred. Please try again.");
       console.error("Reset Password Error:", error);
@@ -67,7 +66,7 @@ const ResetPassword = () => {
                 style={{ width: "100%" }}
               >
                 <img
-                  src="src/assets/crm.jpg"
+                  src={Logo}
                   alt="Login Image"
                   style={{
                     width: "50%",
