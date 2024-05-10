@@ -50,7 +50,8 @@ function App() {
         <Content style={{ padding: "64px", height: "100%" }}>
           <Routes>
             <Route path="/forgot-password" element={<ForgotPassport />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
+
             <Route path="/" element={<Login />} />
             <Route element={<PrivateRoutes />}>
               <Route path="/listUser" element={<UserList />} />
