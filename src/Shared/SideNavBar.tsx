@@ -30,6 +30,7 @@ const { Sider } = Layout;
 const Sidebar = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const [showSubMenu, setShowSubMenu] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [tokenExists, setTokenExists] = useState(false);
@@ -91,13 +92,16 @@ const Sidebar = () => {
 
   return (
     <Sider
-      width={hovered ? 250 : 80}
+      width={hovered ? 250 : 70}
       style={{
         backgroundColor: "#f0f0f0",
         color: "#000",
         left: 0,
         top: 0,
         overflowY: "auto",
+        position: "fixed",
+        height: "100vh",
+        zIndex: hovered ? 1000 : 1,
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -169,76 +173,52 @@ const Sidebar = () => {
         </Menu.ItemGroup>
 
         {userRole === "admin" && (
-          <Menu.ItemGroup
-            style={{ marginBottom: "30px" }}
-            key="user"
-            title={
-              <span style={{ fontWeight: "bold" }}>
-                Users{" "}
-                <UserDeleteOutlined
-                  style={{ marginLeft: "10px", color: "#000" }}
-                />
-              </span>
-            }
-          >
+          <Menu.ItemGroup key="user">
             <Menu.Item key="userList" icon={<UserOutlined />}>
               <Link to="/listUser">Gérer les utilisateurs </Link>
             </Menu.Item>
           </Menu.ItemGroup>
         )}
-        <Menu.ItemGroup
-          style={{ marginBottom: "30px" }}
-          key="Historique"
-          title={
-            <span style={{ fontWeight: "bold" }}>
-              Historique
-              <FolderViewOutlined
-                style={{
-                  marginLeft: "10px",
-                  color: "#000",
-                  marginBottom: userRole !== "admin" ? "100px" : "0",
-                }}
-              />
-            </span>
-          }
-        >
+        <Menu.ItemGroup style={{ marginBottom: "30px" }} key="Historique">
           <Menu.Item key="history" icon={<HistoryOutlined />}>
             <Link to="/history"> Consulter Historique</Link>
           </Menu.Item>
         </Menu.ItemGroup>
         {userRole === "admin" && (
-          <Menu.ItemGroup
-            style={{ marginBottom: "30px" }}
-            key="settings"
-            title={
-              <span style={{ fontWeight: "bold" }}>
-                Paramètres
-                <SettingOutlined
-                  style={{ marginLeft: "10px", color: "#000" }}
-                />
-              </span>
-            }
-          >
-            <Menu.Item key="roleList" icon={<UnorderedListOutlined />}>
-              <Link to="/listRole"> Gérer les Rôle </Link>
-            </Menu.Item>
+          <>
             <Menu.Item
-              key="departmentList"
-              icon={<ApartmentOutlined />}
-              style={{ marginBottom: "180px" }}
+              onClick={() => setShowSubMenu(!showSubMenu)}
+              key="settings"
+              icon={<SettingOutlined style={{ color: "#000" }} />}
             >
-              <Link to="/listdep"> Gérer les Department </Link>
+              <span style={{ fontWeight: "bold" }}>Paramètres</span>
+              <span style={{ marginLeft: "10px" }}>
+                {showSubMenu ? "▼" : "►"}
+              </span>
             </Menu.Item>
-          </Menu.ItemGroup>
+            {showSubMenu && (
+              <>
+                <Menu.Item key="roleList" icon={<UnorderedListOutlined />}>
+                  <Link to="/listRole"> Gérer les Rôles </Link>
+                </Menu.Item>
+                <Menu.Item key="departmentList" icon={<ApartmentOutlined />}>
+                  <Link to="/listdep"> Gérer les Départements </Link>
+                </Menu.Item>
+              </>
+            )}
+          </>
         )}
 
-        <Menu.Item
-          key="logout"
-          icon={<LogoutOutlined />}
-          onClick={handleLogout}
-        >
-          Déconnexion
-        </Menu.Item>
+        <div style={{ position: "absolute", bottom: 0, width: "100%" }}>
+          <Menu.Item
+            key="logout"
+            icon={<LogoutOutlined />}
+            style={{ marginBottom: "40px" }}
+            onClick={handleLogout}
+          >
+            Déconnexion
+          </Menu.Item>
+        </div>
       </Menu>
 
       <Drawer

@@ -55,6 +55,7 @@ const AutomatisationMessenger: React.FC = () => {
     if (id) {
       fetchExistingBlocs();
       fetchExistingMenus();
+      setShowAddBloc(true);
     }
   }, [id]);
 
@@ -208,16 +209,30 @@ const AutomatisationMessenger: React.FC = () => {
       <Title
         level={2}
         style={{
-          textAlign: "left",
+          textAlign: "center",
           borderBottom: "1px solid #D0CCCC",
           color: "#87abcc",
           marginBottom: "10px",
           paddingBottom: "5px",
           fontFamily: "cursive",
+          fontWeight: "bold",
+          cursor: "pointer",
+          transition: "color 0.2s ease-in-out",
         }}
+        onMouseEnter={() => {
+          //@ts-expect-error
+          document.getElementById("myTitle").style.color = "#333333";
+        }}
+        onMouseLeave={() => {
+          //@ts-expect-error
+          document.getElementById("myTitle").style.color = "#87abcc";
+        }}
+        id="myTitle"
       >
-        <BellOutlined /> Automatisation Messenger
+        <BellOutlined />
+        <span style={{ marginLeft: "10px" }}>Automatisation Messenger</span>
       </Title>
+
       <Row gutter={[16, 16]} style={{ padding: "20px", marginBottom: "10px" }}>
         <div style={{ width: "50%" }}>
           <Card
