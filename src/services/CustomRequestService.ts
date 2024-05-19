@@ -15,17 +15,37 @@ const getAxiosConfig = () => {
   }
 };
 
-export const generateAI = async (data: any) => {
+export const generateAI = async (data: any, id: string) => {
   try {
     const response = await axios.put(
-      `${endpoint}/api/question-requests`,
+      `${endpoint}/api/methodeAI/${id}`,
       data,
       getAxiosConfig()
     );
+
     console.log("Request generated successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error generating the request using AI:", error);
+    throw error;
+  }
+};
+
+export const getMethodAI = async (id: string) => {
+  try {
+    const response = await axios.get(
+      `${endpoint}/api/methodeAI/${id}`,
+
+      getAxiosConfig()
+    );
+
+    console.log("Requestmethod ai  receved successfully:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error reciving Requestmethod ai  the request using AI:",
+      error
+    );
     throw error;
   }
 };

@@ -18,6 +18,7 @@ interface Log {
 const History: React.FC = () => {
   const [history, setHistory] = useState<Log[]>([]);
   const [pagination, setPagination] = useState<any>({});
+  const [loading, setLoading] = useState(false);
 
   const columns = [
     {
@@ -29,6 +30,16 @@ const History: React.FC = () => {
       title: "Data",
       dataIndex: "data",
       key: "data",
+      render: (text: string, record: Log) => (
+        <div>
+          <div>
+            <strong>User ID:</strong> {record.user_id}
+          </div>
+          <div>
+            <strong>Request ID:</strong> {record.request_id}
+          </div>
+        </div>
+      ),
     },
     {
       title: "Timestamp",
@@ -41,14 +52,14 @@ const History: React.FC = () => {
       key: "user",
     },
   ];
-  const [loading, setLoading] = useState(false);
+
   const fetchHistory = async (page: number = 1) => {
     try {
       setLoading(true);
       const logs = await fetchLogs(page);
       const formattedLogs = logs.data.map((log: Log) => ({
         ...log,
-        data: JSON.stringify(log),
+        data: "", // Not needed as we are using the render method to format data
         timestamp: log.created_at,
         user: log.user_id,
       }));

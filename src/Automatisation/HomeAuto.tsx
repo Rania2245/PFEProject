@@ -165,6 +165,13 @@ const HomeAuto: React.FC = () => {
         behavior: "smooth",
       });
       console.log(page);
+      const existingPage = localStorage.getItem("pageId");
+      if (existingPage) {
+        console.log(`Removing existing pageId: ${existingPage}`);
+        localStorage.removeItem("pageId");
+      }
+
+      localStorage.setItem("pageId", page);
       navigate(`/autoMess/${page}`);
     } else {
       console.error("Page ID is undefined.");

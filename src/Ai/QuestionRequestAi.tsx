@@ -1,37 +1,70 @@
-import React, { useState } from "react";
-import { Radio, Input, Button, Tooltip } from "antd";
+import React, { useEffect, useState } from "react";
+import { Radio, Input, Button, Tooltip, message } from "antd";
 import {
   DatabaseOutlined,
   FileDoneOutlined,
   OpenAIOutlined,
   ReloadOutlined,
 } from "@ant-design/icons";
-import { generateAI } from "../services/CustomRequestService";
+import { generateAI, getMethodAI } from "../services/CustomRequestService";
 
 import "./QuestionRequestAi.css";
 
 const QuestionRequestAi = () => {
   const [chatGpt, setChatGpt] = useState(false);
   const [baseConnaissance, setBaseConnaissance] = useState(false);
-  const [traning, setTraning] = useState(false);
+  const [training, setTraining] = useState(false);
+  const [methodId, setMethodId] = useState("");
   const [token, setToken] = useState("");
+  const [loading, setLoading] = useState(false);
   const [model, setModel] = useState("");
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      const pageId = localStorage.getItem("pageId");
+      if (pageId) {
+        try {
+          const data = await getMethodAI(pageId);
+          setChatGpt(data.chatGpt ? true : false);
+          setBaseConnaissance(data.baseConnaissance);
+          // Ensure that training state is initialized properly
+          setTraining(data.training !== undefined ? data.training : false);
+          if (data.chatGpt) {
+            setToken(data.chatGpt.token);
+            setModel(data.chatGpt.model);
+          }
+          setMethodId(data.id);
+          setLoading(false);
+        } catch (error) {
+          console.error("Error fetching initial data:", error);
+          message.error("Error fetching initial data");
+          setLoading(false);
+        }
+      }
+    };
+    fetchInitialData();
+  }, []);
 
-  const handleGenerateScenario = () => {
+  const handleGenerateScenario = async () => {
     const requestData = {
       chatGpt: chatGpt ? { token, model } : false,
       baseConnaissance,
-      traning,
+      training,
     };
     console.log(requestData);
-    generateAI(requestData);
+    try {
+      await generateAI(requestData, methodId);
+      message.success("Configuration AI modifiée avec succès !");
+    } catch (error) {
+      console.error("Error lors de generation de  request using AI:", error);
+      message.error("Error lors de generation de  request using AI");
+    }
   };
 
   const handleChatGptChange = (value: any) => {
     setChatGpt(value);
     if (value) {
       setBaseConnaissance(false);
-      setTraning(false);
+      setTraining(false);
     }
   };
 
@@ -39,17 +72,22 @@ const QuestionRequestAi = () => {
     setBaseConnaissance(true);
     if (value) {
       setChatGpt(false);
-      setTraning(false);
+      setTraining(false);
     }
   };
 
-  const handleTraningChange = (value: any) => {
-    setTraning(true);
+  const handleTrainingChange = async (value: any) => {
+    setTraining(true);
+    setChatGpt(false);
+    setBaseConnaissance(false);
+
     if (value) {
-      setChatGpt(false);
-      setBaseConnaissance(false);
-      window.location.href = "http://127.0.0.1:7860/";
+      handleGenerateScenario();
     }
+  };
+
+  const handleTrainingButtonClick = () => {
+    window.location.href = "http://127.0.0.1:7860/";
   };
 
   return (
@@ -151,19 +189,37 @@ const QuestionRequestAi = () => {
             <FileDoneOutlined style={{ color: "#000", marginLeft: "5px" }} />
           </p>
           <Radio.Group
-            value={traning}
-            onChange={handleTraningChange}
+            value={training}
+            onChange={handleTrainingChange}
             buttonStyle="solid"
             className="custom-radio-group"
           >
-            <Radio.Button value={true} className={traning ? "active" : ""}>
+            <Radio.Button value={true} className={training ? "active" : ""}>
               on
             </Radio.Button>
-            <Radio.Button value={false} className={!traning ? "active" : ""}>
+            <Radio.Button value={false} className={!training ? "active" : ""}>
               off
             </Radio.Button>
           </Radio.Group>
         </div>
+
+        {training && (
+          <div style={{ textAlign: "center", marginTop: "20px" }}>
+            <Tooltip title="add training file">
+              <Button
+                style={{
+                  fontFamily: "cursive",
+                  textAlign: "left",
+                  color: "#72A0C1",
+                }}
+                onClick={handleTrainingButtonClick}
+              >
+                <ReloadOutlined style={{ color: "green" }} />
+                ajouter fichier pour training
+              </Button>
+            </Tooltip>
+          </div>
+        )}
 
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <Tooltip title="Appuyez pour générer votre base de connaissances avec l'IA selon vos choix sélectionnés">
