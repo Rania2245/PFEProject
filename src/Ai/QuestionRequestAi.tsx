@@ -6,44 +6,49 @@ import {
   OpenAIOutlined,
   ReloadOutlined,
 } from "@ant-design/icons";
+import { generateAI } from "../services/CustomRequestService";
+
+import "./QuestionRequestAi.css";
 
 const QuestionRequestAi = () => {
-  const [chatGpt, setChatGpt] = useState("off");
-  const [baseConnaissance, setBaseConnaissance] = useState("off");
-  const [traning, setTraning] = useState("off");
+  const [chatGpt, setChatGpt] = useState(false);
+  const [baseConnaissance, setBaseConnaissance] = useState(false);
+  const [traning, setTraning] = useState(false);
   const [token, setToken] = useState("");
   const [model, setModel] = useState("");
 
   const handleGenerateScenario = () => {
     const requestData = {
-      chatGpt: chatGpt === "on" ? { token, model } : false,
-      baseConnaissance: baseConnaissance === "on" ? true : false,
-      traning: traning === "on" ? true : false,
+      chatGpt: chatGpt ? { token, model } : false,
+      baseConnaissance,
+      traning,
     };
     console.log(requestData);
+    generateAI(requestData);
   };
 
-  const handleChatGptChange = (e: any) => {
-    setChatGpt(e.target.value);
-    if (e.target.value === "on") {
-      setBaseConnaissance("off");
-      setTraning("off");
+  const handleChatGptChange = (value: any) => {
+    setChatGpt(value);
+    if (value) {
+      setBaseConnaissance(false);
+      setTraning(false);
     }
   };
 
-  const handleBaseConnaissanceChange = (e: any) => {
-    setBaseConnaissance(e.target.value);
-    if (e.target.value === "on") {
-      setChatGpt("off");
-      setTraning("off");
+  const handleBaseConnaissanceChange = (value: any) => {
+    setBaseConnaissance(true);
+    if (value) {
+      setChatGpt(false);
+      setTraning(false);
     }
   };
 
-  const handleTraningChange = (e: any) => {
-    setTraning(e.target.value);
-    if (e.target.value === "on") {
-      setChatGpt("off");
-      setBaseConnaissance("off");
+  const handleTraningChange = (value: any) => {
+    setTraning(true);
+    if (value) {
+      setChatGpt(false);
+      setBaseConnaissance(false);
+      window.location.href = "http://127.0.0.1:7860/";
     }
   };
 
@@ -64,7 +69,6 @@ const QuestionRequestAi = () => {
           padding: "20px",
           borderRadius: "5px",
           maxWidth: "800px",
-
           width: "100%",
         }}
       >
@@ -81,18 +85,23 @@ const QuestionRequestAi = () => {
 
         <div style={{ marginBottom: "20px" }}>
           <p style={{ fontFamily: "cursive" }}>
-            Génere votre Base de connaissance avec chatGpt
+            Génère votre Base de connaissance avec chatGpt
             <OpenAIOutlined style={{ color: "#000", marginLeft: "5px" }} />
           </p>
           <Radio.Group
             value={chatGpt}
             onChange={handleChatGptChange}
             buttonStyle="solid"
+            className="custom-radio-group"
           >
-            <Radio.Button value="on">on</Radio.Button>
-            <Radio.Button value="off">off</Radio.Button>
+            <Radio.Button value={true} className={chatGpt ? "active" : ""}>
+              on
+            </Radio.Button>
+            <Radio.Button value={false} className={!chatGpt ? "active" : ""}>
+              off
+            </Radio.Button>
           </Radio.Group>
-          {chatGpt === "on" && (
+          {chatGpt && (
             <>
               <Input
                 placeholder="Enter Token"
@@ -112,31 +121,47 @@ const QuestionRequestAi = () => {
 
         <div style={{ marginBottom: "20px" }}>
           <p style={{ fontFamily: "cursive" }}>
-            Apprendre aupres du liste du Base de connaissance existante
+            Apprendre auprès de la liste de la Base de connaissance existante
             <DatabaseOutlined style={{ color: "#000", marginLeft: "5px" }} />
           </p>
           <Radio.Group
             value={baseConnaissance}
             onChange={handleBaseConnaissanceChange}
             buttonStyle="solid"
+            className="custom-radio-group"
           >
-            <Radio.Button value="on">on</Radio.Button>
-            <Radio.Button value="off">off</Radio.Button>
+            <Radio.Button
+              value={true}
+              className={baseConnaissance ? "active" : ""}
+            >
+              on
+            </Radio.Button>
+            <Radio.Button
+              value={false}
+              className={!baseConnaissance ? "active" : ""}
+            >
+              off
+            </Radio.Button>
           </Radio.Group>
         </div>
 
         <div style={{ marginBottom: "20px" }}>
           <p style={{ fontFamily: "cursive" }}>
-            Apprendre aupres dune base existante
+            Apprendre auprès d'un document
             <FileDoneOutlined style={{ color: "#000", marginLeft: "5px" }} />
           </p>
           <Radio.Group
             value={traning}
             onChange={handleTraningChange}
             buttonStyle="solid"
+            className="custom-radio-group"
           >
-            <Radio.Button value="on">on</Radio.Button>
-            <Radio.Button value="off">off</Radio.Button>
+            <Radio.Button value={true} className={traning ? "active" : ""}>
+              on
+            </Radio.Button>
+            <Radio.Button value={false} className={!traning ? "active" : ""}>
+              off
+            </Radio.Button>
           </Radio.Group>
         </div>
 
@@ -151,7 +176,7 @@ const QuestionRequestAi = () => {
               onClick={handleGenerateScenario}
             >
               <ReloadOutlined style={{ color: "green" }} />
-              Générer la base de connaissance
+              Générer la base de connaissances
             </Button>
           </Tooltip>
         </div>
