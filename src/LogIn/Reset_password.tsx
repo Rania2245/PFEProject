@@ -2,6 +2,7 @@ import { Form, Input, Button, message, Space, Row, Col } from "antd";
 import { useParams, useNavigate } from "react-router-dom";
 import { resetPassword } from "../services/UserService";
 import Logo from "../assets/crm.jpg";
+import { LockOutlined, LoginOutlined } from "@ant-design/icons";
 interface FormValues {
   email: string;
   password: string;
@@ -9,7 +10,19 @@ interface FormValues {
 }
 
 const ResetPassword = () => {
-  const { token } = useParams<{ token?: string }>(); // Make token optional
+  const buttonStyles = {
+    base: {
+      backgroundColor: "#1890ff",
+      borderColor: "#1890ff",
+      color: "#fff",
+    },
+    hover: {
+      backgroundColor: "#FF4500",
+      borderColor: "#FF4500",
+      color: "#fff",
+    },
+  };
+  const { token } = useParams<{ token?: string }>();
   const navigate = useNavigate();
 
   const onFinish = async (values: FormValues) => {
@@ -34,6 +47,9 @@ const ResetPassword = () => {
       message.error("An error occurred. Please try again.");
       console.error("Reset Password Error:", error);
     }
+  };
+  const handleLogIn = () => {
+    navigate(`/`);
   };
 
   return (
@@ -123,9 +139,27 @@ const ResetPassword = () => {
                 </Form.Item>
 
                 <Form.Item>
-                  <Button type="primary" htmlType="submit">
-                    Reset Password
-                  </Button>
+                  <Row gutter={16}>
+                    <Col>
+                      <Button
+                        type="primary"
+                        htmlType="submit"
+                        icon={<LockOutlined />}
+                      >
+                        Reset Password
+                      </Button>
+                    </Col>
+                    <Col>
+                      <Button
+                        type="primary"
+                        htmlType="button"
+                        onClick={handleLogIn}
+                        icon={<LoginOutlined />}
+                      >
+                        Back to Log In
+                      </Button>
+                    </Col>
+                  </Row>
                 </Form.Item>
               </Space>
             </Form>

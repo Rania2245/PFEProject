@@ -27,17 +27,12 @@ const History: React.FC = () => {
       key: "action",
     },
     {
-      title: "Data",
-      dataIndex: "data",
+      title: "Requeest Id",
+      dataIndex: "Requeest Id",
       key: "data",
       render: (text: string, record: Log) => (
         <div>
-          <div>
-            <strong>User ID:</strong> {record.user_id}
-          </div>
-          <div>
-            <strong>Request ID:</strong> {record.request_id}
-          </div>
+          <div>{record.request_id}</div>
         </div>
       ),
     },
@@ -59,7 +54,7 @@ const History: React.FC = () => {
       const logs = await fetchLogs(page);
       const formattedLogs = logs.data.map((log: Log) => ({
         ...log,
-        data: "", // Not needed as we are using the render method to format data
+        RequeestId: "",
         timestamp: log.created_at,
         user: log.user_id,
       }));
