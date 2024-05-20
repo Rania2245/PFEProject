@@ -279,33 +279,20 @@ const AddBloc: React.FC = () => {
     updatedInputData[index].data = value;
     setInputData(updatedInputData);
   };
-
   const handleSaveBloc = async () => {
     try {
       console.log({ inputData });
-      // const hasEmptyData = inputData.some((input) => {
-      //   return input.data === "";
-      // });
 
-      // if (hasEmptyData) {
-      //   message.error(
-      //     "Please fill all required fields before saving the bloc."
-      //   );
-      //   throw new Error(
-      //     "Please fill all required fields before saving the bloc."
-      //   );
-      // }
-      const blocData: Bloc = {
-        name: blocName,
-        typeBloc: blocType,
-        //@ts-expect-error
-
-        elementsBloc: inputData.map((input: ElementBloc, index: number) => {
+      const elementsBloc = inputData.map(
+        (input: ElementBloc, index: number) => {
           if (input.type === "gallery") {
             console.log("gallery");
             if (galleryForms.length === 0) {
               message.error(
-                "Please fill all required fields of the gallerie before saving the bloc."
+                "Please fill all required fields of the gallery before saving the bloc."
+              );
+              throw new Error(
+                "Please fill all required fields of the gallery before saving the bloc."
               );
             }
 
@@ -321,11 +308,12 @@ const AddBloc: React.FC = () => {
             (input.type === "audio" && uploadedFileName)
           ) {
             if (!input.file) {
-              if (galleryForms.length === 0) {
-                message.error(
-                  "Please fill all required fields of the file before saving the bloc."
-                );
-              }
+              message.error(
+                "Please fill all required fields of the file before saving the bloc."
+              );
+              throw new Error(
+                "Please fill all required fields of the file before saving the bloc."
+              );
             }
             return {
               type: input.type,
@@ -353,7 +341,10 @@ const AddBloc: React.FC = () => {
           } else if (input.type === "media") {
             if (facebookUrls[index] === "") {
               message.error(
-                "Please fill all required fields of the gallerie before saving the bloc."
+                "Please fill all required fields of the gallery before saving the bloc."
+              );
+              throw new Error(
+                "Please fill all required fields of the gallery before saving the bloc."
               );
             }
             return {
@@ -362,6 +353,14 @@ const AddBloc: React.FC = () => {
               options_bloc: input.blocOptions,
             };
           } else {
+            if (!input.data) {
+              message.error(
+                "Please fill all required fields before saving the bloc."
+              );
+              throw new Error(
+                "Please fill all required fields before saving the bloc."
+              );
+            }
             return {
               type: input.type,
               data: input.data,
@@ -369,15 +368,24 @@ const AddBloc: React.FC = () => {
               options_bloc: input.blocOptions,
             };
           }
-        }),
-      };
+        }
+      );
+
       if (elementsBloc.length === 0) {
-        message.error("Please add bloc Elements to your bloc bloc.");
+        message.error("Please add bloc elements to your bloc.");
+        throw new Error("No elements added to the bloc.");
       }
 
+      const blocData: Bloc = {
+        name: blocName,
+        typeBloc: blocType,
+        //@ts-expect-error
+        elementsBloc: elementsBloc,
+      };
+
+      message.success("Bloc has been added successfully!");
       console.log({ blocData });
       await createBloc(blocData);
-      message.success("Bloc has been added successfully!");
 
       setInputData([]);
       setModalVisible([]);
