@@ -850,7 +850,7 @@ const AddBloc: React.FC = () => {
             </Space>
           </Radio.Group>
           <div style={{ marginTop: "10px" }}>
-            <Tooltip title="Add Bloc">
+            <Tooltip>
               <FileAddOutlined
                 style={{
                   borderRadius: "50%",

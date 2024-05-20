@@ -458,14 +458,16 @@ const AutomatisationMessenger: React.FC = () => {
                     style={{
                       backgroundColor: "#87abcc",
                       borderColor: "#c9c9c9",
-                      width: "100px",
+                      width: "120px",
                       height: "40px",
                       fontSize: "16px",
                       fontWeight: "bold",
                       marginBottom: "10px",
                     }}
                     onClick={handleAddBlocClick}
-                  ></Button>
+                  >
+                    Add Bloc
+                  </Button>
                 </Tooltip>
               </div>
             </div>
@@ -554,13 +556,15 @@ const AutomatisationMessenger: React.FC = () => {
                   style={{
                     backgroundColor: "#87abcc",
                     borderColor: "#c9c9c9",
-                    width: "100px",
+                    width: "120px",
                     height: "40px",
                     fontSize: "16px",
                     fontWeight: "bold",
                   }}
                   onClick={handleAddBlocClick}
-                ></Button>
+                >
+                  Add Menu
+                </Button>
               </Tooltip>
             </div>
           </Card>
