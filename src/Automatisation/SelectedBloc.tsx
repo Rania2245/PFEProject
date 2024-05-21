@@ -70,7 +70,7 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
     setFileInputs(initialFileInputs);
 
     const initialGalleryForms = bloc.elementsBloc
-      .filter((elem) => elem.type === "galerie")
+      .filter((elem) => elem.type === "gallery")
       .map((elem) => {
         const galleryFormData: GalleryFormData = JSON.parse(elem.data);
         return galleryFormData;
@@ -239,23 +239,12 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
               file: input.file,
               options_bloc: input.blocOptions,
             };
-          case "redirect": {
-            if (
-              selectedBlocIndex[index] === undefined ||
-              selectedBlocIndex[index] === null
-            ) {
-              message.error(
-                "Please select a bloc to redirect to before saving the bloc."
-              );
-              throw new Error("Missing selected bloc index for redirect.");
-            }
-            const selectedBlocName = blocNames[selectedBlocIndex[index]];
-            return {
-              type: input.type,
-              data: selectedBlocName,
-              options_bloc: input.blocOptions,
+            case "redirect":{
+              return {
+                type: input.type,
+                data: input.data,}
             };
-          }
+          
           case "media": {
             console.log({ facebookUrls });
             if (facebookUrls[index] === "") {
@@ -805,7 +794,7 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
               {input.type === "photo" && <BellOutlined />}
               {input.type === "audio" && <BellOutlined />}
               {input.type === "media" && <BellOutlined />}
-              {input.type === "galerie" && <BellOutlined />}
+              {input.type === "gallery" && <BellOutlined />}
               {input.type === "redirection" && <BellOutlined />}
               {input.type === "typing" && <BellOutlined />}
               {input.type === "video" && <VideoCameraAddOutlined />}

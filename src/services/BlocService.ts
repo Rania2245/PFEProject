@@ -134,64 +134,86 @@ export const createBloc = async (formData: Bloc) => {
     throw error;
   }
 };
-
 export const updateBloc = async (id: number, formData: Bloc) => {
-  try {
-    const config = {
-      headers: {
-        ...getAxiosConfig().headers,
-        "Content-Type": "multipart/x-www-form-urlencoded",
-      },
-    };
+  const maxRetries = 5;
+  const initialDelay = 500; // Initial delay of 500ms
 
-    const formDataToSend = new FormData();
-    formDataToSend.append("_method", "put");
-    formDataToSend.append("name", formData.name);
+  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-    formData.elementsBloc.forEach((element: ElementBloc, index: number) => {
-      switch (element.type) {
-        case "photo":
-        case "video":
-        case "audio":
-          if (element.file) {
-            console.log({ element });
+  const attemptUpdate = async (retryCount = 0) => {
+    try {
+      const config = {
+        headers: {
+          ...getAxiosConfig().headers,
+          "Content-Type": "multipart/form-data", // Use multipart/form-data for file uploads
+        },
+      };
+
+      const formDataToSend = new FormData();
+      formDataToSend.append("_method", "put"); // Use the POST method with _method=put to emulate a PUT request
+
+      // Append bloc attributes to the formDataToSend
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("typeBloc", formData.typeBloc);
+
+      // Append elementsBloc data to the formDataToSend
+      formData.elementsBloc.forEach((element: ElementBloc, index: number) => {
+        if (element.id !== undefined) {
+          formDataToSend.append(`elementsBloc[${index}][id]`, element.id.toString()); // Include element ID for existing elements
+        }
+
+        switch (element.type) {
+          case "photo":
+          case "video":
+          case "audio":
+            if (element.file) {
+              formDataToSend.append(`elementsBloc[${index}][type]`, element.type);
+              formDataToSend.append(`elementsBloc[${index}][data]`, element.file);
+            }
+            break;
+          case "gallery":
+            if (Array.isArray(element.data)) {
+              element.data.forEach((galleryItem: any, galleryIndex: number) => {
+                formDataToSend.append(`elementsBloc[${index}][data][${galleryIndex}][photo]`, galleryItem.photo);
+                formDataToSend.append(`elementsBloc[${index}][data][${galleryIndex}][title]`, galleryItem.title);
+                formDataToSend.append(`elementsBloc[${index}][data][${galleryIndex}][description]`, galleryItem.description);
+                formDataToSend.append(`elementsBloc[${index}][data][${galleryIndex}][url]`, galleryItem.url);
+              });
+            }
+            break;
+          default:
             formDataToSend.append(`elementsBloc[${index}][type]`, element.type);
-            formDataToSend.append(`elementsBloc[${index}][data]`, element.file);
-          }
-          break;
-
-        default:
-          formDataToSend.append(`elementsBloc[${index}][type]`, element.type);
-          formDataToSend.append(`elementsBloc[${index}][data]`, element.data);
-          break;
-      }
-
-      //@ts-expect-error
-      if (Array.isArray(element.options_bloc)) {
+            formDataToSend.append(`elementsBloc[${index}][data]`, element.data);
+            break;
+        }
         //@ts-expect-error
-        element.options_bloc.forEach(
-          (option: BlocOption, optionIndex: number) => {
-            formDataToSend.append(
-              `elementsBloc[${index}][options_bloc][${optionIndex}][name]`,
-              option.name
-            );
-            formDataToSend.append(
-              `elementsBloc[${index}][options_bloc][${optionIndex}][type]`,
-              option.type
-            );
-            formDataToSend.append(
-              `elementsBloc[${index}][options_bloc][${optionIndex}][value]`,
-              option.value
-            );
-          }
-        );
+        if (Array.isArray(element.options_bloc)) {
+          //@ts-expect-error
+          element.options_bloc.forEach((option: BlocOption, optionIndex: number) => {
+            formDataToSend.append(`elementsBloc[${index}][options_bloc][${optionIndex}][name]`, option.name);
+            formDataToSend.append(`elementsBloc[${index}][options_bloc][${optionIndex}][type]`, option.type);
+            formDataToSend.append(`elementsBloc[${index}][options_bloc][${optionIndex}][value]`, option.value);
+          });
+        }
+      });
+
+      // Send the formDataToSend to update the bloc
+      await axios.post(`${endpoint}/api/blocs/${id}`, formDataToSend, config);
+    } catch (error) {
+      //@ts-expect-error
+      if (error.response && error.response.status === 429 && retryCount < maxRetries) {
+        const delay = initialDelay * Math.pow(2, retryCount); // Exponential backoff
+        console.warn(`Retrying request... Attempt ${retryCount + 1} in ${delay}ms`);
+        await sleep(delay);
+        await attemptUpdate(retryCount + 1);
+      } else {
+        console.error(`Error updating bloc with ID ${id}: `, error);
+        throw error;
       }
-    });
-    await axios.post(`${endpoint}/api/blocs/${id}`, formDataToSend, config);
-  } catch (error) {
-    console.error(`Error updating bloc with ID ${id}: `, error);
-    throw error;
-  }
+    }
+  };
+
+  await attemptUpdate();
 };
 
 export const deleteBloc = async (id: Number) => {
