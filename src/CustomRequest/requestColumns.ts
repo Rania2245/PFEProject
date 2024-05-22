@@ -5,7 +5,7 @@ export default [
     key: "questions",
   },
   {
-    title: "Réponse",
+    title: "Responses",
     dataIndex: "responses",
     key: "responses",
   },

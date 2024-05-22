@@ -146,7 +146,7 @@ const Sidebar = () => {
           key="automatiser"
           title={
             <span style={{ fontWeight: "bold" }}>
-              Automatiser
+              Automation
               <OpenAIOutlined style={{ marginLeft: "10px", color: "#000" }} />
             </span>
           }
@@ -159,29 +159,27 @@ const Sidebar = () => {
             icon={<DatabaseOutlined />}
             style={{ color: "#000" }}
           >
-            <Link to="/requests">Base de Connaissance</Link>
+            <Link to="/requests">knowledge base</Link>
           </Menu.Item>
           <Menu.Item
             key="aiKnowledgeBase"
             icon={<ApiOutlined />}
             style={{ color: "#000" }}
           >
-            <Link to="/questionRequestAi">
-              Gérer Base de Connaissance avec AI
-            </Link>
+            <Link to="/questionRequestAi"> Knowledge Base with AI</Link>
           </Menu.Item>
         </Menu.ItemGroup>
 
         {userRole === "admin" && (
           <Menu.ItemGroup key="user">
             <Menu.Item key="userList" icon={<UserOutlined />}>
-              <Link to="/listUser">Gérer les utilisateurs </Link>
+              <Link to="/listUser">Managing Users</Link>
             </Menu.Item>
           </Menu.ItemGroup>
         )}
         <Menu.ItemGroup style={{ marginBottom: "30px" }} key="Historique">
           <Menu.Item key="history" icon={<HistoryOutlined />}>
-            <Link to="/history"> Consulter Historique</Link>
+            <Link to="/history"> View History</Link>
           </Menu.Item>
         </Menu.ItemGroup>
         {userRole === "admin" && (
@@ -191,7 +189,7 @@ const Sidebar = () => {
               key="settings"
               icon={<SettingOutlined style={{ color: "#000" }} />}
             >
-              <span style={{ fontWeight: "bold" }}>Paramètres</span>
+              <span style={{ fontWeight: "bold" }}>Settings</span>
               <span style={{ marginLeft: "10px" }}>
                 {showSubMenu ? "▼" : "►"}
               </span>
@@ -199,10 +197,10 @@ const Sidebar = () => {
             {showSubMenu && (
               <>
                 <Menu.Item key="roleList" icon={<UnorderedListOutlined />}>
-                  <Link to="/listRole"> Gérer les Rôles </Link>
+                  <Link to="/listRole"> Manage Roles</Link>
                 </Menu.Item>
                 <Menu.Item key="departmentList" icon={<ApartmentOutlined />}>
-                  <Link to="/listdep"> Gérer les Départements </Link>
+                  <Link to="/listdep">Manage Departments </Link>
                 </Menu.Item>
               </>
             )}
@@ -216,7 +214,7 @@ const Sidebar = () => {
             style={{ marginBottom: "40px" }}
             onClick={handleLogout}
           >
-            Déconnexion
+            Log Out
           </Menu.Item>
         </div>
       </Menu>

@@ -23,6 +23,7 @@ import RoletList from "./Role/ListeRoles";
 import DepartmentList from "./Department/ListDep";
 import ForgotPassport from "./Login/Forgot_password";
 import ResetPassword from "./Login/Reset_password";
+import LogInGard from "./LogInGard"; // Import LogInGard
 
 const { Content } = Layout;
 
@@ -49,13 +50,14 @@ function App() {
 
         <Content style={{ padding: "64px", height: "100%" }}>
           <Routes>
+            <Route element={<LogInGard />}>
+              <Route path="/" element={<Login />} />
+            </Route>
             <Route path="/forgot-password" element={<ForgotPassport />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-            <Route path="/" element={<Login />} />
             <Route element={<PrivateRoutes />}>
               <Route path="/listUser" element={<UserList />} />
-
               <Route path="/listdep" element={<DepartmentList />} />
               <Route path="/homeAuto" element={<HomeAuto />} />
               <Route path="/requests" element={<RequestList />} />

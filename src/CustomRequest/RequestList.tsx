@@ -239,7 +239,7 @@ const RequestList = () => {
       render: (_: any, record: QuestionRequest) => renderQuestion(record),
     },
     {
-      title: "Réponses",
+      title: "Responses",
       dataIndex: "responses",
       key: "responses",
       render: (_: any, record: QuestionRequest) => renderResponse(record),
@@ -301,7 +301,7 @@ const RequestList = () => {
         }}
       >
         <h2 style={{ fontFamily: "cursive" }}>
-          Base de connaissance {<DatabaseOutlined style={{ color: "#000" }} />}
+          knowledge base{<DatabaseOutlined style={{ color: "#000" }} />}
           <br />
           <Radio.Group
             value={language}
@@ -340,7 +340,7 @@ const RequestList = () => {
           </div>
           <div>
             <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-              Ajouter
+              Add
             </Button>
           </div>
         </div>

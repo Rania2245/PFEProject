@@ -60,18 +60,13 @@ const AddBloc: React.FC = () => {
   const [optionIdCounter, setOptionIdCounter] = useState<number>(0);
   const [blocNames, setBlocNames] = useState<string[]>([]);
   const [selectedBlocIndex, setSelectedBlocIndex] = useState<number[]>([]);
-
   const [forms, setForms] = useState<GalleryFormData[]>([]);
-
   const [uploadedFileName, setUploadedFileName] = useState<File[]>([]);
   const [searchKeyword, setSearchKeyword] = useState("");
-
   const [fileInputs, setFileInputs] = useState<File[]>([]);
-
   const [facebookUrls, setFacebookUrls] = useState(
     Array(inputData.length).fill("")
   );
-
   const [elementsBloc, setElementsBloc] = useState<ElementBloc[]>([]);
   const [galleryForms, setGalleryForms] = useState<GalleryFormData[]>([]);
   const [blocType, setBlocType] = useState<string>("bloc");
@@ -145,7 +140,6 @@ const AddBloc: React.FC = () => {
         file
       );
 
-      // Update uploadedFileName array
       setUploadedFileName((prevUploadedFiles) => {
         const updatedUploadedFiles = [...prevUploadedFiles];
         updatedUploadedFiles[index] = file;
@@ -215,41 +209,6 @@ const AddBloc: React.FC = () => {
       updated.splice(index, 1);
       return updated;
     });
-  };
-
-  const handleDuplicateBloc = async () => {
-    try {
-      if (currentBlockIndex !== -1) {
-        const blockToDuplicate = inputData[currentBlockIndex];
-        //@ts-expect-error
-        const duplicatedBloc = await duplicateBloc(blockToDuplicate.id);
-        //@ts-expect-error
-        setInputData([...inputData, duplicatedBloc]);
-        setModalVisible([...modalVisible, false]);
-      }
-    } catch (error) {
-      console.error("Error duplicating bloc: ", error);
-    }
-  };
-
-  const handleDeleteBloc = async () => {
-    try {
-      if (currentBlockIndex !== -1) {
-        //@ts-expect-error
-        await deleteBloc(inputData[currentBlockIndex].id);
-        const updatedInputData = [...inputData];
-        updatedInputData.splice(currentBlockIndex, 1);
-        setInputData(updatedInputData);
-        setCurrentBlockIndex(-1);
-        setModalVisible((prev) => {
-          const updated = [...prev];
-          updated.splice(currentBlockIndex, 1);
-          return updated;
-        });
-      }
-    } catch (error) {
-      console.error("Error deleting bloc: ", error);
-    }
   };
 
   const handleBlockClick = (index: number) => {

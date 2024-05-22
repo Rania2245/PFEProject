@@ -36,7 +36,7 @@ const LogoutButton = () => {
   const menu = (
     <Menu>
       <Menu.Item key="logout" onClick={handleLogout}>
-        Déconnexion <LogoutOutlined />
+        Log Out <LogoutOutlined />
       </Menu.Item>
     </Menu>
   );

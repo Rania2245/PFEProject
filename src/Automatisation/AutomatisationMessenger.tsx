@@ -249,7 +249,7 @@ const AutomatisationMessenger: React.FC = () => {
                   color: "#333",
                 }}
               >
-                <MessageOutlined /> Liste des blocs
+                <MessageOutlined /> List of blocks
                 <div style={{ marginLeft: "auto" }}>
                   <Tooltip title="Add Bloc">
                     <Button
@@ -488,7 +488,7 @@ const AutomatisationMessenger: React.FC = () => {
                   textAlign: "center",
                 }}
               >
-                <MenuOutlined /> Eléments de menu
+                <MenuOutlined /> Menu items
               </div>
             }
             style={{
@@ -512,8 +512,8 @@ const AutomatisationMessenger: React.FC = () => {
               }}
             />
             <span style={{ fontFamily: "cursive" }}>
-              Le menu aide les utilisateurs à accéder à des fonctionnalités tout
-              au long de la conversation.
+              The menu assists users in accessing features throughout the
+              conversation
             </span>
             {existingMenus.map((bloc) => (
               <Button

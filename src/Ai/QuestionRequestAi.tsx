@@ -26,7 +26,6 @@ const QuestionRequestAi = () => {
           const data = await getMethodAI(pageId);
           setChatGpt(data.chatGpt ? true : false);
           setBaseConnaissance(data.baseConnaissance);
-          // Ensure that training state is initialized properly
           setTraining(data.training !== undefined ? data.training : false);
           if (data.chatGpt) {
             setToken(data.chatGpt.token);
@@ -117,13 +116,13 @@ const QuestionRequestAi = () => {
             color: "#5072A7",
           }}
         >
-          Configuration AI
+          AI Configuration
           <DatabaseOutlined style={{ color: "green" }} />
         </h2>
 
         <div style={{ marginBottom: "20px" }}>
           <p style={{ fontFamily: "cursive" }}>
-            Génère votre Base de connaissance avec chatGpt
+            Generate your Knowledge Base with ChatGPT
             <OpenAIOutlined style={{ color: "#000", marginLeft: "5px" }} />
           </p>
           <Radio.Group
@@ -159,7 +158,7 @@ const QuestionRequestAi = () => {
 
         <div style={{ marginBottom: "20px" }}>
           <p style={{ fontFamily: "cursive" }}>
-            Apprendre auprès de la liste de la Base de connaissance existante
+            Learn from the existing Knowledge Base list
             <DatabaseOutlined style={{ color: "#000", marginLeft: "5px" }} />
           </p>
           <Radio.Group
@@ -215,14 +214,14 @@ const QuestionRequestAi = () => {
                 onClick={handleTrainingButtonClick}
               >
                 <ReloadOutlined style={{ color: "green" }} />
-                ajouter fichier pour training
+                Add file for training
               </Button>
             </Tooltip>
           </div>
         )}
 
         <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <Tooltip title="Appuyez pour générer votre base de connaissances avec l'IA selon vos choix sélectionnés">
+          <Tooltip title="Press to generate your knowledge base with AI based on your selected choices.">
             <Button
               style={{
                 fontFamily: "cursive",
@@ -232,7 +231,7 @@ const QuestionRequestAi = () => {
               onClick={handleGenerateScenario}
             >
               <ReloadOutlined style={{ color: "green" }} />
-              Générer la base de connaissances
+              Generate the knowledge base
             </Button>
           </Tooltip>
         </div>

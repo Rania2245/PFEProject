@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Input, Button, Typography, Divider, Tooltip, Spin } from "antd"; // Import Spin component from antd
+import { Modal, Input, Button, Typography, Divider, Tooltip, Spin } from "antd";
 import {
   DeleteOutlined,
   EyeOutlined,
@@ -230,14 +230,14 @@ const HomeAuto: React.FC = () => {
           >
             <h2 style={{ fontFamily: "cursive", color: "#333" }}>
               <UserOutlined style={{ marginRight: "10px" }} />
-              Automatisez votre service client de votre page Facebook
+              Automate your customer service for your Facebook page
             </h2>
             <p style={{ fontFamily: "cursive", color: "#666" }}>
               <MessageOutlined style={{ marginRight: "10px" }} />
-              Créez votre chatbot et automatisez vos réponses sur Messenger.
-              L'application vous permet de générer votre base de connaissance
-              avec l'IA, de créer des messages de bienvenue/défaut et des menus
-              et blocs pour améliorer la relation avec le consommateur.
+              Create your chatbot and automate your responses on Messenger. The
+              application allows you to generate responses using AI, create
+              welcome/default messages, design menus and blocks to enhance
+              customer relations, and add your own knowledge base
             </p>
           </div>
         </div>
@@ -261,8 +261,8 @@ const HomeAuto: React.FC = () => {
           }
         >
           <div style={{ fontFamily: "cursive" }}>
-            <h2>Créez votre chatbot</h2>
-            <p>Automatisez Votre Service Client de votre page Facebook</p>
+            <h2>Create your chatbot</h2>
+            <p>Automate your customer service on your Facebook page</p>
           </div>
           <Tooltip title="Add New Page">
             <button
@@ -400,9 +400,9 @@ const HomeAuto: React.FC = () => {
                     handleView(page.id);
                     console.log(page.id);
                   }}
-                  title="Automatiser cette page"
+                  title="Automate  page"
                 >
-                  Automatiser
+                  Automate
                 </Button>
               </div>
             </div>
