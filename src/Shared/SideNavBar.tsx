@@ -211,7 +211,7 @@ const Sidebar = () => {
           <Menu.Item
             key="logout"
             icon={<LogoutOutlined />}
-            style={{ marginBottom: "40px" }}
+            style={{ marginBottom: "20px" }}
             onClick={handleLogout}
           >
             Log Out

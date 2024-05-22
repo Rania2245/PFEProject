@@ -307,7 +307,7 @@ const AutomatisationMessenger: React.FC = () => {
             >
               <div>
                 {" "}
-                <Tooltip title="welcome Messege Dans Messenger">
+                <Tooltip title="welcome Messege In Messenger">
                   <img
                     src={WelcomeMsgImg}
                     alt="welcome messege Image"
@@ -370,7 +370,7 @@ const AutomatisationMessenger: React.FC = () => {
               onMouseEnter={handleDefaultMouseEnter}
               onMouseLeave={handleDefaultMouseLeave}
             >
-              <Tooltip title="Default Messege Dans Messenger">
+              <Tooltip title="Default Messege In Messenger">
                 <img
                   src={DefaultImg}
                   alt="DefaultImg messege Image"
