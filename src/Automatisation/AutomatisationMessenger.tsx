@@ -230,7 +230,7 @@ const AutomatisationMessenger: React.FC = () => {
         id="myTitle"
       >
         <BellOutlined />
-        <span style={{ marginLeft: "10px" }}>Automatisation Messenger</span>
+        <span style={{ marginLeft: "10px" }}>Messenger Automation</span>
       </Title>
 
       <Row gutter={[16, 16]} style={{ padding: "20px", marginBottom: "10px" }}>

@@ -143,7 +143,7 @@ const Login = () => {
                       }}
                       onClick={handleForgotPassword}
                     >
-                      Mot de passe oublié?
+                      Forgot Password?
                     </button>
                   </div>
                 </Form.Item>
