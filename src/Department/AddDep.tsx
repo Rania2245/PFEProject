@@ -14,6 +14,7 @@ const AddDepartmentForm: React.FC<Props> = ({ onCancel }) => {
     try {
       await addDep(values.name);
       message.success("Department added successfully");
+      window.location.reload();
       form.resetFields();
       onCancel();
     } catch (error) {

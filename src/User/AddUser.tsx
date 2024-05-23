@@ -4,6 +4,8 @@ import { addUser } from "../services/UserService";
 import { User } from "../types/user";
 import { getDeps } from "../services/departmentService";
 import { getRoles } from "../services/RoleService";
+import { Department } from "../types/department";
+import { Role } from "../types/Role";
 
 const { Option } = Select;
 
@@ -14,8 +16,8 @@ interface Props {
 const AddUserForm: React.FC<Props> = ({ onCancel }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [departments, setDepartments] = useState<string[]>([]);
-  const [roles, setRoles] = useState<string[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
 
   useEffect(() => {
     fetchDepartments();
@@ -24,13 +26,14 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
 
   const fetchDepartments = async () => {
     try {
-      const departments = await getDeps();
-      setDepartments(departments);
+      const departmentsData = await getDeps();
+      console.log(departmentsData);
+      setDepartments(departmentsData);
     } catch (error) {
       console.error("Error fetching departments:", error);
-      message.error("Failed to fetch departments. Please try again later.");
     }
   };
+
   const fetchRoles = async () => {
     try {
       const roles = await getRoles();
@@ -60,7 +63,9 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
       //@ts-expect-error
 
       await addUser(formData);
+
       message.success("User added successfully");
+      window.location.reload();
       form.resetFields();
       onCancel();
     } catch (error) {
@@ -97,15 +102,11 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
         <Input.Password />
       </Form.Item>
 
-      <Form.Item
-        name="departments"
-        label="Department"
-        rules={[{ required: true, message: "Please select the department" }]}
-      >
+      <Form.Item label="Departments" name="departments" key="departments">
         <Select mode="multiple">
           {departments.map((department, index) => (
-            <Option key={index} value={department}>
-              {department}
+            <Option key={index} value={department.name}>
+              {department.name}
             </Option>
           ))}
         </Select>
@@ -116,9 +117,9 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
         rules={[{ required: true, message: "Please select the Rôle" }]}
       >
         <Select mode="multiple">
-          {roles.map((roles, index) => (
-            <Option key={index} value={roles}>
-              {roles}
+          {roles.map((role) => (
+            <Option key={role.id} value={role.name}>
+              {role.name}
             </Option>
           ))}
         </Select>

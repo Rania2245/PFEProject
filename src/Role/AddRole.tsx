@@ -15,6 +15,7 @@ const AddRoleForm: React.FC<Props> = ({ onCancel }) => {
     try {
       await addRole(values.name);
       message.success("Role added successfully");
+      window.location.reload();
       form.resetFields();
       onCancel();
     } catch (error) {
