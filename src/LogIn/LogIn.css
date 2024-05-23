@@ -85,11 +85,19 @@ body {
   }
 
 a.create-account-link {
-  color: #007bff;
+  background-color: #adc4da;
   text-decoration: none;
   transition: color 0.3s ease; 
 }
 
 a.create-account-link:hover {
-  color: #6a88a7; 
+  color: #adb4bb; 
+}.custom-button:hover {
+  background-color: #adc4da;
+  color: white;
+}
+
+.custom-button:hover .ant-btn-primary {
+  background-color: #97afc5;
+  color: white;
 }

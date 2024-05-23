@@ -1,10 +1,14 @@
 import { Form, Input, Button, message, Space, Row, Col } from "antd";
 import { forgotPassword } from "../services/UserService";
-import { UserOutlined } from "@ant-design/icons";
+import { LoginOutlined, UserOutlined } from "@ant-design/icons";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ForgotPassword = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [loginButtonHovered, setLoginButtonHovered] = useState(false);
+  const [forgotButtonHovered, setForgotButtonHovered] = useState(false);
   const onFinish = async (values: { useremail: string }) => {
     const { useremail } = values;
     try {
@@ -19,6 +23,9 @@ const ForgotPassword = () => {
       message.error("An error occurred. Please try again.");
       console.error("Forgot Password Error:", error);
     }
+  };
+  const handleLogIn = () => {
+    navigate(`/`);
   };
 
   return (
@@ -86,16 +93,30 @@ const ForgotPassword = () => {
                     style={{
                       width: "100%",
                       fontSize: "18px",
-                      backgroundColor: "#f0f0f3",
+                      backgroundColor: loginButtonHovered
+                        ? "#adc4da"
+                        : "#f0f0f3",
                       border: "1px solid #f0f0f0",
-                      color: "black",
-                      transition: "background-color 0.3s",
+                      color: loginButtonHovered ? "white" : "black",
+                      transition: "background-color 0.3s, color 0.3s",
                       borderRadius: "5px",
+                      marginBottom: "10px",
                     }}
                     className="custom-button"
+                    onMouseEnter={() => setLoginButtonHovered(true)}
+                    onMouseLeave={() => setLoginButtonHovered(false)}
                     loading={loading}
                   >
                     Send Reset Email
+                  </Button>
+
+                  <Button
+                    className="custom-button"
+                    htmlType="button"
+                    onClick={handleLogIn}
+                    icon={<LoginOutlined />}
+                  >
+                    Back to Log In
                   </Button>
                 </Form.Item>
               </Space>

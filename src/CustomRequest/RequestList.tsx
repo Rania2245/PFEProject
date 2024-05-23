@@ -18,6 +18,7 @@ import {
   DeleteOutlined,
   EditOutlined,
   EyeOutlined,
+  MessageOutlined,
   PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
@@ -115,6 +116,10 @@ const RequestList = () => {
   const handleAdd = () => {
     setIsRequestDrawerVisible(true);
   };
+  const handleNavChatBot = () => {
+    navigate(`/chatbot`);
+  };
+
   const handleSearch = async (value: string) => {
     try {
       if (value.trim() === "") {
@@ -368,7 +373,27 @@ const RequestList = () => {
         onShowSizeChange={(current, size) =>
           setPagination({ ...pagination, current: 1, pageSize: size })
         }
-      />
+      />{" "}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <Button
+          icon={<MessageOutlined />}
+          onClick={handleNavChatBot}
+          style={{
+            backgroundColor: "white",
+            borderColor: "blue",
+            color: "blue",
+            borderRadius: "5px",
+            fontWeight: "bold",
+          }}
+        >
+          Chatbot
+        </Button>
+      </div>
       <Drawer
         title="Add Request"
         placement="right"

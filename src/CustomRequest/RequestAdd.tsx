@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Switch, Row, Col, Select, message } from "antd";
+import { Form, Input, Button, Select, Row, Col, message } from "antd";
 import { MinusCircleOutlined } from "@ant-design/icons";
 import { addRequest } from "../services/CustomRequestService";
 import { useNavigate } from "react-router-dom";
@@ -35,6 +35,7 @@ const RequestAdd: React.FC<Props> = ({ onCancel }) => {
   const fetchDepartments = async () => {
     try {
       const departmentsData = await getDeps();
+      console.log(departmentsData);
       setDepartments(departmentsData);
     } catch (error) {
       console.error("Error fetching departments:", error);
@@ -64,10 +65,9 @@ const RequestAdd: React.FC<Props> = ({ onCancel }) => {
         }));
       } else if (values.partage === "department") {
         console.log({ departments });
-        //@ts-expect-error
         partage = departments.map((department) => ({
           type: "department",
-          value: department,
+          value: department.name,
         }));
       } else {
         partage.push({ type: values.partage, value: values.partage });
@@ -93,7 +93,7 @@ const RequestAdd: React.FC<Props> = ({ onCancel }) => {
       onCancel();
     } catch (error) {
       console.error("Error while adding the question:", error);
-      message.error("Failed to add , You did not complete the entire form  ");
+      message.error("Failed to add, You did not complete the entire form");
     } finally {
       setLoading(false);
     }
@@ -104,7 +104,7 @@ const RequestAdd: React.FC<Props> = ({ onCancel }) => {
   };
 
   const renderValueFields = () => {
-    if (partageType === "users") {
+    if (partageType === "users" && userEmails.length > 0) {
       return (
         <Form.Item label="Mail of the users" name="users" key="users">
           <Select mode="multiple">
@@ -116,12 +116,12 @@ const RequestAdd: React.FC<Props> = ({ onCancel }) => {
           </Select>
         </Form.Item>
       );
-    } else if (partageType === "department") {
+    } else if (partageType === "department" && departments.length > 0) {
       return (
         <Form.Item label="Departments" name="departments" key="departments">
           <Select mode="multiple">
             {departments.map((department, index) => (
-              <Option key={index} value={department}>
+              <Option key={index} value={department.name}>
                 {department.name}
               </Option>
             ))}
@@ -223,9 +223,9 @@ const RequestAdd: React.FC<Props> = ({ onCancel }) => {
       {renderValueFields()}
 
       <Form.Item label="Language" name="langue">
-        <Select defaultValue="en" onChange={handleChange}>
-          <Select.Option value="anglais">English</Select.Option>
-          <Select.Option value="français">French</Select.Option>
+        <Select defaultValue="anglais" onChange={handleChange}>
+          <Option value="anglais">English</Option>
+          <Option value="français">French</Option>
         </Select>
       </Form.Item>
 

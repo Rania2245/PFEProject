@@ -114,6 +114,7 @@ const AddMenu: React.FC = () => {
         file
       );
 
+     
       setUploadedFileName((prevUploadedFiles) => {
         const updatedUploadedFiles = [...prevUploadedFiles];
         updatedUploadedFiles[index] = file;

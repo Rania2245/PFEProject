@@ -2,9 +2,13 @@ import { Form, Input, Button, Row, Col, Space, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { loginUser } from "../services/UserService";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
+
+  const [loginButtonHovered, setLoginButtonHovered] = useState(false);
+  const [forgotButtonHovered, setForgotButtonHovered] = useState(false);
 
   const onFinish = async (data: { username: string; password: string }) => {
     try {
@@ -15,8 +19,8 @@ const Login = () => {
 
       console.log("Submitting form...");
       const response = await loginUser(data.username, data.password);
-      if (response && response.token && response.roles) {
-        const { token, roles } = response;
+      if (response && response.token && response.roles && response.UserName) {
+        const { token, roles, UserName } = response;
 
         message.success("Logged In successfully!");
         localStorage.setItem("token", token);
@@ -25,7 +29,7 @@ const Login = () => {
           localStorage.setItem("role", role);
         }
 
-        localStorage.setItem("userEmail", data.username);
+        localStorage.setItem("userEmail", UserName);
         window.scrollTo({
           top: 0,
           behavior: "smooth",
@@ -40,6 +44,7 @@ const Login = () => {
       console.error("Login Error:", error);
     }
   };
+
   const handleForgotPassword = () => {
     navigate(`/forgot-password`);
   };
@@ -120,13 +125,18 @@ const Login = () => {
                     style={{
                       width: "100%",
                       fontSize: "18px",
-                      backgroundColor: "#f0f0f3",
+                      backgroundColor: loginButtonHovered
+                        ? "#adc4da"
+                        : "#f0f0f3",
                       border: "1px solid #f0f0f0",
-                      color: "black",
-                      transition: "background-color 0.3s",
+                      color: loginButtonHovered ? "white" : "black",
+                      transition: "background-color 0.3s, color 0.3s",
                       borderRadius: "5px",
+                      marginBottom: "10px",
                     }}
                     className="custom-button"
+                    onMouseEnter={() => setLoginButtonHovered(true)}
+                    onMouseLeave={() => setLoginButtonHovered(false)}
                   >
                     LOGIN
                   </Button>
@@ -134,17 +144,31 @@ const Login = () => {
                     style={{
                       marginTop: "10px",
                       textAlign: "center",
-                      color: " #FF4500",
+                      color: "#FF4500",
                     }}
                   >
-                    <button
+                    <Button
+                      type="primary"
+                      htmlType="button"
                       style={{
-                        color: "#FF4500",
+                        width: "100%",
+                        fontSize: "18px",
+                        backgroundColor: forgotButtonHovered
+                          ? "#adc4da"
+                          : "#f0f0f3",
+                        border: "1px solid #f0f0f0",
+                        color: forgotButtonHovered ? "white" : "red",
+                        transition: "background-color 0.3s, color 0.3s",
+                        borderRadius: "5px",
+                        marginBottom: "10px",
                       }}
+                      className="custom-button"
                       onClick={handleForgotPassword}
+                      onMouseEnter={() => setForgotButtonHovered(true)}
+                      onMouseLeave={() => setForgotButtonHovered(false)}
                     >
                       Forgot Password?
-                    </button>
+                    </Button>
                   </div>
                 </Form.Item>
               </Space>

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { endpoint } from "../constants";
 import { User } from "../types/user";
+import { UserAddOutlined } from "@ant-design/icons";
 
 export const loginUser = async (email: string, password: string) => {
   try {
@@ -8,10 +9,11 @@ export const loginUser = async (email: string, password: string) => {
       email,
       password,
     });
-    // Assuming the response contains a 'token' and 'roles' property
+
     return {
       token: data.token,
       roles: data.roles,
+      UserName: data.name,
     };
   } catch (error) {
     console.error("Error logging in:", error);
