@@ -18,18 +18,19 @@ const QuestionRequestAi = () => {
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(false);
   const [model, setModel] = useState("");
+
   useEffect(() => {
     const fetchInitialData = async () => {
       const pageId = localStorage.getItem("pageId");
       if (pageId) {
         try {
           const data = await getMethodAI(pageId);
-          setChatGpt(data.chatGpt ? true : false);
+          setChatGpt(data.chatgpt ? true : false);
           setBaseConnaissance(data.baseConnaissance);
-          setTraining(data.training !== undefined ? data.training : false);
-          if (data.chatGpt) {
-            setToken(data.chatGpt.token);
-            setModel(data.chatGpt.model);
+          setTraining(data.Document !== undefined ? data.Document : false);
+          if (data.chatgpt) {
+            setToken(data.chatgpt.token);
+            setModel(data.chatgpt.model);
           }
           setMethodId(data.id);
           setLoading(false);
@@ -43,19 +44,13 @@ const QuestionRequestAi = () => {
     fetchInitialData();
   }, []);
 
-  const handleGenerateScenario = async () => {
-    const requestData = {
-      chatGpt: chatGpt ? { token, model } : false,
-      baseConnaissance,
-      training,
-    };
-    console.log(requestData);
+  const handleGenerateScenario = async (requestData: any) => {
     try {
       await generateAI(requestData, methodId);
       message.success("Configuration AI modifiée avec succès !");
     } catch (error) {
-      console.error("Error lors de generation de  request using AI:", error);
-      message.error("Error lors de generation de  request using AI");
+      console.error("Error lors de generation de request using AI:", error);
+      message.error("Error lors de generation de request using AI");
     }
   };
 
@@ -76,17 +71,36 @@ const QuestionRequestAi = () => {
   };
 
   const handleTrainingChange = async (value: any) => {
-    setTraining(true);
-    setChatGpt(false);
-    setBaseConnaissance(false);
-
+    setTraining(value);
     if (value) {
-      handleGenerateScenario();
+      const requestData = {
+        chatGpt: false,
+        baseConnaissance: false,
+        Document: true,
+      };
+      setChatGpt(false);
+      setBaseConnaissance(false);
+      await handleGenerateScenario(requestData);
     }
   };
 
   const handleTrainingButtonClick = () => {
-    window.location.href = "http://127.0.0.1:7860/";
+    const pageId = localStorage.getItem("pageId");
+    if (pageId) {
+      const url = `http://127.0.0.1:7860/?pageId=${pageId}`;
+      const newWindow = window.open(url, "_blank");
+
+      const setLocalStorage = () => {
+        if (newWindow) {
+          newWindow.localStorage.setItem("pageId", pageId);
+          newWindow.removeEventListener("load", setLocalStorage);
+        }
+      };
+
+      newWindow?.addEventListener("load", setLocalStorage);
+    } else {
+      message.error("Page ID not found in local storage.");
+    }
   };
 
   return (
@@ -189,7 +203,7 @@ const QuestionRequestAi = () => {
           </p>
           <Radio.Group
             value={training}
-            onChange={handleTrainingChange}
+            onChange={(e) => handleTrainingChange(e.target.value)}
             buttonStyle="solid"
             className="custom-radio-group"
           >
@@ -228,7 +242,13 @@ const QuestionRequestAi = () => {
                 textAlign: "left",
                 color: "#72A0C1",
               }}
-              onClick={handleGenerateScenario}
+              onClick={() =>
+                handleGenerateScenario({
+                  chatGpt: chatGpt ? { token, model } : false,
+                  baseConnaissance,
+                  Document: training,
+                })
+              }
             >
               <ReloadOutlined style={{ color: "green" }} />
               Generate the knowledge base

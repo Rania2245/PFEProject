@@ -23,7 +23,7 @@ import RoletList from "./Role/ListeRoles";
 import DepartmentList from "./Department/ListDep";
 import ForgotPassport from "./Login/Forgot_password";
 import ResetPassword from "./Login/Reset_password";
-import LogInGard from "./LogInGard"; // Import LogInGard
+import LogInGard from "./LogInGard"; 
 
 const { Content } = Layout;
 
