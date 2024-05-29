@@ -185,7 +185,7 @@ const RoletList = () => {
       >
         {selectedRoleId && (
           <RoleModify
-            id={selectedRoleId} // Pass the id prop here
+            id={selectedRoleId}
             visible={isModifyDrawerVisible}
             onCancel={() => setIsModifyDrawerVisible(false)}
           />

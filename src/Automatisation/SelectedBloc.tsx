@@ -239,12 +239,13 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
               file: input.file,
               options_bloc: input.blocOptions,
             };
-            case "redirect":{
-              return {
-                type: input.type,
-                data: input.data,}
+          case "redirect": {
+            return {
+              type: input.type,
+              data: input.data,
             };
-          
+          }
+
           case "media": {
             console.log({ facebookUrls });
             if (facebookUrls[index] === "") {
@@ -283,8 +284,7 @@ const SelectedBloc: React.FC<SelectedBlocProps> = ({ bloc }) => {
       if (Bloc1) {
         message.success("Bloc has been updated successfully!");
       }
-      //@ts-expect-error
-      await updateBloc(bloc.id.valueOf(), updatedBloc);
+
       window.location.reload();
     } catch (error) {
       console.error("Error saving bloc: ", error);

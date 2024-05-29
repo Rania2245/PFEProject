@@ -342,9 +342,12 @@ const AddBloc: React.FC = () => {
         elementsBloc: elementsBloc,
       };
 
-      message.success("Bloc has been added successfully!");
+      if (blocData) message.success("Bloc has been added successfully!");
       console.log({ blocData });
-      await createBloc(blocData);
+      const addBloc = await createBloc(blocData);
+      if (addBloc) {
+        message.success("Bloc has been added successfully!");
+      }
 
       setInputData([]);
       setModalVisible([]);

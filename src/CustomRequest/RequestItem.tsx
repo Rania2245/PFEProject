@@ -85,8 +85,8 @@ const RequestItem: React.FC = () => {
             new Date(requestDetails!.created_at).toDateString()
           )}
         </Descriptions.Item>
-        <Descriptions.Item label="Active">
-          {loading ? <Spin /> : requestDetails?.active ? "Yes" : "No"}
+        <Descriptions.Item label="Language">
+          {loading ? <Spin /> : requestDetails?.langue}
         </Descriptions.Item>
         <Descriptions.Item label="Partage">
           {loading ? (
@@ -99,9 +99,11 @@ const RequestItem: React.FC = () => {
                   <div>
                     Type: <strong>{p.type}</strong>
                   </div>
-                  <div>
-                    Value: <strong>{p.value}</strong>
-                  </div>
+                  {p.type !== "private" && p.type !== "public" && (
+                    <div>
+                      Value: <strong>{p.value}</strong>
+                    </div>
+                  )}
                 </div>
               )
             )
