@@ -27,17 +27,17 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
   const fetchDepartments = async () => {
     try {
       const departmentsData = await getDeps();
-      console.log(departmentsData);
       setDepartments(departmentsData);
     } catch (error) {
       console.error("Error fetching departments:", error);
+      message.error("Failed to fetch departments. Please try again later.");
     }
   };
 
   const fetchRoles = async () => {
     try {
-      const roles = await getRoles();
-      setRoles(roles);
+      const rolesData = await getRoles();
+      setRoles(rolesData);
     } catch (error) {
       console.error("Error fetching roles:", error);
       message.error("Failed to fetch roles. Please try again later.");
@@ -58,19 +58,16 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
           : //@ts-expect-error
             [values.roles?.trim()],
       };
-
-      console.log(formData);
       //@ts-expect-error
-
       await addUser(formData);
-
       message.success("User added successfully");
-      window.location.reload();
       form.resetFields();
       onCancel();
     } catch (error) {
       console.error("Error adding user:", error);
-      message.error("Failed to add User. Please try again later.");
+      message.error(
+        "Failed to add user. Please ensure you're adding the data in the right way."
+      );
     } finally {
       setLoading(false);
     }
@@ -89,7 +86,10 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
       <Form.Item
         name="email"
         label="Email"
-        rules={[{ required: true, message: "Please enter the email" }]}
+        rules={[
+          { required: true, message: "Please enter the email" },
+          { type: "email", message: "Please enter a valid email" },
+        ]}
       >
         <Input type="email" />
       </Form.Item>
@@ -97,24 +97,36 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
       <Form.Item
         name="password"
         label="Password"
-        rules={[{ required: true, message: "Please enter the password" }]}
+        rules={[
+          { required: true, message: "Please enter the password" },
+          {
+            pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+            message:
+              "Password must contain at least 8 characters, including letters and numbers",
+          },
+        ]}
       >
         <Input.Password />
       </Form.Item>
 
-      <Form.Item label="Departments" name="departments" key="departments">
+      <Form.Item
+        name="departments"
+        label="Departments"
+        rules={[{ required: true, message: "Please select the departments" }]}
+      >
         <Select mode="multiple">
-          {departments.map((department, index) => (
-            <Option key={index} value={department.name}>
+          {departments.map((department) => (
+            <Option key={department.id} value={department.name}>
               {department.name}
             </Option>
           ))}
         </Select>
       </Form.Item>
+
       <Form.Item
         name="roles"
-        label="Rôle"
-        rules={[{ required: true, message: "Please select the Rôle" }]}
+        label="Role"
+        rules={[{ required: true, message: "Please select the roles" }]}
       >
         <Select mode="multiple">
           {roles.map((role) => (

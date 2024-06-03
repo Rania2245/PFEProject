@@ -100,6 +100,9 @@ const DepartmentList = () => {
       setLoading(false);
     }
   };
+  const capitalizeName = (name: any) => {
+    return name.replace(/\b\w/g, (char: any) => char.toUpperCase());
+  };
 
   const columns = [
     {
@@ -114,6 +117,7 @@ const DepartmentList = () => {
       dataIndex: "name",
       key: "name",
       align: "center",
+      render: (name: any) => capitalizeName(name),
     },
     {
       title: "Actions",

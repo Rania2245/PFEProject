@@ -84,11 +84,13 @@ const RequestAdd: React.FC<Props> = ({ onCancel }) => {
         })),
       };
       console.log({ requestData });
+      message.success("Question added successfully", 10);
       await addRequest(requestData);
+
+      console.log("Question added successfully:", requestData);
+
       navigate("/requests");
       window.location.reload();
-      message.success("Question added successfully");
-      console.log("Question added successfully:", requestData);
 
       onCancel();
     } catch (error) {

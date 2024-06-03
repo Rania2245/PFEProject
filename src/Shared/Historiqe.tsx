@@ -4,6 +4,7 @@ import { HistoryOutlined, ReloadOutlined } from "@ant-design/icons";
 
 import { fetchLogs } from "../services/historyService";
 
+import moment from "moment";
 const { Title } = Typography;
 
 interface Log {
@@ -38,8 +39,13 @@ const History: React.FC = () => {
     },
     {
       title: "Timestamp",
-      dataIndex: "timestamp",
-      key: "timestamp",
+      dataIndex: "created_at",
+      key: "created_at",
+      render: (text: string, record: Log) => (
+        <div>
+          <div>{moment(record.created_at).format("YYYY-MM-DD HH:mm:ss")}</div>
+        </div>
+      ),
     },
     {
       title: "User",

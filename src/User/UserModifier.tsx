@@ -12,11 +12,21 @@ interface Props {
   onCancel: () => void;
 }
 
+interface Department {
+  id: string;
+  name: string;
+}
+
+interface Role {
+  id: string;
+  name: string;
+}
+
 const UserModify: React.FC<Props> = ({ id, visible, onCancel }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [departments, setDepartments] = useState<any[]>([]);
-  const [roles, setRoles] = useState<any[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
   const [userData, setUserData] = useState<any>();
 
   useEffect(() => {
@@ -48,9 +58,9 @@ const UserModify: React.FC<Props> = ({ id, visible, onCancel }) => {
       const userName = userData.name;
       const userEmail = userData.email;
       const userDepartments = userData.departments.map(
-        (department: any) => department.name
+        (department: Department) => department.name
       );
-      const userRoles = userData.roles.map((role: any) => role.name);
+      const userRoles = userData.roles.map((role: Role) => role.name);
       setUserData(userData);
       form.setFieldsValue({
         name: userName,
@@ -86,10 +96,18 @@ const UserModify: React.FC<Props> = ({ id, visible, onCancel }) => {
 
   return (
     <Form form={form} layout="vertical" onFinish={onFinish}>
-      <Form.Item label="Name" name="name">
+      <Form.Item
+        label="Name"
+        name="name"
+        rules={[{ required: true, message: "Please enter the name" }]}
+      >
         <Input />
       </Form.Item>
-      <Form.Item label="Email" name="email">
+      <Form.Item
+        label="Email"
+        name="email"
+        rules={[{ required: true, message: "Please enter the email" }]}
+      >
         <Input />
       </Form.Item>
       <Form.Item
@@ -98,22 +116,22 @@ const UserModify: React.FC<Props> = ({ id, visible, onCancel }) => {
         rules={[{ required: true, message: "Please select the department" }]}
       >
         <Select mode="multiple">
-          {departments.map((department, index) => (
-            <Option key={index} value={department}>
-              {department}
+          {departments.map((department) => (
+            <Option key={department.id} value={department.name}>
+              {department.name}
             </Option>
           ))}
         </Select>
       </Form.Item>
       <Form.Item
         name="roles"
-        label="Rôle"
-        rules={[{ required: true, message: "Please select the Rôle" }]}
+        label="Role"
+        rules={[{ required: true, message: "Please select the role" }]}
       >
         <Select mode="multiple">
-          {roles.map((roles, index) => (
-            <Option key={index} value={roles}>
-              {roles}
+          {roles.map((role) => (
+            <Option key={role.id} value={role.name}>
+              {role.name}
             </Option>
           ))}
         </Select>

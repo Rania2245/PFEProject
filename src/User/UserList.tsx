@@ -21,7 +21,7 @@ import {
   UsergroupAddOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { Department } from "../types/department";
+
 import AddUserForm from "./AddUser";
 import UserModify from "./UserModifier";
 
@@ -61,6 +61,10 @@ const UserList = () => {
       setLoading(false);
     }
   };
+  const capitalizeName = (name: any) => {
+    return name.replace(/\b\w/g, (char: any) => char.toUpperCase());
+  };
+
   const refreshPage = () => {
     fetchData();
   };
@@ -87,7 +91,6 @@ const UserList = () => {
   const handleAdd = () => {
     setIsUserDrawerVisible(true);
   };
-  // Inside the UserList component
 
   const handleSearch = async (value: string) => {
     try {
@@ -117,6 +120,7 @@ const UserList = () => {
       dataIndex: "name",
       key: "name",
       align: "center",
+      render: (name: any) => capitalizeName(name),
     },
     {
       title: "Department",

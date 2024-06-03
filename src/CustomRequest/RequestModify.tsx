@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Switch, Select, message } from "antd";
+import { Form, Input, Button, Select, message } from "antd";
 import { MinusCircleOutlined } from "@ant-design/icons";
 import { QuestionRequest } from "../types/questionrequest";
 import {
   getRequestById,
   modifyRequest,
 } from "../services/CustomRequestService";
-
 import { getUsersEmail } from "../services/UserService";
 import { getDeps } from "../services/departmentService";
 import { PartageOption } from "../types/partageOption";
+import { Department } from "../types/department";
 
 const { Option } = Select;
 
@@ -23,7 +23,7 @@ const RequestModify: React.FC<Props> = ({ id, visible, onCancel }) => {
   const [form] = Form.useForm<QuestionRequest>();
   const [loading, setLoading] = useState(false);
   const [userEmails, setUserEmails] = useState<string[]>([]);
-  const [departments, setDepartments] = useState<any[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [initialPartageValue, setInitialPartageValue] =
     useState<PartageOption>();
   const [langue, setLanguage] = useState("anglais");
@@ -31,6 +31,7 @@ const RequestModify: React.FC<Props> = ({ id, visible, onCancel }) => {
   const handleChange = (langue: string) => {
     setLanguage(langue);
   };
+
   useEffect(() => {
     if (visible) {
       fetchData();
@@ -40,7 +41,6 @@ const RequestModify: React.FC<Props> = ({ id, visible, onCancel }) => {
   const fetchData = async () => {
     try {
       const response = await getRequestById(Number(id));
-
       const partageData: { type: PartageOption; value: string }[] = JSON.parse(
         //@ts-expect-error
         response.data.partage
@@ -60,9 +60,13 @@ const RequestModify: React.FC<Props> = ({ id, visible, onCancel }) => {
         const emails = await getUsersEmail();
         setUserEmails(emails);
         //@ts-expect-error
+        form.setFieldsValue({ users: partageData[0].value.split(",") });
+        //@ts-expect-error
       } else if (initialType === "department") {
         const deps = await getDeps();
         setDepartments(deps);
+        //@ts-expect-error
+        form.setFieldsValue({ departments: partageData[0].value.split(",") });
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -75,9 +79,13 @@ const RequestModify: React.FC<Props> = ({ id, visible, onCancel }) => {
       const emails = await getUsersEmail();
       setUserEmails(emails);
       //@ts-expect-error
+      form.setFieldsValue({ users: [] });
+      //@ts-expect-error
     } else if (value === "department") {
       const departmentsData = await getDeps();
       setDepartments(departmentsData);
+      //@ts-expect-error
+      form.setFieldsValue({ departments: [] });
     }
   };
 
@@ -99,14 +107,14 @@ const RequestModify: React.FC<Props> = ({ id, visible, onCancel }) => {
           text: response,
         })),
       };
-      console.log(modifiedValues);
       //@ts-expect-error
+
       await modifyRequest(Number(id), modifiedValues);
 
       message.success("Request updated successfully");
     } catch (error) {
       console.error("Error modifying request:", error);
-      message.error("Failed to updated ");
+      message.error("Failed to update request");
     } finally {
       setLoading(false);
       onCancel();
@@ -194,8 +202,9 @@ const RequestModify: React.FC<Props> = ({ id, visible, onCancel }) => {
           </>
         )}
       </Form.List>
+
       <Form.Item label="Language" name="langue">
-        <Select defaultValue="en" onChange={handleChange}>
+        <Select defaultValue="anglais" onChange={handleChange}>
           <Select.Option value="anglais">English</Select.Option>
           <Select.Option value="français">French</Select.Option>
         </Select>
@@ -213,6 +222,7 @@ const RequestModify: React.FC<Props> = ({ id, visible, onCancel }) => {
           <Option value="department">Department</Option>
         </Select>
       </Form.Item>
+
       {form.getFieldValue("partage") === "users" && (
         <Form.Item label="Users" name="users">
           <Select mode="multiple" placeholder="Select users">
@@ -224,12 +234,13 @@ const RequestModify: React.FC<Props> = ({ id, visible, onCancel }) => {
           </Select>
         </Form.Item>
       )}
+
       {form.getFieldValue("partage") === "department" && (
-        <Form.Item label="Department" name="department">
+        <Form.Item label="Departments" name="departments">
           <Select mode="multiple" placeholder="Select departments">
             {departments.map((department) => (
-              <Option key={department} value={department}>
-                {department}
+              <Option key={department.id} value={department.name}>
+                {department.name}
               </Option>
             ))}
           </Select>
