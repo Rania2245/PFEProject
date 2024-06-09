@@ -1,20 +1,11 @@
 import axios from "axios";
 import { endpoint } from "../constants";
 import { User } from "../types/user";
-import { UserAddOutlined } from "@ant-design/icons";
 
 export const loginUser = async (email: string, password: string) => {
   try {
-    const { data } = await axios.post(`${endpoint}/api/login`, {
-      email,
-      password,
-    });
-
-    return {
-      token: data.token,
-      roles: data.roles,
-      UserName: data.name,
-    };
+    const { data } = await axios.post(`${endpoint}/api/login`, { email, password });
+    return { token: data.token, roles: data.roles, UserName: data.name };
   } catch (error) {
     console.error("Error logging in:", error);
     throw error;
@@ -35,9 +26,7 @@ export const getUsersEmail = async () => {
   try {
     const token = localStorage.getItem("token");
     const { data } = await axios.get(`${endpoint}/api/emails`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
     return data;
   } catch (error) {
@@ -50,9 +39,7 @@ export const getAllUsers = async () => {
   try {
     const token = localStorage.getItem("token");
     const { data } = await axios.get(`${endpoint}/api/users`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
     return data;
   } catch (error) {
@@ -64,15 +51,9 @@ export const getAllUsers = async () => {
 export const updateUser = async (userId: string, formData: User) => {
   try {
     const token = localStorage.getItem("token");
-    const response = await axios.put(
-      `${endpoint}/api/users/${userId}`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axios.put(`${endpoint}/api/users/${userId}`, formData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     return response.data;
   } catch (error) {
     console.error("Error updating user:", error);
@@ -84,9 +65,7 @@ export const deleteUser = async (userId: string) => {
   try {
     const token = localStorage.getItem("token");
     const response = await axios.delete(`${endpoint}/api/users/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
   } catch (error) {
@@ -94,7 +73,8 @@ export const deleteUser = async (userId: string) => {
     throw error;
   }
 };
-export const getUserById = async (userId: string) => {
+
+export const getUserById = async (userId: string): Promise<User> => {
   try {
     const token = localStorage.getItem("token");
     const { data } = await axios.get(`${endpoint}/api/users/${userId}`, {
@@ -102,7 +82,19 @@ export const getUserById = async (userId: string) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    return data;
+
+    // Assuming the API returns the departments and roles as arrays of strings
+    const departments = data.departments.map((name: string) => ({ name }));
+    const roles = data.roles.map((name: string) => ({ name }));
+
+    return {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      password: "", // Password is not returned for security reasons
+      departments,
+      roles,
+    };
   } catch (error) {
     console.error("Error fetching user by ID:", error);
     throw error;
@@ -111,15 +103,14 @@ export const getUserById = async (userId: string) => {
 
 export const forgotPassword = async (useremail: string) => {
   try {
-    const response = await axios.post(`${endpoint}/api/password/email`, {
-      email: useremail,
-    });
+    const response = await axios.post(`${endpoint}/api/password/email`, { email: useremail });
     return response.data;
   } catch (error) {
     console.error("Error sending reset password email:", error);
     throw new Error("Error sending reset password email");
   }
 };
+
 export const resetPassword = async (
   email: string,
   password: string,
@@ -133,7 +124,6 @@ export const resetPassword = async (
       password_confirmation: confirmPassword,
       token,
     });
-
     return response.data;
   } catch (error) {
     console.error("Error resetting password:", error);

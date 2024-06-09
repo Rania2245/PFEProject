@@ -6,6 +6,6 @@ export type User = {
   name: string;
   email: string;
   password: string;
-  departments: Department;
-  roles: Role;
+  departments: Department[];
+  roles: Role[];
 };
