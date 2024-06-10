@@ -58,9 +58,11 @@ const AddUserForm: React.FC<Props> = ({ onCancel }) => {
           : //@ts-expect-error
             [values.roles?.trim()],
       };
+      message.success("User added successfully");
       //@ts-expect-error
       await addUser(formData);
-      message.success("User added successfully");
+      window.location.reload();
+
       form.resetFields();
       onCancel();
     } catch (error) {

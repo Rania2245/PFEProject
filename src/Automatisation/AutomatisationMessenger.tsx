@@ -17,7 +17,7 @@ import {
   MenuOutlined,
 } from "@ant-design/icons";
 import AddBloc from "./AddBloc";
-import AddMenu from "./AddMenu";
+
 import { Bloc } from "../types/Bloc";
 import {
   getAllBlocs,
@@ -221,13 +221,15 @@ const AutomatisationMessenger: React.FC = () => {
         }}
         onMouseEnter={() => {
           //@ts-expect-error
-          document.getElementById("myTitle").style.color = "#333333";
+          document.getElementById("Messenger Automation").style.color =
+            "#333333";
         }}
         onMouseLeave={() => {
           //@ts-expect-error
-          document.getElementById("myTitle").style.color = "#87abcc";
+          document.getElementById("Messenger Automation").style.color =
+            "#87abcc";
         }}
-        id="myTitle"
+        id="Messenger Automation"
       >
         <BellOutlined />
         <span style={{ marginLeft: "10px" }}>Messenger Automation</span>
@@ -572,7 +574,7 @@ const AutomatisationMessenger: React.FC = () => {
         <Col span={12}>
           <Spin spinning={loading2}></Spin>
           {selectedBloc !== null ? <SelectedBloc bloc={selectedBloc} /> : null}
-          {showAddMenu && <AddMenu />}
+          {showAddMenu && <AddBloc />}
           {showAddBloc && <AddBloc />}
         </Col>
       </Row>

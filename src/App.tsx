@@ -23,22 +23,12 @@ import RoletList from "./Role/ListeRoles";
 import DepartmentList from "./Department/ListDep";
 import ForgotPassport from "./Login/Forgot_password";
 import ResetPassword from "./Login/Reset_password";
-import LogInGard from "./LogInGard"; 
+import LogInGard from "./LogInGard";
 
 const { Content } = Layout;
 
 function App() {
-  const navigate = useNavigate();
   const location = useLocation();
-
-  const isAuthenticated =
-    localStorage.getItem("username") && localStorage.getItem("token");
-
-  useEffect(() => {
-    if (isAuthenticated && location.pathname === "/") {
-      navigate("/homeAuto");
-    }
-  }, [isAuthenticated, location.pathname, navigate]);
 
   const isHomeAutoPage = location.pathname === "/homeAuto";
 

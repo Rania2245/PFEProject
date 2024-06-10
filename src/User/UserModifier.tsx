@@ -54,6 +54,7 @@ const UserModify: React.FC<Props> = ({ id, visible, onCancel }) => {
   const fetchData = async () => {
     try {
       const response = await getUserById(id);
+      console.log({ response });
       const userData = response;
       const userName = userData.name;
       const userEmail = userData.email;

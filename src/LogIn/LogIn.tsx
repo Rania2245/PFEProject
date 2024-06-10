@@ -23,13 +23,16 @@ const Login = () => {
         const { token, roles, UserName } = response;
 
         message.success("Logged In successfully!");
+
         localStorage.setItem("token", token);
+        
         if (Array.isArray(roles) && roles.length > 0) {
           const role = roles[0];
           localStorage.setItem("role", role);
         }
 
         localStorage.setItem("userEmail", UserName);
+
         window.scrollTo({
           top: 0,
           behavior: "smooth",
